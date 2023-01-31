@@ -1,0 +1,23 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: ruiji
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/reggie
+      username: root
+      password: root
+mybatis-plus:
+  configuration:
+#    在数据库和实体类进行映射的时候，去掉数据库中的下划线或者字段中的下划线，按照驼峰命名法进行匹配
+    map-underscore-to-camel-case: true
+#    想要打印sql配置这个
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    结合实体类中的long类型的id，配置了后可以自动生成主键
+  global-config:
+    db-config:
+      id-type: assign_id
+ruiji:
+  path: D:\img\
