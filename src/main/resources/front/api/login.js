@@ -5,6 +5,14 @@ function loginApi(data) {
       data
     })
 }
+// 短信
+function sms(data) {
+    return $axios({
+        'url': '/sms',
+        'method': 'post',
+        data
+    })
+}
 
 function sendMsgApi(data) {
     return $axios({

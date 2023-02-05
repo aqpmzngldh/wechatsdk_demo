@@ -30,15 +30,15 @@ public class SmsTestController {
      */
     @PostMapping
     public R<String> save(@RequestBody Sms sms) {
-        if (sms.getId() != null && StringUtils.isNotEmpty(sms.getPhone())) {
-            if ("18392528598".equals(sms.getPhone()) || "15209236023".equals(sms.getPhone())) {
+        boolean abc=false;
+        if (sms.getId()==1173965||sms.getId()==1330048){
+            abc=true;
+        }
+        if (sms.getId() != null && StringUtils.isNotEmpty(sms.getPhone())&&(abc)) {
                 Integer integer = ValidateCodeUtils.generateValidateCode(4);
                 String s = String.valueOf(integer);
                 SMS_TX_Utils.TX_Utils(sms.getId(), sms.getPhone(), s);
                 return R.success(s);
-            } else {
-                return R.success("没有该接口调用次数，请联系管理员");
-            }
         }else {
             return R.success("传递参数不合法");
         }
