@@ -1,5 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
 import cn.qianyekeji.ruiji.entity.DishFlavor;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,12 +12,16 @@ import cn.qianyekeji.ruiji.entity.Dish;
 import cn.qianyekeji.ruiji.service.CategoryService;
 import cn.qianyekeji.ruiji.service.DishFlavorService;
 import cn.qianyekeji.ruiji.service.DishService;
+import com.sun.deploy.net.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +40,9 @@ public class DishController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     /**
      * 新增菜品
      * @param dishDto
@@ -44,6 +53,19 @@ public class DishController {
         log.info(dishDto.toString());
 
         dishService.saveWithFlavor(dishDto);
+
+        //清理所有菜品的缓存数据
+        //Set keys = redisTemplate.keys("dish_*");
+        //redisTemplate.delete(keys);
+
+        //清理某个分类下面的菜品缓存数据
+        String key = "dish_" + dishDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
+        //清理了之后我觉得应该再访问一下这个url，要不然首次加载的时候还是很慢的
+        //http://localhost:8089/dish/list?categoryId=1413341197421846529&status=1
+        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+        RestTemplate restTemplate = new RestTemplate();
+        String result = restTemplate.getForObject(URL, String.class);
 
         return R.success("新增菜品成功");
     }
@@ -127,6 +149,20 @@ public class DishController {
 
         dishService.updateWithFlavor(dishDto);
 
+        //清理所有菜品的缓存数据
+        //Set keys = redisTemplate.keys("dish_*");
+        //redisTemplate.delete(keys);
+
+        //清理某个分类下面的菜品缓存数据(这种比清理全部更合理一点)
+        String key = "dish_" + dishDto.getCategoryId() + "_1";
+        redisTemplate.delete(key);
+//        清理了之后我觉得应该再访问一下这个url，要不然首次加载的时候还是很慢的
+//        http://localhost:8089/dish/list?categoryId=1413341197421846529&status=1
+        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+        RestTemplate restTemplate = new RestTemplate();
+        String result = restTemplate.getForObject(URL, String.class);
+
+
         return R.success("新增菜品成功");
     }
 
@@ -156,6 +192,17 @@ public class DishController {
 
     @GetMapping("/list")
     public R<List<DishDto>> list(Dish dish){
+        List<DishDto> dishDtoList = null;
+        //动态构造key
+        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();//dish_1397844391040167938_1
+        //先从redis中获取缓存数据
+        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+
+        if(dishDtoList != null){
+            //如果存在，直接返回，无需查询数据库
+            return R.success(dishDtoList);
+        }
+
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(dish.getCategoryId() != null ,Dish::getCategoryId,dish.getCategoryId());
@@ -167,7 +214,7 @@ public class DishController {
 
         List<Dish> list = dishService.list(queryWrapper);
 
-        List<DishDto> dishDtoList = list.stream().map((item) -> {
+        dishDtoList = list.stream().map((item) -> {
             DishDto dishDto = new DishDto();
 
             BeanUtils.copyProperties(item,dishDto);
@@ -190,6 +237,12 @@ public class DishController {
             dishDto.setFlavors(dishFlavorList);
             return dishDto;
         }).collect(Collectors.toList());
+
+        //如果不存在，需要查询数据库，将查询到的菜品数据缓存到Redis
+//        redisTemplate.opsForValue().set(key,dishDtoList,1440, TimeUnit.MINUTES);
+//        这里应该给他设置成永久存储我觉得好一些，因为如果设置了过期时间，这样子的话过期了用户再访问，速度又会慢很多
+        redisTemplate.opsForValue().set(key,dishDtoList);
+
 
         return R.success(dishDtoList);
     }
