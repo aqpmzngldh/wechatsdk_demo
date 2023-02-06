@@ -63,7 +63,10 @@ public class DishController {
         redisTemplate.delete(key);
         //清理了之后我觉得应该再访问一下这个url，要不然首次加载的时候还是很慢的
         //http://localhost:8089/dish/list?categoryId=1413341197421846529&status=1
-        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+//        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+
+
+        String URL = "http://124.222.221.77:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(URL, String.class);
 
@@ -156,9 +159,10 @@ public class DishController {
         //清理某个分类下面的菜品缓存数据(这种比清理全部更合理一点)
         String key = "dish_" + dishDto.getCategoryId() + "_1";
         redisTemplate.delete(key);
-//        清理了之后我觉得应该再访问一下这个url，要不然首次加载的时候还是很慢的
-//        http://localhost:8089/dish/list?categoryId=1413341197421846529&status=1
-        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+//        清理了之后我觉得应该再访问一下这个url，访问了后会存入缓存，要不然首次加载的时候还是很慢的
+//        String URL = "http://localhost:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
+
+        String URL = "http://124.222.221.77:8089/dish/list?categoryId="+dishDto.getCategoryId()+"&status=1";
         RestTemplate restTemplate = new RestTemplate();
         String result = restTemplate.getForObject(URL, String.class);
 
