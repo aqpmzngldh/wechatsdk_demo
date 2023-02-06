@@ -194,7 +194,9 @@ public class DishController {
     public R<List<DishDto>> list(Dish dish){
         List<DishDto> dishDtoList = null;
         //动态构造key
-        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();//dish_1397844391040167938_1
+//        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();//dish_1397844391040167938_1
+//        这里不设置死的话在添加套餐功能中的添加菜品中传递的dish.getStatus()是null
+        String key = "dish_" + dish.getCategoryId() + "_" + 1;//dish_1397844391040167938_1
         //先从redis中获取缓存数据
         dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
 
