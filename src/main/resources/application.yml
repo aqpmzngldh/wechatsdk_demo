@@ -11,6 +11,7 @@ spring:
 #      云服务数据库
       url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
+#      password: root
       password: MXMPbrxyc4t7sBje
   redis:
 #    redis本地主机ip
@@ -18,7 +19,8 @@ spring:
 #    redis云服务ip
     host: 124.222.221.77
     port: 6379
-    password:
+#    password:
+    password: MXMPbrxyc4t7sBje
     database: 0
 #  cache:
 #    redis:
@@ -37,7 +39,7 @@ ruiji:
 #  图片本地存储位置
 #  path: D:\img\
 #  图片云服务器存储位置
-  path: /www/server/img
+  path: /www/server/img/
 
 
 
