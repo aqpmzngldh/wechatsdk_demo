@@ -16,5 +16,7 @@ public class Sms implements Serializable {
     private Integer id;
     //电话号码
     private String phone;
+    //压力测试电话号码
+    private String p;
 
 }
