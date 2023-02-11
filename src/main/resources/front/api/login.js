@@ -5,10 +5,19 @@ function loginApi(data) {
       data
     })
 }
-// 短信
+// 短信接口
 function sms(data) {
     return $axios({
         'url': '/sms',
+        'method': 'post',
+        data
+    })
+}
+
+// 短信压力测试
+function sss(data) {
+    return $axios({
+        'url': '/sss',
         'method': 'post',
         data
     })

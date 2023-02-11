@@ -20,8 +20,17 @@
 </head>
 <body>
 <div id="login" v-loading="loading">
-    <div class="divHead">短信接口</div>
-    <div class="divContainer">
+    <!--<div class="divHead">短信接口</div>-->
+
+    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+        <el-menu-item index="1">短信接口</el-menu-item>
+        <!--<el-menu-item index="4"><a href="https://www.ele.me" target="_blank">压力测试</a></el-menu-item>-->
+        <!--<el-menu-item index="4"><a href="login.html" target="_blank">压力测试</a></el-menu-item>-->
+        <el-menu-item index="4">压力测试</el-menu-item>
+    </el-menu>
+    <!--url: 'page/member/list.html'?-->
+
+    <div class="divContainer" v-if="ls">
         <el-input  v-model="form.phon" :disabled="true" /></el-input>
         <div class="divSplit"></div>
         <el-input  v-model="form.pho" :disabled="true" /></el-input>
@@ -31,9 +40,19 @@
         <el-input placeholder=" 请输入测试手机号码" v-model="form.phone"  maxlength='20'/></el-input>
         <div class="divSplit"></div>
         <el-input placeholder=" 1173965注册，1330048登录" v-model="form.id"  maxlength='20'/></el-input>
+        <div class="divSplit"></div>
+        <div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>
     </div>
-    <div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>
-    <el-button  :disabled="is_click"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.phone,btnPhone:form.phone}" @click="btnLogin">测试</el-button>
+    <div class="divContainer" v-if="wc">
+        <el-input placeholder=" 请输入测试手机号码" v-model="form.p"  maxlength='20'/></el-input>
+        <div class="divMsg" v-if="msgFlag1">手机号输入不正确，请重新输入</div>
+        <div class="divSplit"></div>
+    </div>
+    <!--<div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>-->
+    <el-button v-if="ls"  :disabled="is_click"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.phone,btnPhone:form.phone}" @click="btnLogin">测试</el-button>
+    <!--<el-button v-if="wc"  :disabled="is_click"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.p,btnPhone:form.p}" @click="btnLogin2">-->
+    <el-button v-if="wc"  :disabled="totalTime < 60"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.p,btnPhone:form.p}" @click="btnLogin2">
+        {{content}}</el-button>
 </div>
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="../../backend/plugins/vue/vue.js"></script>
@@ -52,13 +71,20 @@
         data(){
             return {
                 form:{
-                    phon:'post接口:qianyekeji.cn/front/page/sms.html',
+                    phon:'post接口:qianyekeji.cn/sms',
                     pho:'接口参数:id，phone(json形式传递)',
                     ph:'参数类型:id(Integer)，phone(String)',
+                    p:'',
                     phone:'',
                     id:''
                 },
+                activeIndex: '1',
+                ls:true,
+                wc:false,
+                content:'压力测试(仅供本人开发使用)',
+                totalTime: 60,
                 msgFlag:false,
+                msgFlag1:false,
                 loading:false,
                 is_click:false,
             }
@@ -67,6 +93,45 @@
         created(){},
         mounted(){},
         methods:{
+            handleSelect(key, keyPath) {
+                console.log(key, keyPath);
+                if (key==4){
+                    this.ls=false
+                    this.wc=true
+                }
+                if(key==1) {
+                    this.wc=false
+                    this.ls=true
+                }
+            },
+            async btnLogin2(){
+                const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
+                if (regex.test(this.form.p)) {
+                    // 通过了走这里，没通过走else
+                    // this.$notify({ type:'warning', message:'压力测试已启动'});
+                    const clock = window.setInterval(() => {
+                        this.content = this.totalTime + 's后可再次测试'
+                        this.totalTime--
+                        if (this.totalTime < 0) {
+                            this.totalTime = 60
+                            this.content = '重新测试'
+                            window.clearInterval(clock)
+                        }
+                    }, 1000)
+                }else{
+                    this.form.p=""
+                    this.$notify({ type:'warning', message:'请输入正确的手机号码'});
+                    return;
+                }
+
+                if(this.form.p){
+                    const res = await sss(this.form)
+                        this.$notify({ type:'warning', message:res.data});
+                        this.form.p=""
+                        this.is_click=false;
+                }
+
+            },
             async btnLogin(){
                 this.is_click=true;
                 const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;

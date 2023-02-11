@@ -53,7 +53,8 @@ public class LoginCheckFilter implements Filter {
                 "/user/sendMsg",//移动端发送短信
                 "/user/login",//移动端登录
                 "/dish/list",//菜品缓存后再访问跳过登录
-                "/sms/**"
+                "/sms/**",
+                "/sss/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"
