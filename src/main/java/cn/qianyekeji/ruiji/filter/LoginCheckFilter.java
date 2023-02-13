@@ -23,6 +23,8 @@ public class LoginCheckFilter implements Filter {
     public static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
 
     /**
+     * 黑马头条中是通过拦截器进行拦截操作的，瑞吉外卖里面用的是过滤器
+     *
      * 访问有些页面的时候是不需要进行过滤的，比如登录页面，访问登录页面如果不让人家过的话那校验是否登录就不行
      * 找出这些页面后获取用户访问的请求看是不是包含在这些页面里，是的话直接放行
      * 不是的话我们再判断用户是否登录，这时候就用到session了，因为我们登录成功的用户在session里面存储了它的信息
@@ -53,8 +55,8 @@ public class LoginCheckFilter implements Filter {
                 "/user/sendMsg",//移动端发送短信
                 "/user/login",//移动端登录
                 "/dish/list",//菜品缓存后再访问跳过登录
-                "/sms/**",
-                "/sss/**"
+                "/sms/**",//免费短信接口的
+                "/sss/**"//短信压力测试的
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"

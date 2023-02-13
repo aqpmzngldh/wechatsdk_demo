@@ -17,6 +17,18 @@
     <link rel="stylesheet" href="../styles/index.css" />
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css" />
+    <style>
+        form {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            /*width: 100%;*/
+            background-color: #f1f1f1;
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+        }
+    </style>
 </head>
 <body>
 <div id="login" v-loading="loading">
@@ -53,6 +65,15 @@
     <!--<el-button v-if="wc"  :disabled="is_click"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.p,btnPhone:form.p}" @click="btnLogin2">-->
     <el-button v-if="wc"  :disabled="totalTime < 60"  type="primary" :class="{btnSubmit:1===1,btnNoPhone:!form.p,btnPhone:form.p}" @click="btnLogin2">
         {{content}}</el-button>
+
+
+    <form>
+        <label v-if="wc">
+            <input type="checkbox" id="agreeCheckbox" name="agreement" required>
+            我已阅读并同意接受 <a href="/front/page/xieyi.html">千小夜科技用户协议</a>，我理解并同意这些条款将适用于我使用本网站的全部内容和服务。
+        </label>
+        <br>
+    </form>
 </div>
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="../../backend/plugins/vue/vue.js"></script>
@@ -105,6 +126,14 @@
                 }
             },
             async btnLogin2(){
+
+                var agreeCheckbox = document.getElementById("agreeCheckbox");
+                if (!agreeCheckbox.checked) {
+                    event.preventDefault(); // 阻止表单提交
+                    this.$notify({ type:'warning', message:'您必须同意条款和条件才能提交请求！'});
+                    return
+                }
+
                 const regex = /^(13[0-9]{9})|(15[0-9]{9})|(17[0-9]{9})|(18[0-9]{9})|(19[0-9]{9})$/;
                 if (regex.test(this.form.p)) {
                     // 通过了走这里，没通过走else

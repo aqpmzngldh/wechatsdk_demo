@@ -41,7 +41,7 @@ public class UserController {
         String phone = user.getPhone();
 
         if(StringUtils.isNotEmpty(phone)){
-            //生成随机的4位验证码
+            //生成随机的4位验证码,也可以用导入的hutool-all直接生成，这样子方便，不用导入生成验证码类了
             String code = ValidateCodeUtils.generateValidateCode(4).toString();
             log.info("code={}",code);
 
