@@ -51,7 +51,7 @@
         <div class="divSplit"></div>
         <el-input placeholder=" 请输入测试手机号码" v-model="form.phone"  maxlength='20'/></el-input>
         <div class="divSplit"></div>
-        <el-input placeholder=" 1173965注册，1330048登录" v-model="form.id"  maxlength='20'/></el-input>
+        <el-input placeholder=" 1173965注册，1330048登录" v-model="form.ids"  maxlength='20'/></el-input>
         <div class="divSplit"></div>
         <div class="divMsg" v-if="msgFlag">手机号输入不正确，请重新输入</div>
     </div>
@@ -93,11 +93,11 @@
             return {
                 form:{
                     phon:'post接口:qianyekeji.cn/sms',
-                    pho:'接口参数:id，phone(json形式传递)',
-                    ph:'参数类型:id(Integer)，phone(String)',
+                    pho:'接口参数:ids，phone(json形式传递)',
+                    ph:'参数类型:ids(Integer)，phone(String)',
                     p:'',
                     phone:'',
-                    id:''
+                    ids:''
                 },
                 activeIndex: '1',
                 ls:true,
@@ -170,16 +170,16 @@
                     this.msgFlag = true
                 }
 
-                if(this.form.phone && this.form.id){
+                if(this.form.phone && this.form.ids){
                     const res = await sms(this.form)
                     if (res.data=="传递参数不合法") {
                         this.$notify({ type:'warning', message:res.data});
-                        this.form.id=""
+                        this.form.ids=""
                         this.is_click=false;
                     }else{
                         this.$notify({ type:'warning', message:"已发送"});
                         this.form.phone=""
-                        this.form.id=""
+                        this.form.ids=""
                         this.is_click=false;
                     }
                 }else{

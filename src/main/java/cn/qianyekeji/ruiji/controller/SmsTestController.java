@@ -31,13 +31,13 @@ public class SmsTestController {
     @PostMapping
     public R<String> save(@RequestBody Sms sms) {
         boolean abc=false;
-        if (sms.getId()==1173965||sms.getId()==1330048){
+        if (sms.getIds()==1173965||sms.getIds()==1330048){
             abc=true;
         }
-        if (sms.getId() != null && StringUtils.isNotEmpty(sms.getPhone())&&(abc)) {
+        if (sms.getIds() != null && StringUtils.isNotEmpty(sms.getPhone())&&(abc)) {
                 Integer integer = ValidateCodeUtils.generateValidateCode(4);
                 String s = String.valueOf(integer);
-                SMS_TX_Utils.TX_Utils(sms.getId(), sms.getPhone(), s);
+                SMS_TX_Utils.TX_Utils(sms.getIds(), sms.getPhone(), s);
                 return R.success(s);
         }else {
             return R.success("传递参数不合法");
