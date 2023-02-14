@@ -74,7 +74,7 @@ public class SmsTestsController {
                 headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
                 headers.add("Accept", MediaType.APPLICATION_JSON_UTF8_VALUE);
                 Map<String, Object> paramMap = new HashMap<>();
-                paramMap.put("id", 1330048);
+                paramMap.put("ids", 1330048);
                 paramMap.put("phone", sms.getP());
                 HttpEntity<Map> entity = new HttpEntity<>(paramMap, headers);
                 restTemplate.postForEntity(URL, entity, String.class);
