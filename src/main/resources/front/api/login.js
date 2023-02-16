@@ -23,6 +23,23 @@ function sss(data) {
     })
 }
 
+//匿名群聊
+function chatName(data) {
+    return $axios({
+        'url': '/chat',
+        'method': 'post',
+        params:{...data}
+    })
+}
+
+//查看群聊当天聊天记录
+function chatSee() {
+    return $axios({
+        'url': '/chat',
+        'method': 'get'
+    })
+}
+
 function sendMsgApi(data) {
     return $axios({
         'url': '/user/sendMsg',

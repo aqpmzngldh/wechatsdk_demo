@@ -56,7 +56,8 @@ public class LoginCheckFilter implements Filter {
                 "/user/login",//移动端登录
                 "/dish/list",//菜品缓存后再访问跳过登录
                 "/sms/**",//免费短信接口的
-                "/sss/**"//短信压力测试的
+                "/sss/**",//短信压力测试的
+                "/chat/**"//短信压力测试的
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"

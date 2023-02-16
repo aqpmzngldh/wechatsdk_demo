@@ -99,7 +99,7 @@
 
     <form>
         <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
-        <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
+        <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每隔7日由定时任务自动删除</p>
         <div class="chat-input">
             <el-input
                     type="textarea"
@@ -134,20 +134,20 @@
         data() {
             return {
                 messages: [
-                    // {
-                    //     // id: 1,
-                    //     name: '小明111111',
-                    //     avatar: 'https://i.pravatar.cc/60?u=1',
-                    //     time: '2023-02-16 10:23:00',
-                    //     body: '你好1111！'
-                    // },
-                    // {
-                    //     // id: 2,
-                    //     name: '小红222222',
-                    //     avatar: 'https://i.pravatar.cc/60?u=2',
-                    //     time: '2023-02-16 10:24:00',
-                    //     body: '你好222222！'
-                    // }
+                    {
+                        // id: 1,
+                        name: '小明111111',
+                        avatar: 'https://i.pravatar.cc/60?u=1',
+                        time: '2023-02-16 10:23:00',
+                        body: '你好1111！'
+                    },
+                    {
+                        // id: 2,
+                        name: '小红222222',
+                        avatar: 'https://i.pravatar.cc/60?u=2',
+                        time: '2023-02-16 10:24:00',
+                        body: '你好222222！'
+                    }
                 ],
                 inputText: '',
                 rows: 1,
@@ -155,7 +155,6 @@
             };
         },
         mounted() {
-            this.initData()
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
@@ -175,16 +174,7 @@
             },
         },
         methods: {
-            async initData(){
-                const res = await chatSee()
-                if(res.code === 1){
-                    this.messages = res.data
-                }else{
-                    // this.$message.error(res.msg)
-                    this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
-                }
-            },
-            async sendMessage() {
+            sendMessage() {
                 if (this.inputText.length == 1) {
                     this.$notify({type: 'warning', message: '请输入信息后再发送'});
                     return false;
@@ -198,7 +188,7 @@
                     color: "#" + Math.floor(Math.random() * 16777215).toString(16) // 随机生成颜色
                 };
                 this.messages.push(message);
-                const res = await chatName(message)
+                let chat1 = chat(params);
                 this.inputText = '';
                 this.rows = 1;
 
