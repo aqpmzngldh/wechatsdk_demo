@@ -1,36 +1,36 @@
 Manifest-Version: 1.0
-Class-Path: opentracing-noop-0.33.0.jar lombok-1.18.20.jar ini4j-0.5.4
- .jar snakeyaml-1.27.jar jackson-core-2.11.4.jar org.jacoco.agent-0.8.
- 6-runtime.jar jakarta.el-3.0.3.jar netty-handler-4.1.63.Final.jar spr
- ing-data-redis-2.4.8.jar spring-boot-starter-json-2.4.5.jar spring-we
- b-5.3.6.jar druid-1.1.23.jar netty-codec-4.1.63.Final.jar json-201705
- 16.jar spring-jdbc-5.3.6.jar lettuce-core-6.0.4.RELEASE.jar commons-l
- ogging-1.2.jar spring-webmvc-5.3.6.jar mybatis-plus-core-3.4.2.jar co
- mmons-lang-2.6.jar jackson-datatype-jdk8-2.11.4.jar mybatis-3.5.6.jar
-  mybatis-plus-3.4.2.jar druid-spring-boot-starter-1.1.23.jar spring-c
- ontext-5.3.6.jar httpclient-4.5.13.jar hutool-all-5.8.8.jar spring-bo
- ot-starter-logging-2.4.5.jar tomcat-embed-websocket-9.0.45.jar aliyun
- -java-sdk-core-4.5.16.jar reactor-core-3.4.5.jar httpcore-4.4.14.jar 
- logback-core-1.2.3.jar jul-to-slf4j-1.7.30.jar spring-data-commons-2.
- 4.8.jar spring-oxm-5.3.6.jar spring-data-keyvalue-2.4.8.jar spring-bo
- ot-starter-jdbc-2.4.5.jar spring-jcl-5.3.6.jar jsqlparser-4.0.jar tom
- cat-embed-core-9.0.45.jar qcloudsms-1.0.6.jar netty-transport-4.1.63.
- Final.jar logback-classic-1.2.3.jar log4j-api-2.13.3.jar jackson-anno
- tations-2.11.4.jar spring-boot-starter-tomcat-2.4.5.jar netty-buffer-
- 4.1.63.Final.jar HikariCP-3.4.5.jar jackson-module-parameter-names-2.
- 11.4.jar netty-resolver-4.1.63.Final.jar spring-expression-5.3.6.jar 
- spring-boot-starter-web-2.4.5.jar jackson-datatype-jsr310-2.11.4.jar 
- spring-context-support-5.3.6.jar jaxb-api-2.3.1.jar spring-boot-2.4.5
- .jar mybatis-plus-annotation-3.4.2.jar fastjson-1.2.76.jar aliyun-jav
- a-sdk-dysmsapi-2.1.0.jar opentracing-api-0.33.0.jar mybatis-plus-exte
- nsion-3.4.2.jar mysql-connector-java-8.0.23.jar spring-boot-autoconfi
- gure-2.4.5.jar gson-2.8.6.jar log4j-to-slf4j-2.13.3.jar spring-core-5
- .3.6.jar opentracing-util-0.33.0.jar spring-tx-5.3.6.jar netty-common
- -4.1.63.Final.jar spring-aop-5.3.6.jar commons-codec-1.15.jar jackson
- -databind-2.11.4.jar httpmime-4.5.13.jar javax.activation-api-1.2.0.j
- ar slf4j-api-1.7.30.jar spring-boot-starter-cache-2.4.5.jar jakarta.a
- nnotation-api-1.3.5.jar spring-boot-starter-2.4.5.jar spring-boot-sta
- rter-data-redis-2.4.5.jar mybatis-plus-boot-starter-3.4.2.jar reactiv
- e-streams-1.0.3.jar mybatis-spring-2.0.5.jar spring-beans-5.3.6.jar
+Class-Path: druid-spring-boot-starter-1.1.23.jar opentracing-api-0.33.
+ 0.jar mybatis-plus-core-3.4.2.jar jakarta.el-3.0.3.jar mybatis-plus-e
+ xtension-3.4.2.jar spring-jdbc-5.3.6.jar snakeyaml-1.27.jar netty-res
+ olver-4.1.63.Final.jar commons-logging-1.2.jar commons-lang-2.6.jar s
+ pring-web-5.3.6.jar aliyun-java-sdk-core-4.5.16.jar aliyun-java-sdk-d
+ ysmsapi-2.1.0.jar spring-boot-starter-cache-2.4.5.jar netty-codec-4.1
+ .63.Final.jar log4j-to-slf4j-2.13.3.jar jackson-module-parameter-name
+ s-2.11.4.jar spring-boot-autoconfigure-2.4.5.jar opentracing-noop-0.3
+ 3.0.jar spring-boot-starter-logging-2.4.5.jar lombok-1.18.20.jar jaka
+ rta.annotation-api-1.3.5.jar jackson-datatype-jdk8-2.11.4.jar javax.a
+ ctivation-api-1.2.0.jar spring-jcl-5.3.6.jar spring-aop-5.3.6.jar spr
+ ing-boot-2.4.5.jar spring-data-keyvalue-2.4.8.jar mybatis-plus-boot-s
+ tarter-3.4.2.jar spring-core-5.3.6.jar jackson-core-2.11.4.jar spring
+ -boot-starter-web-2.4.5.jar json-20170516.jar jul-to-slf4j-1.7.30.jar
+  netty-common-4.1.63.Final.jar spring-context-support-5.3.6.jar fastj
+ son-1.2.76.jar mysql-connector-java-8.0.23.jar spring-beans-5.3.6.jar
+  jackson-datatype-jsr310-2.11.4.jar org.jacoco.agent-0.8.6-runtime.ja
+ r reactor-core-3.4.5.jar commons-codec-1.15.jar mybatis-3.5.6.jar jac
+ kson-annotations-2.11.4.jar spring-expression-5.3.6.jar mybatis-sprin
+ g-2.0.5.jar netty-handler-4.1.63.Final.jar mybatis-plus-3.4.2.jar htt
+ pcore-4.4.14.jar spring-boot-starter-data-redis-2.4.5.jar lettuce-cor
+ e-6.0.4.RELEASE.jar hutool-all-5.8.8.jar reactive-streams-1.0.3.jar q
+ cloudsms-1.0.6.jar spring-webmvc-5.3.6.jar netty-transport-4.1.63.Fin
+ al.jar spring-boot-starter-json-2.4.5.jar jackson-databind-2.11.4.jar
+  opentracing-util-0.33.0.jar spring-boot-starter-jdbc-2.4.5.jar sprin
+ g-oxm-5.3.6.jar spring-tx-5.3.6.jar jaxb-api-2.3.1.jar spring-data-re
+ dis-2.4.8.jar spring-data-commons-2.4.8.jar gson-2.8.6.jar spring-boo
+ t-starter-2.4.5.jar slf4j-api-1.7.30.jar tomcat-embed-websocket-9.0.4
+ 5.jar logback-core-1.2.3.jar httpclient-4.5.13.jar ini4j-0.5.4.jar js
+ qlparser-4.0.jar netty-buffer-4.1.63.Final.jar HikariCP-3.4.5.jar spr
+ ing-context-5.3.6.jar spring-boot-starter-tomcat-2.4.5.jar log4j-api-
+ 2.13.3.jar tomcat-embed-core-9.0.45.jar httpmime-4.5.13.jar mybatis-p
+ lus-annotation-3.4.2.jar druid-1.1.23.jar logback-classic-1.2.3.jar
 Main-Class: cn.qianyekeji.ruiji.RuijiApplication
 

@@ -185,8 +185,9 @@
                 }
             },
             async sendMessage() {
-                if (this.inputText.length == 1) {
-                    this.$notify({type: 'warning', message: '请输入信息后再发送'});
+                if (((JSON.stringify(this.inputText).match(/\n/g) || []).length>1)||(JSON.stringify(this.inputText)==JSON.stringify("\n"))) {
+                    this.inputText = '';
+                    this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
                     return false;
                 }
                 const message = {
@@ -207,6 +208,7 @@
                 this.isShow = true
             },
             hideParagraphs() {
+                this.inputText = '';
                 this.isShow = false
             },
         },
