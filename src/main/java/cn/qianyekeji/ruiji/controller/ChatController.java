@@ -38,15 +38,47 @@ public class ChatController {
         log.info("传递的数据分别是{}和{}",time,body );
         if (time.indexOf("上午") >= 0) {
             time = time.replace("上午", "");
+            String[] dateTime = time.split(" ");
+            String date = dateTime[0];
+            String[] dateParts = date.split("/");
+            if (dateParts[1].length() == 1) {
+                dateParts[1] = "0" + dateParts[1];
+                date = String.join("/", dateParts);
+            }
+            time = date + " " + dateTime[1];
         }
         if (time.indexOf("中午") >= 0) {
             time = time.replace("中午", "");
+            String[] dateTime = time.split(" ");
+            String date = dateTime[0];
+            String[] dateParts = date.split("/");
+            if (dateParts[1].length() == 1) {
+                dateParts[1] = "0" + dateParts[1];
+                date = String.join("/", dateParts);
+            }
+            time = date + " " + dateTime[1];
         }
         if (time.indexOf("下午") >= 0) {
             time = time.replace("下午", "");
+            String[] dateTime = time.split(" ");
+            String date = dateTime[0];
+            String[] dateParts = date.split("/");
+            if (dateParts[1].length() == 1) {
+                dateParts[1] = "0" + dateParts[1];
+                date = String.join("/", dateParts);
+            }
+            time = date + " " + dateTime[1];
         }
         if (time.indexOf("晚上") >= 0) {
             time = time.replace("晚上", "");
+            String[] dateTime = time.split(" ");
+            String date = dateTime[0];
+            String[] dateParts = date.split("/");
+            if (dateParts[1].length() == 1) {
+                dateParts[1] = "0" + dateParts[1];
+                date = String.join("/", dateParts);
+            }
+            time = date + " " + dateTime[1];
         }
         String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
         Map<String, String> chatRecord = new HashMap<>();

@@ -30,7 +30,8 @@
 
         .chat-history {
             height: 500px; /* 设置内容高度 */
-            overflow-y: scroll; /* 启用垂直滚动 */
+            /*overflow-y: scroll; !* 启用垂直滚动 *!*/
+            overflow-y: auto; /* 启用垂直滚动 */
             overflow-x: hidden; /* 禁用水平滚动 */
         }
 
@@ -79,7 +80,7 @@
 
 <!--<template>-->
 <div class="chat" id="login">
-    <div class="chat-history">
+    <div class="chat-history" id="chat-container">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
                 <!--<img :src="message.avatar" alt="Avatar">-->
@@ -175,17 +176,17 @@
             },
         },
         methods: {
-            async initData(){
+            async initData() {
                 const res = await chatSee()
-                if(res.code === 1){
+                if (res.code === 1) {
                     this.messages = res.data
-                }else{
+                } else {
                     // this.$message.error(res.msg)
                     this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
                 }
             },
             async sendMessage() {
-                if (((JSON.stringify(this.inputText).match(/\n/g) || []).length>1)||(JSON.stringify(this.inputText)==JSON.stringify("\n"))) {
+                if (((JSON.stringify(this.inputText).match(/\n/g) || []).length > 1) || (JSON.stringify(this.inputText) == JSON.stringify("\n"))) {
                     this.inputText = '';
                     this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
                     return false;
@@ -202,6 +203,22 @@
                 const res = await chatName(message)
                 this.inputText = '';
                 this.rows = 1;
+                // 发送消息后刷新页面，等待聊天记录容器加载完成后，将其滚动到底部
+                window.onload = function() {
+                    scrollToBottom();
+                };
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    scrollToBottom();
+                });
+
+                function scrollToBottom() {
+                    var chatHistory = document.querySelector(".chat-history");
+                    if (chatHistory) {
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+                }
+
 
             },
             diuShi() {
