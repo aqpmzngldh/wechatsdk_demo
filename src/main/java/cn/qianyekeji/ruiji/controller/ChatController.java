@@ -36,8 +36,18 @@ public class ChatController {
     @PostMapping
     public R<String> save(String time, String body) {
         log.info("传递的数据分别是{}和{}",time,body );
-        //把传递过来的数据存储进redis，id键值对，还有过期时间
-        //这里要注意的是存进去和到时候取出来的顺序要一致，还要考虑到时候怎么取呢，怎么遍历呢
+        if (time.indexOf("上午") >= 0) {
+            time = time.replace("上午", "");
+        }
+        if (time.indexOf("中午") >= 0) {
+            time = time.replace("中午", "");
+        }
+        if (time.indexOf("下午") >= 0) {
+            time = time.replace("下午", "");
+        }
+        if (time.indexOf("晚上") >= 0) {
+            time = time.replace("晚上", "");
+        }
         String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
         Map<String, String> chatRecord = new HashMap<>();
         chatRecord.put("body", body);
