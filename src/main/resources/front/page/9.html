@@ -72,6 +72,10 @@
             padding-right: 5%;
         }
 
+        .el-button--primary{
+            margin-left: 20%;
+        }
+
         p {
             color: black;
             font-size: 15px;
@@ -100,10 +104,11 @@
             <hr/>
         </div>
         <a id="myElement"></a>
-        <div>你有新消息需要处理</div>
     </div>
 
     <form>
+        <el-button  type="primary" v-show="isShow" @click="tiXing">{{content}}</el-button>
+
         <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
@@ -145,6 +150,8 @@
                 rows: 1,
                 isShow: true,
                 isInteger: 0,
+                content:'提醒管理员上线陪聊',
+                p: 18392528598
             };
         },
         mounted() {
@@ -178,11 +185,9 @@
             },
             messages(value) {
                 console.log(value.length+"---------------------")
-                console.log(this.isInteger+"---------------------")
                 if (this.isInteger==""){
                     this.isInteger=value.length;
                 }
-                console.log(this.isInteger+"---------------------")
                 if (this.isInteger!=value.length){
                     // alert("999")
                     this.isInteger=value.length;
@@ -232,6 +237,14 @@
             hideParagraphs() {
                 this.inputText = '';
                 this.isShow = false
+            },
+            async tiXing(){
+                this.content='管理员马上就到，稍等';
+                setTimeout(() => {
+                    this.content = '提醒管理员上线陪聊'
+                }, 5000);
+                // await sss(this.p)
+                await sss({p:this.p })
             },
         },
     });
