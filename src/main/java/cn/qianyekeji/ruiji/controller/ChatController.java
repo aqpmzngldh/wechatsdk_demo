@@ -36,6 +36,27 @@ public class ChatController {
     @PostMapping
     public R<String> save(String time, String body) {
         log.info("传递的数据分别是{}和{}",time,body );
+//        不管怎么样，传递的time不是19位就是异常的，就要进行处理
+        if (time.length()!=19) {
+//        处理2023/2/17 3:02:57为2023/02/17 3:02:57
+            String[] dateTime1 = time.split(" ");
+            String date1 = dateTime1[0];
+            String[] dateParts1 = date1.split("/");
+            if (dateParts1[1].length() == 1) {
+                dateParts1[1] = "0" + dateParts1[1];
+                date1 = String.join("/", dateParts1);
+            }
+            time = date1 + " " + dateTime1[1];
+//        处理2023/02/17 3:02:57为2023/02/17 03:02:57
+            String[] dateTime2 = time.split(" ");
+            String date2 = dateTime2[1];
+            String[] dateParts2 = date2.split(":");
+            if (dateParts2[0].length() == 1) {
+                dateParts2[0] = "0" + dateParts2[0];
+                date2 = String.join(":", dateParts2);
+            }
+            time = dateTime2[0] + " " + date2;
+        }
         if (time.indexOf("上午") >= 0) {
             time = time.replace("上午", "");
             String[] dateTime = time.split(" ");
@@ -94,7 +115,7 @@ public class ChatController {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        String key = today + "*";
 //        String key = "2023/2/16" + "*";
-        String key = DateTimeFormatter.ofPattern("uuuu/M/d")
+        String key = DateTimeFormatter.ofPattern("uuuu/MM/d")
                 .withResolverStyle(ResolverStyle.STRICT)
                 .format(LocalDate.parse(today, DateTimeFormatter.BASIC_ISO_DATE)) + "*";
 
