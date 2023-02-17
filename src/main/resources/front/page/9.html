@@ -99,8 +99,8 @@
             </div>
             <hr/>
         </div>
-        <!--<div id="myElement"></div>-->
         <a id="myElement"></a>
+        <div>你有新消息需要处理</div>
     </div>
 
     <form>
@@ -144,6 +144,7 @@
                 inputText: '',
                 rows: 1,
                 isShow: true,
+                isInteger: 0,
             };
         },
         mounted() {
@@ -171,8 +172,22 @@
         },
         watch: {
             inputText(value) {
+                console.log(value+"---------------------")
                 const lines = value.split('\n');
                 this.rows = Math.max(lines.length, 1);
+            },
+            messages(value) {
+                console.log(value.length+"---------------------")
+                console.log(this.isInteger+"---------------------")
+                if (this.isInteger==""){
+                    this.isInteger=value.length;
+                }
+                console.log(this.isInteger+"---------------------")
+                if (this.isInteger!=value.length){
+                    // alert("999")
+                    this.isInteger=value.length;
+                    this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                }
             },
         },
         methods: {
