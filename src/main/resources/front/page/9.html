@@ -15,7 +15,7 @@
     <!--引入vant样式-->
     <link rel="stylesheet" href="../styles/vant.min.css"/>
     <!-- 引入样式  -->
-    <link rel="stylesheet" href="../styles/index.css"/>
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
 
@@ -26,13 +26,16 @@
             padding-right: 20px;
             padding-top: 20px;
 
+            height: 500px; /* 设置内容高度 */
+            overflow-y: scroll; /* 启用垂直滚动 */
+            overflow-x: hidden; /* 禁用水平滚动 */
         }
 
         .chat-history {
-            height: 500px; /* 设置内容高度 */
-            /*overflow-y: scroll; !* 启用垂直滚动 *!*/
-            overflow-y: auto; /* 启用垂直滚动 */
-            overflow-x: hidden; /* 禁用水平滚动 */
+            /*height: 500px; !* 设置内容高度 *!*/
+            /*!*overflow-y: scroll; !* 启用垂直滚动 *!*!*/
+            /*overflow-y: auto; !* 启用垂直滚动 *!*/
+            /*overflow-x: hidden; !* 禁用水平滚动 *!*/
         }
 
         .chat-header .back-btn {
@@ -80,7 +83,7 @@
 
 <!--<template>-->
 <div class="chat" id="login">
-    <div class="chat-history" id="chat-container">
+    <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
                 <!--<img :src="message.avatar" alt="Avatar">-->
@@ -96,6 +99,8 @@
             </div>
             <hr/>
         </div>
+        <!--<div id="myElement"></div>-->
+        <a id="myElement"></a>
     </div>
 
     <form>
@@ -135,20 +140,6 @@
         data() {
             return {
                 messages: [
-                    // {
-                    //     // id: 1,
-                    //     name: '小明111111',
-                    //     avatar: 'https://i.pravatar.cc/60?u=1',
-                    //     time: '2023-02-16 10:23:00',
-                    //     body: '你好1111！'
-                    // },
-                    // {
-                    //     // id: 2,
-                    //     name: '小红222222',
-                    //     avatar: 'https://i.pravatar.cc/60?u=2',
-                    //     time: '2023-02-16 10:24:00',
-                    //     body: '你好222222！'
-                    // }
                 ],
                 inputText: '',
                 rows: 1,
@@ -168,6 +159,11 @@
             // 为第二个p标签设置随机颜色值
             const secondColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
             secondParagraph.style.color = secondColor;
+
+            // document.getElementById("myElement").href="#myElement"
+            window.onscroll = function() {
+                console.log(window.scrollY);
+            }
         },
         watch: {
             inputText(value) {
@@ -203,23 +199,13 @@
                 const res = await chatName(message)
                 this.inputText = '';
                 this.rows = 1;
-                // 发送消息后刷新页面，等待聊天记录容器加载完成后，将其滚动到底部
-                window.onload = function() {
-                    scrollToBottom();
-                };
-
-                document.addEventListener("DOMContentLoaded", function() {
-                    scrollToBottom();
-                });
-
-                function scrollToBottom() {
-                    var chatHistory = document.querySelector(".chat-history");
-                    if (chatHistory) {
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-                    }
-                }
-
-
+                // location.reload()
+                this.initData()
+                this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+            },
+            scrollToEnd() {
+                const element = document.getElementById('myElement');
+                element.scrollIntoView(false);
             },
             diuShi() {
                 this.isShow = true
