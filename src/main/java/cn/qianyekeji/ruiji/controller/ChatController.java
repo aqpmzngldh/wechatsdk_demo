@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import java.util.*;
@@ -35,72 +36,11 @@ public class ChatController {
 
     @PostMapping
     public R<String> save(String time, String body) {
-        log.info("传递的数据分别是{}和{}",time,body );
-//        不管怎么样，传递的time不是19位就是异常的，就要进行处理
-        if (time.length()!=19) {
-//        处理2023/2/17 3:02:57为2023/02/17 3:02:57
-            String[] dateTime1 = time.split(" ");
-            String date1 = dateTime1[0];
-            String[] dateParts1 = date1.split("/");
-            if (dateParts1[1].length() == 1) {
-                dateParts1[1] = "0" + dateParts1[1];
-                date1 = String.join("/", dateParts1);
-            }
-            time = date1 + " " + dateTime1[1];
-//        处理2023/02/17 3:02:57为2023/02/17 03:02:57
-            String[] dateTime2 = time.split(" ");
-            String date2 = dateTime2[1];
-            String[] dateParts2 = date2.split(":");
-            if (dateParts2[0].length() == 1) {
-                dateParts2[0] = "0" + dateParts2[0];
-                date2 = String.join(":", dateParts2);
-            }
-            time = dateTime2[0] + " " + date2;
-        }
-        if (time.indexOf("上午") >= 0) {
-            time = time.replace("上午", "");
-            String[] dateTime = time.split(" ");
-            String date = dateTime[0];
-            String[] dateParts = date.split("/");
-            if (dateParts[1].length() == 1) {
-                dateParts[1] = "0" + dateParts[1];
-                date = String.join("/", dateParts);
-            }
-            time = date + " " + dateTime[1];
-        }
-        if (time.indexOf("中午") >= 0) {
-            time = time.replace("中午", "");
-            String[] dateTime = time.split(" ");
-            String date = dateTime[0];
-            String[] dateParts = date.split("/");
-            if (dateParts[1].length() == 1) {
-                dateParts[1] = "0" + dateParts[1];
-                date = String.join("/", dateParts);
-            }
-            time = date + " " + dateTime[1];
-        }
-        if (time.indexOf("下午") >= 0) {
-            time = time.replace("下午", "");
-            String[] dateTime = time.split(" ");
-            String date = dateTime[0];
-            String[] dateParts = date.split("/");
-            if (dateParts[1].length() == 1) {
-                dateParts[1] = "0" + dateParts[1];
-                date = String.join("/", dateParts);
-            }
-            time = date + " " + dateTime[1];
-        }
-        if (time.indexOf("晚上") >= 0) {
-            time = time.replace("晚上", "");
-            String[] dateTime = time.split(" ");
-            String date = dateTime[0];
-            String[] dateParts = date.split("/");
-            if (dateParts[1].length() == 1) {
-                dateParts[1] = "0" + dateParts[1];
-                date = String.join("/", dateParts);
-            }
-            time = date + " " + dateTime[1];
-        }
+//        log.info("传递的数据分别是{}和{}",time,body );
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        time=currentDateTime.format(formatter);
+
         String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
         Map<String, String> chatRecord = new HashMap<>();
         chatRecord.put("body", body);
