@@ -147,7 +147,11 @@
             };
         },
         mounted() {
-            this.initData()
+            // this.initData()
+            // setInterval(this.initData(), 1000);
+            setInterval(() => {
+                this.initData();
+            }, 1000);
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
