@@ -61,7 +61,8 @@
         .chat-input {
             flex: 1;
             height: 40px;
-            margin-right: 10px;
+            /*margin-right: 10px;*/
+            padding-bottom: 10px;
         }
 
         form {
@@ -72,7 +73,7 @@
             padding-right: 5%;
         }
 
-        .el-button--primary{
+        #wc{
             margin-left: 20%;
         }
 
@@ -80,6 +81,14 @@
             color: black;
             font-size: 15px;
             margin-bottom: 10px;
+        }
+        .el-textarea {
+            padding-right: 20px;
+            display: inline-block;
+            width: 70%;
+        }
+        .chat-input .el-button  el-button--primary{
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -107,7 +116,7 @@
     </div>
 
     <form>
-        <el-button  type="primary" v-show="isShow" @click="tiXing">{{content}}</el-button>
+        <el-button  type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
         <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -121,6 +130,7 @@
                     @blur="diuShi"
                     @click.native="hideParagraphs"
             ></el-input>
+            <el-button type="primary" icon="el-icon-plus" @click="selectImage"></el-button>
         </div>
     </form>
 </div>
@@ -248,6 +258,17 @@
                 }, 5000);
                 // await sss(this.p)
                 await sss({p:this.p })
+            },
+            selectImage() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (event) => {
+                    const file = event.target.files[0];
+                    // 处理选择的图片文件
+                    // ...
+                };
+                input.click();
             },
         },
     });
