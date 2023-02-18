@@ -109,7 +109,7 @@
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{ message.body }}</span>
-                    <img v-if="!message.body" :src="message.image" :style="{width: '200px', height: '200px'}"/>
+                    <img v-if="!message.body" :src="message.url" :style="{width: '200px', height: '200px'}"/>
 
                 </div>
             </div>
@@ -128,7 +128,7 @@
                     type="textarea"
                     autosize
                     v-model="inputText"
-                    placeholder="请输入消息(回车键发送)"
+                    placeholder="回车键发送消息..."
                     @keyup.enter.native="sendMessage"
                     @blur="diuShi"
                     @click.native="hideParagraphs"
@@ -158,23 +158,21 @@
         data() {
             return {
                 messages: [
-                    // {
-                    //     "time":"2023/02/18 00:01:30",
-                    //     "body":"我说句话吧\n",
-                    //     "image":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
-                    // },
-                    // {
-                    //     "time":"2023/02/18 00:01:35",
-                    //     "image":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676740239343_8e8c138c-7084-40e9-83bb-dc707994e899.jpg"
-                    // },
-                    // {
-                    //     "time":"2023/02/18 00:01:30",
-                    //     "body":"我说句话吧\n"
-                    // },
-                    // {
-                    //     "time":"2023/02/18 00:01:35",
-                    //     "image":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
-                    // }
+                    {
+                        "time":"2023/02/19 02:17:05",
+                        "body":"你好1呀\n",
+                        "url":""
+                    },
+                    {
+                        "time":"2023/02/19 02:17:38",
+                        "body":"",
+                        "url":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
+                    },
+                    {
+                        "time":"2023/02/19 02:18:31",
+                        "body":"",
+                        "url":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676744308635_17925955-fc5a-4064-8f82-37f9b39eb405.tencent.mm.jpg"
+                    }
                 ],
                 inputText: '',
                 rows: 1,
@@ -190,9 +188,9 @@
             console.log("----------------------------")
             // this.initData()
             // setInterval(this.initData(), 1000);
-            setInterval(() => {
-                this.initData();
-            }, 1000);
+            // setInterval(() => {
+            //     this.initData();
+            // }, 1000);
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
