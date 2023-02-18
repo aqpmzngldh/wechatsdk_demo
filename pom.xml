@@ -104,6 +104,7 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!--企业微信发邮件-->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>

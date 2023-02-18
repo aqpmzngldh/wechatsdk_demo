@@ -22,5 +22,7 @@ public class Chat implements Serializable {
     private String time;
     //当前对话的内容
     private String body;
+    //当前对话的图片
+    private String url;
 
 }

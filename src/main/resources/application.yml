@@ -25,6 +25,10 @@ spring:
 #  cache:
 #    redis:
 #      time-to-live: 1800000 #设置缓存数据的过期时间不写的话默认永久生效
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
 mybatis-plus:
   configuration:
 #    在数据库和实体类进行映射的时候，去掉数据库中的下划线或者字段中的下划线，按照驼峰命名法进行匹配

@@ -1,5 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
+import java.util.Collections;
+
 /**
  * @author liangshuai
  * @date 2023/2/17
@@ -15,9 +17,12 @@ public class abc {
 //        }
 //        String formattedTime = date + " " + dateTime[1];
 //        System.out.println(formattedTime);
-
-        String s="2023/2/17 10:02:26";
-        System.out.println(s.length());
+        String s = null;
+        if ("666".equals(s)) {
+            System.out.println(123);
+        }else {
+            System.out.println("456");
+        }
 
     }
 }

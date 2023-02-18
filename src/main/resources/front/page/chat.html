@@ -106,10 +106,11 @@
                     <!--<div class="name">{{ message.name }}</div>-->
                     <div class="time">{{ message.time }}</div>
                 </div>
-                <div class="message-body" :style="{color: message.color}" ref="threeParagraph">
-                    {{ message.body }}
-                    <!--如果message.body数据为空，这时候我们提取message.image的图片放在这里-->
-                    <!--而且我们可以选择设置图片具体展示的宽和高，让每张图片都展示的一样大-->
+                <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
+                    <!--{{ message.body }}-->
+                    <span v-if="message.body">{{ message.body }}</span>
+                    <img v-if="!message.body" :src="message.image" :style="{width: '200px', height: '200px'}"/>
+
                 </div>
             </div>
             <hr/>
@@ -157,14 +158,23 @@
         data() {
             return {
                 messages: [
-                    {
-                        "time":"2023/02/18 00:01:30",
-                        "body":"我说句话吧\n"
-                    },
-                    {
-                        "time":"2023/02/18 00:01:35",
-                        "image":""
-                    }
+                    // {
+                    //     "time":"2023/02/18 00:01:30",
+                    //     "body":"我说句话吧\n",
+                    //     "image":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
+                    // },
+                    // {
+                    //     "time":"2023/02/18 00:01:35",
+                    //     "image":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676740239343_8e8c138c-7084-40e9-83bb-dc707994e899.jpg"
+                    // },
+                    // {
+                    //     "time":"2023/02/18 00:01:30",
+                    //     "body":"我说句话吧\n"
+                    // },
+                    // {
+                    //     "time":"2023/02/18 00:01:35",
+                    //     "image":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
+                    // }
                 ],
                 inputText: '',
                 rows: 1,
@@ -262,7 +272,7 @@
                 this.isShow = false
             },
             async tiXing(){
-                this.content='管理员马上就到，稍等';
+                this.content='管理员二十秒后到达战场';
                 setTimeout(() => {
                     this.content = '提醒管理员上线陪聊'
                 }, 5000);
@@ -275,25 +285,16 @@
                 input.accept = 'image/*';
                 input.onchange = (event) => {
                     const file = event.target.files[0];
-                    // 创建FileReader对象
-                    const reader = new FileReader();
-
-                    // 绑定load事件，当读取完成后触发
-                    reader.addEventListener('load', function() {
-                        // 将读取的数据转换为二进制数据
-                        const binaryData = reader.result;
-
-                        // 在这里可以将二进制数据发送到后端服务器进行处理或存储
-
-                        //后端取数据和存数据那里也要进行改变，作为一个通用的方法，
-                        // 传递的数据判断body或者image必定有个为空，hash中键值对变成三个
-                        //返回数据的时候也得返回一个三个参数的方法了
-                        //最后问怎么把存进redis的二进制数据在前段解析出具体的图片，这四步，明天做吧
-                         chatName(binaryData)
-                    });
-
-                    // 开始读取文件
-                    reader.readAsBinaryString(file);
+                    // 创建一个新的FormData对象
+                    const formData = new FormData();
+                    // 将文件追加到FormData对象
+                    formData.append('file', file);
+                    // 附加任何其他表单数据到FormData对象
+                    // formData.append('name', 'John Doe');
+                    // 使用AJAX请求将表单数据发送到后端
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/chat');
+                    xhr.send(formData);
                 };
                 input.click();
             },
