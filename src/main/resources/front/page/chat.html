@@ -107,7 +107,9 @@
                     <div class="time">{{ message.time }}</div>
                 </div>
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph">
-                    匿名者---{{ message.body }}
+                    {{ message.body }}
+                    <!--如果message.body数据为空，这时候我们提取message.image的图片放在这里-->
+                    <!--而且我们可以选择设置图片具体展示的宽和高，让每张图片都展示的一样大-->
                 </div>
             </div>
             <hr/>
@@ -125,12 +127,12 @@
                     type="textarea"
                     autosize
                     v-model="inputText"
-                    placeholder="请输入消息..."
+                    placeholder="请输入消息(回车键发送)"
                     @keyup.enter.native="sendMessage"
                     @blur="diuShi"
                     @click.native="hideParagraphs"
             ></el-input>
-            <el-button type="primary" icon="el-icon-plus" @click="selectImage"></el-button>
+            <el-button type="primary" icon="el-icon-plus" v-show="isShow" @click="selectImage"></el-button>
         </div>
     </form>
 </div>
@@ -155,13 +157,21 @@
         data() {
             return {
                 messages: [
+                    {
+                        "time":"2023/02/18 00:01:30",
+                        "body":"我说句话吧\n"
+                    },
+                    {
+                        "time":"2023/02/18 00:01:35",
+                        "image":""
+                    }
                 ],
                 inputText: '',
                 rows: 1,
                 isShow: true,
                 isInteger: 0,
                 content:'提醒管理员上线陪聊',
-                p: 18392528598
+                p: 666
             };
         },
         mounted() {
@@ -265,8 +275,25 @@
                 input.accept = 'image/*';
                 input.onchange = (event) => {
                     const file = event.target.files[0];
-                    // 处理选择的图片文件
-                    // ...
+                    // 创建FileReader对象
+                    const reader = new FileReader();
+
+                    // 绑定load事件，当读取完成后触发
+                    reader.addEventListener('load', function() {
+                        // 将读取的数据转换为二进制数据
+                        const binaryData = reader.result;
+
+                        // 在这里可以将二进制数据发送到后端服务器进行处理或存储
+
+                        //后端取数据和存数据那里也要进行改变，作为一个通用的方法，
+                        // 传递的数据判断body或者image必定有个为空，hash中键值对变成三个
+                        //返回数据的时候也得返回一个三个参数的方法了
+                        //最后问怎么把存进redis的二进制数据在前段解析出具体的图片，这四步，明天做吧
+                         chatName(binaryData)
+                    });
+
+                    // 开始读取文件
+                    reader.readAsBinaryString(file);
                 };
                 input.click();
             },

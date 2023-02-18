@@ -7,12 +7,12 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
 #      本地数据库
-#      url: jdbc:mysql://localhost:3306/reggie
+      url: jdbc:mysql://localhost:3306/reggie
 #      云服务数据库
-      url: jdbc:mysql://124.222.221.77:3306/reggie
+#      url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
-#      password:
-      password: MXMPbrxyc4t7sBje
+      password:
+#      password: MXMPbrxyc4t7sBje
   redis:
 #    redis本地主机ip
     host: 127.0.0.1
@@ -37,10 +37,23 @@ mybatis-plus:
       id-type: assign_id
 ruiji:
 #  图片本地存储位置
-#  path: D:\img\
+  path: D:\img\
 #  图片云服务器存储位置
-  path: /www/server/img/
+#  path: /www/server/img/
 
+#企业邮箱发邮件
+mail:
+  transport:
+    protocol: ssl
+  smtp:
+    host: smtp.exmail.qq.com # 企业微信的host
+    port: 465
+    auth: true
+    ssl:
+      enable : true
+  enable: true
+  account: ls@qianyekeji.cn
+  password: 123.oooooO
 
 
 #除了这些配置文件还有dishcontroller中的http://路径要改一下

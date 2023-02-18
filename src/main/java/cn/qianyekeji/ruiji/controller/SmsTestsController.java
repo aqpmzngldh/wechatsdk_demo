@@ -1,21 +1,12 @@
 package cn.qianyekeji.ruiji.controller;
 
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
-import cn.qianyekeji.ruiji.entity.Employee;
 import cn.qianyekeji.ruiji.entity.Sms;
-import cn.qianyekeji.ruiji.service.EmployeeService;
 import cn.qianyekeji.ruiji.service.SmsService;
-import cn.qianyekeji.ruiji.utils.IpLocation;
-import cn.qianyekeji.ruiji.utils.SMS_TX_Utils;
-import cn.qianyekeji.ruiji.utils.ValidateCodeUtils;
+import cn.qianyekeji.ruiji.utils.MailUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,9 +18,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +32,9 @@ public class SmsTestsController {
 
     @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private MailUtil mailUtil;
 
     @PostMapping
     public R<String> save(@RequestBody Sms sms,HttpServletRequest request) {
@@ -72,6 +64,10 @@ public class SmsTestsController {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        if ("666".equals(sms.getP())){
+            mailUtil.send("","ls@qianyekeji.cn","【匿名群聊提醒】","有人来找你聊天了", Collections.singletonList(""));
         }
 
         try {
