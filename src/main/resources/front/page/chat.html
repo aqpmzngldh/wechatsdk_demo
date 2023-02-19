@@ -73,7 +73,7 @@
             padding-right: 5%;
         }
 
-        #wc{
+        #wc {
             margin-left: 20%;
         }
 
@@ -82,12 +82,14 @@
             font-size: 15px;
             margin-bottom: 10px;
         }
+
         .el-textarea {
             padding-right: 20px;
             display: inline-block;
             width: 70%;
         }
-        .chat-input .el-button  el-button--primary{
+
+        .chat-input .el-button el-button--primary {
             margin-left: 10px;
         }
     </style>
@@ -108,8 +110,9 @@
                 </div>
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
                     <!--{{ message.body }}-->
-                    <span v-if="message.body">{{ message.body }}</span>
-                    <img v-if="!message.body" :src="message.url" :style="{width: '200px', height: '200px'}"/>
+                    <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
+                    <img  v-if="!message.body" :src="message.url"
+                         :style="{width: '200px', height: '200px'}"/>
 
                 </div>
             </div>
@@ -119,7 +122,7 @@
     </div>
 
     <form>
-        <el-button  type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
+        <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
         <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -158,39 +161,51 @@
         data() {
             return {
                 messages: [
-                    {
-                        "time":"2023/02/19 02:17:05",
-                        "body":"你好1呀\n",
-                        "url":""
-                    },
-                    {
-                        "time":"2023/02/19 02:17:38",
-                        "body":"",
-                        "url":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
-                    },
-                    {
-                        "time":"2023/02/19 02:18:31",
-                        "body":"",
-                        "url":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676744308635_17925955-fc5a-4064-8f82-37f9b39eb405.tencent.mm.jpg"
-                    }
+                    // {
+                    //     "time":"2023/02/19 02:17:05",
+                    //     "body":"你好1呀\n",
+                    //     "url":""
+                    // },
+                    // {
+                    //     "time":"2023/02/19 02:17:38",
+                    //     "body":"",
+                    //     "url":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
+                    // },
+                    // {
+                    //     "time":"2023/02/19 02:18:31",
+                    //     "body":"",
+                    //     "url":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676744308635_17925955-fc5a-4064-8f82-37f9b39eb405.tencent.mm.jpg"
+                    // }
                 ],
                 inputText: '',
                 rows: 1,
                 isShow: true,
                 isInteger: 0,
-                content:'提醒管理员上线陪聊',
+                content: '提醒管理员上线陪聊',
                 p: 666
             };
         },
         mounted() {
+            let name = localStorage.getItem('myName');
+            if (name==null) {
+                // 定义形容词和名词数组
+                var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
+                var nouns = ['大熊', '静香', '胖胖', '小兔', '蛋黄'];
+
+                // 生成唯一名称
+                var myName = adjectives[Math.floor(Math.random() * adjectives.length)] +
+                    nouns[Math.floor(Math.random() * nouns.length)];
+                // 存储到 local storage 中
+                localStorage.setItem('myName', myName);
+            }
             console.log("----------------------------")
             console.log(chatSee)
             console.log("----------------------------")
             // this.initData()
             // setInterval(this.initData(), 1000);
-            // setInterval(() => {
-            //     this.initData();
-            // }, 1000);
+            setInterval(() => {
+                this.initData();
+            }, 1000);
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
@@ -204,24 +219,24 @@
             secondParagraph.style.color = secondColor;
 
             // document.getElementById("myElement").href="#myElement"
-            window.onscroll = function() {
+            window.onscroll = function () {
                 console.log(window.scrollY);
             }
         },
         watch: {
             inputText(value) {
-                console.log(value+"---------------------")
+                console.log(value + "---------------------")
                 const lines = value.split('\n');
                 this.rows = Math.max(lines.length, 1);
             },
             messages(value) {
-                console.log(value.length+"---------------------")
-                if (this.isInteger==""){
-                    this.isInteger=value.length;
+                console.log(value.length + "---------------------")
+                if (this.isInteger == "") {
+                    this.isInteger = value.length;
                 }
-                if (this.isInteger!=value.length){
+                if (this.isInteger != value.length) {
                     // alert("999")
-                    this.isInteger=value.length;
+                    this.isInteger = value.length;
                     this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
                 }
             },
@@ -242,9 +257,11 @@
                     this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
                     return false;
                 }
+                // 获取唯一标识符
+                let name = localStorage.getItem('myName');
                 const message = {
                     id: this.messages.length + 1,
-                    // name: '小明',
+                    name: name,
                     // avatar: 'https://i.pravatar.cc/60?u=1',
                     time: new Date().toLocaleString(),
                     body: this.inputText,
@@ -269,13 +286,13 @@
                 this.inputText = '';
                 this.isShow = false
             },
-            async tiXing(){
-                this.content='管理员二十秒后到达战场';
+            async tiXing() {
+                this.content = '管理员二十秒后到达战场';
                 setTimeout(() => {
                     this.content = '提醒管理员上线陪聊'
                 }, 5000);
                 // await sss(this.p)
-                await sss({p:this.p })
+                await sss({p: this.p})
             },
             selectImage() {
                 const input = document.createElement('input');

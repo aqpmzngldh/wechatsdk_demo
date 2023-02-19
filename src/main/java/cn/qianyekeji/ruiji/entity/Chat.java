@@ -24,5 +24,7 @@ public class Chat implements Serializable {
     private String body;
     //当前对话的图片
     private String url;
+    //当前对话的name
+    private String name;
 
 }

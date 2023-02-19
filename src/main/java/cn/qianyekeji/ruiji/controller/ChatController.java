@@ -39,7 +39,7 @@ public class ChatController {
     private GiteeUploader giteeUploader;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, String time, String body) throws Exception {
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile,String name, String time, String body) throws Exception {
         if (multipartFile!=null) {
             log.info("uploadImg()请求已来临...");
             //根据文件名生成指定的请求url
@@ -71,6 +71,7 @@ public class ChatController {
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("url", url);
             chatRecord.put("body","");
+            chatRecord.put("name",name);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -79,7 +80,7 @@ public class ChatController {
             return R.success("图片已成功保存");
 
         }else {
-        log.info("传递的数据分别是{}和{}",time,body );
+//        log.info("传递的数据分别是{}和{}和{}",time,body,name );
         LocalDateTime currentDateTime = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         time=currentDateTime.format(formatter);
@@ -88,6 +89,7 @@ public class ChatController {
         Map<String, String> chatRecord = new HashMap<>();
         chatRecord.put("body", body);
         chatRecord.put("url","");
+        chatRecord.put("name",name);
         long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
         chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
         redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -113,8 +115,8 @@ public class ChatController {
             String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
             String body = (String) chatRecord.get("body");
             String url = (String) chatRecord.get("url");
-//            Chat chat = new Chat(time, body);
-            Chat chat = new Chat(time, body,url);
+            String name = (String) chatRecord.get("name");
+            Chat chat = new Chat(time, body,url,name);
             chats.add(chat);
         }
 
