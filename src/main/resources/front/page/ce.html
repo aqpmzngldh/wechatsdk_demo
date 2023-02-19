@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>匿名群聊</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
+
+    <style scoped>
+
+    </style>
+</head>
+<body>
+
+<!--<template>-->
+<div class="chat" id="login">
+
+    <el-alert
+            v-show="isShow"
+            title="管理员已上线"
+            type="success"
+            effect="dark">
+    </el-alert>
+</div>
+<!--</template>-->
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script src="./../api/login.js"></script>
+</body>
+
+<script>
+    new Vue({
+        el: "#login",
+        data() {
+            return {
+                isShow: false,
+            };
+        },
+        mounted() {
+            let name = localStorage.getItem('myName');
+            alert(name)
+            alert(name==='尊敬的管理员')
+            if (name==='尊敬的管理员') {
+                this.isShow=true
+                setTimeout(() => {
+                    this.isShow=false
+                }, 3000);
+            }
+        },
+    });
+</script>
+</html>

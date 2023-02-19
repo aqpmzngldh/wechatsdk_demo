@@ -98,6 +98,14 @@
 
 <!--<template>-->
 <div class="chat" id="login">
+
+    <el-alert
+            v-show="Show"
+            :title="title"
+            type="success"
+            effect="dark">
+    </el-alert>
+
     <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
@@ -111,7 +119,7 @@
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
-                    <img  v-if="!message.body" :src="message.url"
+                    <img v-if="!message.body" :src="message.url"
                          :style="{width: '200px', height: '200px'}"/>
 
                 </div>
@@ -180,6 +188,8 @@
                 inputText: '',
                 rows: 1,
                 isShow: true,
+                Show: false,
+                title: '',
                 isInteger: 0,
                 content: '提醒管理员上线陪聊',
                 p: 666
@@ -187,10 +197,10 @@
         },
         mounted() {
             let name = localStorage.getItem('myName');
-            if (name==null) {
+            if (name == null) {
                 // 定义形容词和名词数组
                 var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
-                var nouns = ['大熊', '静香', '胖胖', '小兔', '蛋黄'];
+                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎', '汤姆', '杰瑞', '蛋黄'];
 
                 // 生成唯一名称
                 var myName = adjectives[Math.floor(Math.random() * adjectives.length)] +
@@ -198,6 +208,15 @@
                 // 存储到 local storage 中
                 localStorage.setItem('myName', myName);
             }
+
+            if (name||myName) {
+                this.title=name != null ? name+"已上线" : myName+"已上线";
+                this.Show = true
+                setTimeout(() => {
+                    this.Show = false
+                }, 3000);
+            }
+
             console.log("----------------------------")
             console.log(chatSee)
             console.log("----------------------------")

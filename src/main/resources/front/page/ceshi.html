@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>匿名群聊</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
+
+    <style scoped>
+        @keyframes my-animation {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!--<template>-->
+<div class="chat" id="login">
+    <div id="dynamic-effect">
+        <div>123</div>
+        <div>456</div>
+    </div>
+</div>
+<!--</template>-->
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script src="./../api/login.js"></script>
+</body>
+
+<script>
+    new Vue({
+        el: "#login",
+        mounted() {
+            let name = localStorage.getItem('myName');
+            if (name==null) {
+                alert("出错了")
+            }
+            alert("正常"+name)
+            // 判断变量是否存在
+            if (name) {
+                // 获取动态效果元素
+                const dynamicEffect = document.getElementById('dynamic-effect');
+                // 添加动态效果
+                dynamicEffect.style.backgroundColor = 'red';
+                dynamicEffect.style.animation = 'my-animation 2s infinite';
+                // 5秒后停止动画
+                setTimeout(() => {
+                    dynamicEffect.style.animation = 'none';
+                    dynamicEffect.style.display= "none"
+                }, 5000);
+            }
+        },
+    });
+</script>
+</html>
