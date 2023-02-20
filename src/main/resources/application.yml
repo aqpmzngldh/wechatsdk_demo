@@ -7,20 +7,20 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
 #      本地数据库
-      url: jdbc:mysql://localhost:3306/reggie
+#      url: jdbc:mysql://localhost:3306/reggie
 #      云服务数据库
-#      url: jdbc:mysql://124.222.221.77:3306/reggie
+      url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
-      password:
-#      password: MXMPbrxyc4t7sBje
+#      password:
+      password: MXMPbrxyc4t7sBje
   redis:
 #    redis本地主机ip
-    host: 127.0.0.1
+#    host: 127.0.0.1
 #    redis云服务ip
-#    host: 124.222.221.77
+    host: 124.222.221.77
     port: 6379
-    password:
-#    password: MXMPbrxyc4t7sBje
+#    password:
+    password: MXMPbrxyc4t7sBje
     database: 0
 #  cache:
 #    redis:
@@ -41,11 +41,13 @@ mybatis-plus:
       id-type: assign_id
 ruiji:
 #  图片本地存储位置
-  path: D:\img\
+#  path: D:\img\
 #  图片云服务器存储位置
-#  path: /www/server/img/
+  path: /www/server/img/
 #  聊天图片存储路径
-  path2: D:\img2\
+#  path2: D:\img2\
+#  聊天图片云存储路径
+  path2: /www/server/img2/
 
 #企业邮箱发邮件
 mail:
