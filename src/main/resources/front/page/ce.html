@@ -18,8 +18,12 @@
     <!--<link rel="stylesheet" href="../styles/index.css"/>-->
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
-
     <style scoped>
+        .chat-bubble img {
+            max-width: 50%;
+            max-height: 50%;
+            object-fit: cover;
+        }
 
     </style>
 </head>
@@ -27,14 +31,13 @@
 
 <!--<template>-->
 <div class="chat" id="login">
-
-    <el-alert
-            v-show="isShow"
-            title="管理员已上线"
-            type="success"
-            effect="dark">
-    </el-alert>
-</div>
+    <!-- 图片展示 -->
+    <div class="chat-bubble">
+    <img src="https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg" data-lightbox="images" alt="My Image" />
+    <img src="../img/1fac7b41-e1b5-43c6-b407-5885fd051f9d.jpg"  />
+    <img src="../img/eab9d04cede6eb27e96809f35a01ea1.jpg"  />
+    </div>
+    </div>
 <!--</template>-->
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -47,6 +50,7 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script src="./../api/login.js"></script>
+
 </body>
 
 <script>
@@ -54,19 +58,19 @@
         el: "#login",
         data() {
             return {
-                isShow: false,
+                // isShow: false,
             };
         },
         mounted() {
-            let name = localStorage.getItem('myName');
-            alert(name)
-            alert(name==='尊敬的管理员')
-            if (name==='尊敬的管理员') {
-                this.isShow=true
-                setTimeout(() => {
-                    this.isShow=false
-                }, 3000);
-            }
+            // let name = localStorage.getItem('myName');
+            // alert(name)
+            // alert(name==='尊敬的管理员')
+            // if (name==='尊敬的管理员') {
+            //     this.isShow=true
+            //     setTimeout(() => {
+            //         this.isShow=false
+            //     }, 3000);
+            // }
         },
     });
 </script>

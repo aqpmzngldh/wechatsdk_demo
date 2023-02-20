@@ -92,6 +92,11 @@
         .chat-input .el-button el-button--primary {
             margin-left: 10px;
         }
+        .message-body img {
+            max-width: 50%;
+            max-height: 50%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -121,7 +126,7 @@
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
                     <!--<span v-if="!message.body">{{message.name}}:</span>-->
                     <img v-if="!message.body"
-                         :src="'/chat/download?name=' + message.url" :style="{width: '200px', height: '200px'}"/>
+                         :src="'/chat/download?name=' + message.url"/>
 
                 </div>
             </div>
