@@ -98,8 +98,22 @@
             object-fit: cover;
         }
     </style>
+    <script>
+        document.onkeydown = function (event) {
+            if (event.ctrlKey||event.keyCode == 123 || event.which == 123) {
+                event.preventDefault();
+            }
+        };
+        console.log('开发者工具已打开！');
+        console.log('请您谨慎操作！');
+        console.log('后台已记录您的ip与访问日志！');
+        console.log('工业和信息化部门相关的投诉受理中心网址！');
+        console.log('一经发现恶意操作将立即在https://www.miit.gov.cn  进行举报，谢谢配合！');
+        console.log('网络并非法外之地，请您遵纪守法！');
+
+    </script>
 </head>
-<body>
+<body oncontextmenu=self.event.returnValue=false onselectstart="return false">
 
 <!--<template>-->
 <div class="chat" id="login">
@@ -206,7 +220,7 @@
             if (name == null) {
                 // 定义形容词和名词数组
                 var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
-                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎', '汤姆', '杰瑞', '蛋黄'];
+                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎','蝎子莱莱', '鲨鱼辣椒', '蜘蛛侦探', '蟑螂恶霸', '汤姆', '杰瑞'];
 
                 // 生成唯一名称
                 name = adjectives[Math.floor(Math.random() * adjectives.length)] +
