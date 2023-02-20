@@ -10,15 +10,23 @@ import cn.qianyekeji.ruiji.entity.AddressBook;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,11 +35,15 @@ import java.time.format.ResolverStyle;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.qcloud.cos.demo.BucketRefererDemo.cosClient;
+
 
 @RestController
 @RequestMapping("/chat")
 @Slf4j
 public class ChatController {
+    @Value("${ruiji.path2}")
+    private String basePath;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -39,62 +51,61 @@ public class ChatController {
     private GiteeUploader giteeUploader;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile,String name, String time, String body) throws Exception {
-        if (multipartFile!=null) {
-            log.info("uploadImg()请求已来临...");
-            //根据文件名生成指定的请求url
-            String originalFilename = multipartFile.getOriginalFilename();
-            if (originalFilename == null) {
-                return R.error("請求失敗");
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, String name, String time, String body) throws Exception {
+        if (multipartFile != null) {
+            //file是一个临时文件，需要转存到指定位置，否则本次请求完成后临时文件会删除
+            log.info(multipartFile.toString());
+            //原始文件名
+            String originalFilename = multipartFile.getOriginalFilename();//abc.jpg
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));//.jpg
+            //使用UUID重新生成文件名，防止文件名称重复造成文件覆盖
+            String fileName = UUID.randomUUID().toString() + suffix;//dfsdfdfd.jpg
+            //创建一个目录对象
+            File dir = new File(basePath);
+            //判断当前目录是否存在
+            if(!dir.exists()){
+                //目录不存在，需要创建
+                dir.mkdirs();
             }
-            String targetURL = giteeUploader.createUploadFileUrl(originalFilename);
-            log.info("目标url：" + targetURL);
-            //请求体封装
-            Map<String, Object> uploadBodyMap = giteeUploader.getUploadBodyMap(multipartFile.getBytes());
-            //借助HttpUtil工具类发送POST请求
-            String JSONResult = HttpUtil.post(targetURL, uploadBodyMap);
-            //解析响应JSON字符串
-            JSONObject jsonObj = JSONUtil.parseObj(JSONResult);
-            //请求失败
-            if (jsonObj == null || jsonObj.getObj("commit") == null) {
-                return R.error("請求失敗");
+            try {
+                //将临时文件转存到指定位置
+                multipartFile.transferTo(new File(basePath + fileName));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            //请求成功：返回下载地址
-            JSONObject content = JSONUtil.parseObj(jsonObj.getObj("content"));
-            String url = (String) content.get("download_url");
 
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-            time=currentDateTime.format(formatter);
+            time = currentDateTime.format(formatter);
 
             String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
-            chatRecord.put("url", url);
-            chatRecord.put("body","");
-            chatRecord.put("name",name);
+            chatRecord.put("body", "");
+            chatRecord.put("url", fileName);
+            chatRecord.put("name", name);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
             redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
 
-            return R.success("图片已成功保存");
+            return R.success(fileName);
 
-        }else {
+        } else {
 //        log.info("传递的数据分别是{}和{}和{}",time,body,name );
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        time=currentDateTime.format(formatter);
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            time = currentDateTime.format(formatter);
 
-        String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
-        Map<String, String> chatRecord = new HashMap<>();
-        chatRecord.put("body", body);
-        chatRecord.put("url","");
-        chatRecord.put("name",name);
-        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
-        chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
-        redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
-        redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
-        return R.success("聊天记录已成功保存");
+            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+            Map<String, String> chatRecord = new HashMap<>();
+            chatRecord.put("body", body);
+            chatRecord.put("url", "");
+            chatRecord.put("name", name);
+            long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
+            chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
+            redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
+            redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+            return R.success("聊天记录已成功保存");
         }
     }
 
@@ -116,7 +127,7 @@ public class ChatController {
             String body = (String) chatRecord.get("body");
             String url = (String) chatRecord.get("url");
             String name = (String) chatRecord.get("name");
-            Chat chat = new Chat(time, body,url,name);
+            Chat chat = new Chat(time, body, url, name);
             chats.add(chat);
         }
 
@@ -124,5 +135,38 @@ public class ChatController {
         chats.sort((c1, c2) -> c1.getTime().compareTo(c2.getTime()));
 
         return R.success(chats);
+    }
+
+    /**
+     * 文件下载
+     * @param name
+     * @param response
+     */
+    @GetMapping("/download")
+    public void download(String name, HttpServletResponse response){
+
+        try {
+            //输入流，通过输入流读取文件内容
+            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
+
+            //输出流，通过输出流将文件写回浏览器
+            ServletOutputStream outputStream = response.getOutputStream();
+
+            response.setContentType("image/jpeg");
+
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            while ((len = fileInputStream.read(bytes)) != -1){
+                outputStream.write(bytes,0,len);
+                outputStream.flush();
+            }
+
+            //关闭资源
+            outputStream.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

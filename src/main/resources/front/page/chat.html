@@ -113,14 +113,15 @@
             </div>
             <div class="message-content">
                 <div class="message-header">
-                    <!--<div class="name">{{ message.name }}</div>-->
                     <div class="time">{{ message.time }}</div>
+                    <span v-if="!message.body">{{message.name}}:</span>
                 </div>
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
-                    <img v-if="!message.body" :src="message.url"
-                         :style="{width: '200px', height: '200px'}"/>
+                    <!--<span v-if="!message.body">{{message.name}}:</span>-->
+                    <img v-if="!message.body"
+                         :src="'/chat/download?name=' + message.url" :style="{width: '200px', height: '200px'}"/>
 
                 </div>
             </div>
@@ -182,7 +183,7 @@
                     // {
                     //     "time":"2023/02/19 02:18:31",
                     //     "body":"",
-                    //     "url":"https://gitee.com/liangdachui/tu_tu/raw/master/uploadimg/2023-02/1676744308635_17925955-fc5a-4064-8f82-37f9b39eb405.tencent.mm.jpg"
+                    //     "url":"https://qianykeji-1304134216.cos.ap-chengdu.myqcloud.com/1.jpg?q-sign-algorithm=sha1&q-ak=AKIDVqw0BwiaKSmUkgMPaVehMFQV96A-AtnoF2B4TXdv9WhBa-io53rtNiTsrlYQyzj0&q-sign-time=1676823504;1676827104&q-key-time=1676823504;1676827104&q-header-list=host&q-url-param-list=&q-signature=486a3d6b346a0df3b58f3604aea4cea66c9b2721&x-cos-security-token=aGWvf1EwQL78eJnybRhKSbGKA3TDy47aebd03afb70b51b860cebc7642d7fe35bGNAfpATMSIjm57gpKZQCQiZc3AaXTcM8SdB1wpPaSxEaUjBnAd2CYERz_orCYcBzpf1Wn7zp_5OFiykBXvJkff7gKq1NYDsX9x5r4y1oQy9IdCWfGzI8LuXl7smScsjGctHTAqQWPd62OLwD-4uauYHdchhhw-ozspAMiBbJXCZg6YocVO7KLCOmP3u53Mxu"
                     // }
                 ],
                 inputText: '',
@@ -317,12 +318,14 @@
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
+                let name = localStorage.getItem('myName');
                 input.onchange = (event) => {
                     const file = event.target.files[0];
                     // 创建一个新的FormData对象
                     const formData = new FormData();
                     // 将文件追加到FormData对象
                     formData.append('file', file);
+                    formData.append('name', name);
                     // 附加任何其他表单数据到FormData对象
                     // formData.append('name', 'John Doe');
                     // 使用AJAX请求将表单数据发送到后端

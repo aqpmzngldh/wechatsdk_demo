@@ -44,6 +44,8 @@ ruiji:
   path: D:\img\
 #  图片云服务器存储位置
 #  path: /www/server/img/
+#  聊天图片存储路径
+  path2: D:\img2\
 
 #企业邮箱发邮件
 mail:
