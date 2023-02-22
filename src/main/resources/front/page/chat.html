@@ -3,20 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
     <title>匿名群聊</title>
     <link rel="icon" href="./../images/favico.ico">
-    <!--不同屏幕尺寸根字体设置-->
     <script src="./../js/base.js"></script>
-    <!--element-ui的样式-->
     <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
-    <!--引入vant样式-->
     <link rel="stylesheet" href="../styles/vant.min.css"/>
-    <!-- 引入样式  -->
-    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
-    <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
 
     <style scoped>
@@ -26,17 +19,11 @@
             padding-right: 20px;
             padding-top: 20px;
 
-            height: 500px; /* 设置内容高度 */
-            overflow-y: scroll; /* 启用垂直滚动 */
-            overflow-x: hidden; /* 禁用水平滚动 */
+            height: 500px;
+            overflow-y: scroll;
+            overflow-x: hidden;
         }
 
-        .chat-history {
-            /*height: 500px; !* 设置内容高度 *!*/
-            /*!*overflow-y: scroll; !* 启用垂直滚动 *!*!*/
-            /*overflow-y: auto; !* 启用垂直滚动 *!*/
-            /*overflow-x: hidden; !* 禁用水平滚动 *!*/
-        }
 
         .chat-header .back-btn {
             margin-right: 16px;
@@ -113,7 +100,6 @@
     <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
-                <!--<img :src="message.avatar" alt="Avatar">-->
             </div>
             <div class="message-content">
                 <div class="message-header">
