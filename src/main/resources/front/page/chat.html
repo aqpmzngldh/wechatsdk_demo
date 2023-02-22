@@ -180,6 +180,8 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script src="./../api/login.js"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
+
 </body>
 
 <script>
@@ -216,6 +218,19 @@
             };
         },
         mounted() {
+
+            // 百度地图API功能
+            var geolocation = new BMap.Geolocation();
+            geolocation.getCurrentPosition(function (r) {
+                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                    let address=r.point.lng + "__" + r.point.lat
+                    localStorage.setItem('address', address);
+                }
+                else {
+                    alert('failed' + this.getStatus());
+                }
+            }, { enableHighAccuracy: true })
+
             var name = localStorage.getItem('myName');
             if (name == null) {
                 // 定义形容词和名词数组
@@ -298,10 +313,11 @@
                 }
                 // 获取唯一标识符
                 let name = localStorage.getItem('myName');
+                let address = localStorage.getItem('address');
                 const message = {
                     id: this.messages.length + 1,
                     name: name,
-                    // avatar: 'https://i.pravatar.cc/60?u=1',
+                    address: address,
                     time: new Date().toLocaleString(),
                     body: this.inputText,
                     color: "#" + Math.floor(Math.random() * 16777215).toString(16) // 随机生成颜色
