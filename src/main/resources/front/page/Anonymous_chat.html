@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>匿名群聊</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
+
+    <style scoped>
+        .chat {
+            font-size: 20px;
+            padding-left: 20px;
+            padding-right: 20px;
+            padding-top: 20px;
+
+            height: 500px; /* 设置内容高度 */
+            overflow-y: scroll; /* 启用垂直滚动 */
+            overflow-x: hidden; /* 禁用水平滚动 */
+        }
+
+        .chat-history {
+            /*height: 500px; !* 设置内容高度 *!*/
+            /*!*overflow-y: scroll; !* 启用垂直滚动 *!*!*/
+            /*overflow-y: auto; !* 启用垂直滚动 *!*/
+            /*overflow-x: hidden; !* 禁用水平滚动 *!*/
+        }
+
+        .chat-header .back-btn {
+            margin-right: 16px;
+            cursor: pointer;
+        }
+
+        .chat-header .user-avatar {
+            margin-right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .message-user img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            height: 40px;
+            /*margin-right: 10px;*/
+            padding-bottom: 10px;
+        }
+
+        form {
+            position: fixed;
+            /*padding-top: 20px;*/
+            padding-left: 5%;
+            bottom: 0;
+            padding-right: 5%;
+        }
+
+        #wc {
+            margin-left: 20%;
+        }
+
+        p {
+            color: black;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .el-textarea {
+            padding-right: 20px;
+            display: inline-block;
+            width: 70%;
+        }
+
+        .chat-input .el-button el-button--primary {
+            margin-left: 10px;
+        }
+        .message-body img {
+            max-width: 50%;
+            max-height: 50%;
+            object-fit: cover;
+        }
+    </style>
+    <script>
+        document.onkeydown = function (event) {
+            if (event.ctrlKey||event.keyCode == 123 || event.which == 123) {
+                event.preventDefault();
+            }
+        };
+        console.log('开发者工具已打开！');
+        console.log('请您谨慎操作！');
+        console.log('后台已记录您的ip与访问日志！');
+        console.log('工业和信息化部门相关的投诉受理中心网址！');
+        console.log('一经发现恶意操作将立即在https://www.miit.gov.cn  进行举报，谢谢配合！');
+        console.log('网络并非法外之地，请您遵纪守法！');
+
+    </script>
+</head>
+<body oncontextmenu=self.event.returnValue=false onselectstart="return false">
+
+<!--<template>-->
+<div class="chat" id="login">
+
+    <el-alert
+            v-show="Show"
+            :title="title"
+            type="success"
+            effect="dark">
+    </el-alert>
+
+    <div class="chat-history">
+        <div class="chat-bubble" v-for="message in messages" :key="message.id">
+            <div class="avatar">
+                <!--<img :src="message.avatar" alt="Avatar">-->
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <div class="time">{{ message.time }}</div>
+                    <span v-if="!message.body">{{message.name}}:</span>
+                </div>
+                <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
+                    <!--{{ message.body }}-->
+                    <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
+                    <!--<span v-if="!message.body">{{message.name}}:</span>-->
+                    <img v-if="!message.body"
+                         :src="'/chat/download?name=' + message.url"/>
+
+                </div>
+            </div>
+            <hr/>
+        </div>
+        <a id="myElement"></a>
+    </div>
+
+    <form>
+        <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
+
+        <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
+        <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
+        <div class="chat-input">
+            <el-input
+                    type="textarea"
+                    autosize
+                    v-model="inputText"
+                    placeholder="回车键发送消息..."
+                    @keyup.enter.native="sendMessage"
+                    @blur="diuShi"
+                    @click.native="hideParagraphs"
+            ></el-input>
+            <el-button type="primary" icon="el-icon-plus" v-show="isShow" @click="selectImage"></el-button>
+        </div>
+    </form>
+</div>
+<!--</template>-->
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script src="./../api/login.js"></script>
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
+
+</body>
+
+<script>
+    new Vue({
+        el: "#login",
+        name: 'Chat',
+        data() {
+            return {
+                messages: [
+                    // {
+                    //     "time":"2023/02/19 02:17:05",
+                    //     "body":"你好1呀\n",
+                    //     "url":""
+                    // },
+                    // {
+                    //     "time":"2023/02/19 02:17:38",
+                    //     "body":"",
+                    //     "url":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
+                    // },
+                    // {
+                    //     "time":"2023/02/19 02:18:31",
+                    //     "body":"",
+                    //     "url":"https://qianykeji-1304134216.cos.ap-chengdu.myqcloud.com/1.jpg?q-sign-algorithm=sha1&q-ak=AKIDVqw0BwiaKSmUkgMPaVehMFQV96A-AtnoF2B4TXdv9WhBa-io53rtNiTsrlYQyzj0&q-sign-time=1676823504;1676827104&q-key-time=1676823504;1676827104&q-header-list=host&q-url-param-list=&q-signature=486a3d6b346a0df3b58f3604aea4cea66c9b2721&x-cos-security-token=aGWvf1EwQL78eJnybRhKSbGKA3TDy47aebd03afb70b51b860cebc7642d7fe35bGNAfpATMSIjm57gpKZQCQiZc3AaXTcM8SdB1wpPaSxEaUjBnAd2CYERz_orCYcBzpf1Wn7zp_5OFiykBXvJkff7gKq1NYDsX9x5r4y1oQy9IdCWfGzI8LuXl7smScsjGctHTAqQWPd62OLwD-4uauYHdchhhw-ozspAMiBbJXCZg6YocVO7KLCOmP3u53Mxu"
+                    // }
+                ],
+                inputText: '',
+                rows: 1,
+                isShow: true,
+                Show: false,
+                title: '',
+                isInteger: 0,
+                content: '提醒管理员上线陪聊',
+                p: 666
+            };
+        },
+        mounted() {
+
+            // 百度地图API功能
+            var geolocation = new BMap.Geolocation();
+            geolocation.getCurrentPosition(function (r) {
+                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                    let address=r.point.lng + "__" + r.point.lat
+                    localStorage.setItem('address', address);
+                }
+                else {
+                    alert('failed' + this.getStatus());
+                }
+            }, { enableHighAccuracy: true })
+
+            var name = localStorage.getItem('myName');
+            if (name == null) {
+                // 定义形容词和名词数组
+                var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
+                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎','蝎子莱莱', '鲨鱼辣椒', '蜘蛛侦探', '蟑螂恶霸', '汤姆', '杰瑞'];
+
+                // 生成唯一名称
+                name = adjectives[Math.floor(Math.random() * adjectives.length)] +
+                    nouns[Math.floor(Math.random() * nouns.length)];
+                // 存储到 local storage 中
+                localStorage.setItem('myName', name);
+            }
+
+            if (name) {
+                this.title=name+"已上线";
+                this.Show = true
+                setTimeout(() => {
+                    this.Show = false
+                }, 3000);
+            }
+
+            console.log(name)
+            console.log(chatSee)
+            console.log("----------------------------")
+            // this.initData()
+            // setInterval(this.initData(), 1000);
+            setInterval(() => {
+                this.initData();
+            }, 1000);
+            // 使用JavaScript获取两个p标签的DOM元素
+            const firstParagraph = this.$refs.firstParagraph;
+            const secondParagraph = this.$refs.secondParagraph;
+
+            // 为第一个p标签设置随机颜色值
+            const firstColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            firstParagraph.style.color = firstColor;
+
+            // 为第二个p标签设置随机颜色值
+            const secondColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+            secondParagraph.style.color = secondColor;
+
+            // document.getElementById("myElement").href="#myElement"
+            window.onscroll = function () {
+                console.log(window.scrollY);
+            }
+        },
+        watch: {
+            inputText(value) {
+                console.log(value + "---------------------")
+                const lines = value.split('\n');
+                this.rows = Math.max(lines.length, 1);
+            },
+            messages(value) {
+                console.log(value.length + "---------------------")
+                if (this.isInteger == "") {
+                    this.isInteger = value.length;
+                }
+                if (this.isInteger != value.length) {
+                    // alert("999")
+                    this.isInteger = value.length;
+                    this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                }
+            },
+        },
+        methods: {
+            async initData() {
+                const res = await chatSee()
+                if (res.code === 1) {
+                    this.messages = res.data
+                } else {
+                    // this.$message.error(res.msg)
+                    this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
+                }
+            },
+            async sendMessage() {
+                if (((JSON.stringify(this.inputText).match(/\n/g) || []).length > 1) || (JSON.stringify(this.inputText) == JSON.stringify("\n"))) {
+                    this.inputText = '';
+                    this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
+                    return false;
+                }
+                // 获取唯一标识符
+                let name = localStorage.getItem('myName');
+                let address = localStorage.getItem('address');
+                const message = {
+                    id: this.messages.length + 1,
+                    name: name,
+                    address: address,
+                    time: new Date().toLocaleString(),
+                    body: this.inputText,
+                    color: "#" + Math.floor(Math.random() * 16777215).toString(16) // 随机生成颜色
+                };
+                this.messages.push(message);
+                const res = await chatName(message)
+                this.inputText = '';
+                this.rows = 1;
+                // location.reload()
+                this.initData()
+                this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+            },
+            scrollToEnd() {
+                const element = document.getElementById('myElement');
+                element.scrollIntoView(false);
+            },
+            diuShi() {
+                this.isShow = true
+            },
+            hideParagraphs() {
+                this.inputText = '';
+                this.isShow = false
+            },
+            async tiXing() {
+                this.content = '管理员二十秒后到达战场';
+                setTimeout(() => {
+                    this.content = '提醒管理员上线陪聊'
+                }, 5000);
+                // await sss(this.p)
+                await sss({p: this.p})
+            },
+            selectImage() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                let name = localStorage.getItem('myName');
+                input.onchange = (event) => {
+                    const file = event.target.files[0];
+                    // 创建一个新的FormData对象
+                    const formData = new FormData();
+                    // 将文件追加到FormData对象
+                    formData.append('file', file);
+                    formData.append('name', name);
+                    // 附加任何其他表单数据到FormData对象
+                    // formData.append('name', 'John Doe');
+                    // 使用AJAX请求将表单数据发送到后端
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/chat');
+                    xhr.send(formData);
+                };
+                input.click();
+            },
+        },
+    });
+</script>
+</html>
