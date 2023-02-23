@@ -43,6 +43,12 @@ public class LoginCheckFilter implements Filter {
         //1、获取本次请求的URI
         String requestURI = request.getRequestURI();// /backend/index.html
 
+        // 判断请求是否是根路径
+        if (requestURI.equals("/")) {
+            // 将请求重定向到默认访问页面
+            response.sendRedirect("/front/page/chat.html");
+            return;
+        }
 //        log.info("拦截到请求：{}",requestURI);
 
         //定义不需要处理的请求路径
