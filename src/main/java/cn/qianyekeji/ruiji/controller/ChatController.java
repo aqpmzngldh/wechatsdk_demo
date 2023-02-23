@@ -10,8 +10,6 @@ import cn.qianyekeji.ruiji.entity.AddressBook;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +37,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.ResolverStyle;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.qcloud.cos.demo.BucketRefererDemo.cosClient;
-
 
 @RestController
 @RequestMapping("/chat")
