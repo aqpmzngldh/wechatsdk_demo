@@ -25,7 +25,7 @@ public class QuitzTask {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @Scheduled(cron = "0 48 23 * * ?")
+    @Scheduled(cron = "0 0 6 * * ?")
     public void executeTask() {
         // 执行要定时执行的任务
         LocalDateTime currentDateTime = LocalDateTime.now();
