@@ -8,7 +8,10 @@ import cn.qianyekeji.ruiji.common.BaseContext;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.AddressBook;
 import cn.qianyekeji.ruiji.entity.Chat;
+import cn.qianyekeji.ruiji.entity.Sms;
+import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
+import cn.qianyekeji.ruiji.utils.IpLocation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
@@ -39,7 +42,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/chaat")
 @Slf4j
 public class ChatController {
     @Value("${ruiji.path2}")
@@ -49,9 +52,24 @@ public class ChatController {
     private RedisTemplate<String, String> redisTemplate;
     @Autowired
     private GiteeUploader giteeUploader;
+    @Autowired
+    private SmsService smsService;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, String address, String name, String time, String body) throws Exception {
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile,HttpServletRequest request, String address, String name, String time, String body) throws Exception {
+
+
+        String prefix = name.substring(0, 3); // 截取前三个字符
+        String suffix1 = name.substring(3); // 截取剩余的字符
+
+        List<String> prefixList = Arrays.asList("淘气的", "爱动的", "调皮的", "可爱的", "聪明的");
+        List<String> suffixList = Arrays.asList("大熊", "哆嗦A梦", "小夫", "胖虎", "蝎子莱莱", "鲨鱼辣椒", "蜘蛛侦探", "蟑螂恶霸", "汤姆", "杰瑞");
+
+        if (!prefixList.contains(prefix) || suffixList.contains(suffix1)) {
+            return null;
+        }
+
+
 
         String forObject = "";
         String URL = "http://api.map.baidu.com/?qterm=pc&coding=utf-8&coord=bd09ll&extensions=1&callback_type=jsonp&ak=B13d386658b7f5e9c2e2294e0314afbe&qt=hip&v=3.0&ie=utf-8&oue=1&fromproduct=jsapi&res=api&ak=B13d386658b7f5e9c2e2294e0314afbe&callback=BMap._rd._cbk52177&v=3.0&seckey=KSvl4YKPd09sveyXHd34A5AtqJjd34WGW%2BQrZZ7unLw%3D%2CQPaRZS15geTSh-2b4EtwJFykhQVSONaFWVgb24ZAn7ZTJHdXlOHvBjB4uf4101iaxa0HG3kTySkDJVjjPJyBCy7KaF06nPNXdXBQBC4B8YabR-QkYm4SS9efnNDneboyj6pXJej1j688j8fpC0F_LTgzAORDCVqHUjE7nHTxi3pKuHMtMhPUQwhPs8Ib9X-Z&timeStamp=1676978163595&sign=4d2178bd7efc";
@@ -62,6 +80,28 @@ public class ChatController {
         forObject = restTemplate.getForObject(uri, String.class);
         System.out.println("----------------------");
         System.out.println(forObject);
+
+
+        try {
+            String ipAddress = request.getHeader("X-Forwarded-For");
+            if (ipAddress == null) {
+                ipAddress = request.getRemoteAddr();
+            }
+            LambdaQueryWrapper<Sms> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Sms::getIpAddress,ipAddress);
+            Sms sms1 = smsService.getOne(queryWrapper);
+            if(sms1 == null){
+                Sms sms = new Sms();
+                sms.setNumber("1");
+                sms.setIpAddress(ipAddress);
+                smsService.save(sms);
+            }else{
+                sms1.setNumber((Integer.parseInt(sms1.getNumber())+1)+"");
+                smsService.updateById(sms1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         if (multipartFile != null) {

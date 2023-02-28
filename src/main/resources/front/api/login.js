@@ -26,7 +26,7 @@ function sss(data) {
 //匿名群聊
 function chatName(data) {
     return $axios({
-        'url': '/chat',
+        'url': '/chaat',
         'method': 'post',
         params:{...data}
     })
@@ -35,7 +35,7 @@ function chatName(data) {
 //查看群聊当天聊天记录
 function chatSee() {
     return $axios({
-        'url': '/chat',
+        'url': '/chaat',
         'method': 'get'
     })
 }
