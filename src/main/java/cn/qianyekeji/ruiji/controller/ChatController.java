@@ -11,7 +11,6 @@ import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
-import cn.qianyekeji.ruiji.utils.IpLocation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
@@ -42,7 +41,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/chaat")
+@RequestMapping("/chat")
 @Slf4j
 public class ChatController {
     @Value("${ruiji.path2}")
