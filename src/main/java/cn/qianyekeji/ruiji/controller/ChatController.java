@@ -71,16 +71,6 @@ public class ChatController {
 
 
 
-        String forObject = "";
-        String URL = "http://api.map.baidu.com/?qterm=pc&coding=utf-8&coord=bd09ll&extensions=1&callback_type=jsonp&ak=B13d386658b7f5e9c2e2294e0314afbe&qt=hip&v=3.0&ie=utf-8&oue=1&fromproduct=jsapi&res=api&ak=B13d386658b7f5e9c2e2294e0314afbe&callback=BMap._rd._cbk52177&v=3.0&seckey=KSvl4YKPd09sveyXHd34A5AtqJjd34WGW%2BQrZZ7unLw%3D%2CQPaRZS15geTSh-2b4EtwJFykhQVSONaFWVgb24ZAn7ZTJHdXlOHvBjB4uf4101iaxa0HG3kTySkDJVjjPJyBCy7KaF06nPNXdXBQBC4B8YabR-QkYm4SS9efnNDneboyj6pXJej1j688j8fpC0F_LTgzAORDCVqHUjE7nHTxi3pKuHMtMhPUQwhPs8Ib9X-Z&timeStamp=1676978163595&sign=4d2178bd7efc";
-        String encodedURL = URLEncoder.encode(URL, "UTF-8");
-        String decodedURL = URLDecoder.decode(encodedURL, "UTF-8");
-        URI uri = new URI(decodedURL);
-        RestTemplate restTemplate = new RestTemplate();
-        forObject = restTemplate.getForObject(uri, String.class);
-        System.out.println("----------------------");
-        System.out.println(forObject);
-
 
         try {
             String ipAddress = request.getHeader("X-Forwarded-For");
@@ -136,7 +126,6 @@ public class ChatController {
             chatRecord.put("url", fileName);
             chatRecord.put("name", name);
             chatRecord.put("address", address);
-            chatRecord.put("s", forObject);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -156,7 +145,6 @@ public class ChatController {
             chatRecord.put("url", "");
             chatRecord.put("name", name);
             chatRecord.put("address", address);
-            chatRecord.put("s", forObject);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
