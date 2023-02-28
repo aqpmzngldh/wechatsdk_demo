@@ -65,7 +65,7 @@ public class ChatController {
         List<String> prefixList = Arrays.asList("淘气的", "爱动的", "调皮的", "可爱的", "聪明的");
         List<String> suffixList = Arrays.asList("大熊", "哆嗦A梦", "小夫", "胖虎", "蝎子莱莱", "鲨鱼辣椒", "蜘蛛侦探", "蟑螂恶霸", "汤姆", "杰瑞");
 
-        if (!prefixList.contains(prefix) || suffixList.contains(suffix1)) {
+        if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
 
