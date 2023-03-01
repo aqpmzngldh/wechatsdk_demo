@@ -157,7 +157,7 @@ public class ChatController {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        String key = today + "*";
 //        String key = "2023/2/16" + "*";
-        String key = DateTimeFormatter.ofPattern("uuuu/MM/d")
+        String key = DateTimeFormatter.ofPattern("uuuu/MM/dd")
                 .withResolverStyle(ResolverStyle.STRICT)
                 .format(LocalDate.parse(today, DateTimeFormatter.BASIC_ISO_DATE)) + "*";
 
