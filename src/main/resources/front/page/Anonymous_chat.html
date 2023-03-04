@@ -98,21 +98,9 @@
             max-height: 50%;
             object-fit: cover;
         }
-    </style>
-    <script>
-        document.onkeydown = function (event) {
-            if (event.ctrlKey || event.keyCode == 123 || event.which == 123) {
-                event.preventDefault();
-            }
-        };
-        console.log('开发者工具已打开！');
-        console.log('请您谨慎操作！');
-        console.log('后台已记录您的ip与访问日志！');
-        console.log('工业和信息化部门相关的投诉受理中心网址！');
-        console.log('一经发现恶意操作将立即在https://www.miit.gov.cn  进行举报，谢谢配合！');
-        console.log('网络并非法外之地，请您遵纪守法！');
 
-    </script>
+    </style>
+
 </head>
 <body oncontextmenu=self.event.returnValue=false onselectstart="return false">
 
@@ -130,6 +118,7 @@
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
                 <!--<img :src="message.avatar" alt="Avatar">-->
+                <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
             </div>
             <div class="message-content">
                 <div class="message-header">
