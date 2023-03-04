@@ -67,7 +67,7 @@ public class SmsTestsController {
         }
 
         if ("666".equals(sms.getP())){
-            mailUtil.send("","ls@qianyekeji.cn","【匿名群聊提醒】","有人来找你聊天了", Collections.singletonList(""));
+//            mailUtil.send("","ls@qianyekeji.cn","【匿名群聊提醒】","有人来找你聊天了", Collections.singletonList(""));
         }
 
         try {

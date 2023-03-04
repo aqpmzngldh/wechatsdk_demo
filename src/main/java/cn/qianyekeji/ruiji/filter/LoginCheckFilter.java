@@ -63,7 +63,9 @@ public class LoginCheckFilter implements Filter {
                 "/dish/list",//菜品缓存后再访问跳过登录
                 "/sms/**",//免费短信接口的
                 "/sss/**",//短信压力测试的
-                "/chat/**"//短信压力测试的
+                "/chat/**",//短信压力测试的
+                "/MP_verify_03jsGPvZkHlHOejC.txt",
+                "/e94e1abec6a39542e13386eaaa1bdb3d.txt"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"

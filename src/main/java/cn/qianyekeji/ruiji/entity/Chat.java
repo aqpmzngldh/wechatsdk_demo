@@ -26,5 +26,9 @@ public class Chat implements Serializable {
     private String url;
     //当前对话的name
     private String name;
+    //当前对话在reids中存储的键
+    private String k;
+    //当前对话所点赞的人数
+    private String number;
 
 }

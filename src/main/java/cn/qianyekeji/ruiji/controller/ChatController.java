@@ -29,9 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -124,6 +126,7 @@ public class ChatController {
             chatRecord.put("body", "");
             chatRecord.put("url", fileName);
             chatRecord.put("name", name);
+            chatRecord.put("number", "0");
             chatRecord.put("address", address);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
@@ -143,6 +146,7 @@ public class ChatController {
             chatRecord.put("body", body);
             chatRecord.put("url", "");
             chatRecord.put("name", name);
+            chatRecord.put("number", "0");
             chatRecord.put("address", address);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
@@ -170,7 +174,8 @@ public class ChatController {
             String body = (String) chatRecord.get("body");
             String url = (String) chatRecord.get("url");
             String name = (String) chatRecord.get("name");
-            Chat chat = new Chat(time, body, url, name);
+            String number = (String) chatRecord.get("number");
+            Chat chat = new Chat(time, body, url, name,k,number);
             chats.add(chat);
         }
 
@@ -211,6 +216,32 @@ public class ChatController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+    @PostMapping("/zan/{p}/{k}")
+    public R<String> dianzan(@PathVariable("p") String p, @PathVariable("k")String k) throws Exception {
+
+        k = new String(Base64.getDecoder().decode(k));
+        if (Integer.parseInt(p) % 2 == 0) {
+            System.out.println(p + "是偶数。");
+            //这时候去数据库给number进行-1
+            // 获取HashOperations实例
+            HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+            // 将新值设置为哈希类型字段的值
+            String s = hashOps.get(k, "number");
+            String a=s.length()==0 ? "0" : s;
+            hashOps.put(k, "number", (Integer.parseInt(a)-1)+"");
+        } else {
+            System.out.println(p + "是奇数。");
+            //这时候去数据库给number进行+1
+            // 获取HashOperations实例
+            HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+            // 将新值设置为哈希类型字段的值
+            String s = hashOps.get(k, "number");
+            String a=s.length()==0 ? "0" : s;
+            hashOps.put(k, "number", (Integer.parseInt(a)+1)+"");
+        }
+        return null;
 
     }
 }

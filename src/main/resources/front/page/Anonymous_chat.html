@@ -92,6 +92,7 @@
         .chat-input .el-button el-button--primary {
             margin-left: 10px;
         }
+
         .message-body img {
             max-width: 50%;
             max-height: 50%;
@@ -100,7 +101,7 @@
     </style>
     <script>
         document.onkeydown = function (event) {
-            if (event.ctrlKey||event.keyCode == 123 || event.which == 123) {
+            if (event.ctrlKey || event.keyCode == 123 || event.which == 123) {
                 event.preventDefault();
             }
         };
@@ -138,10 +139,16 @@
                 <div class="message-body" :style="{color: message.color}" ref="threeParagraph" id="bigSmall">
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
-                    <!--<span v-if="!message.body">{{message.name}}:</span>-->
+
                     <img v-if="!message.body"
                          :src="'/chat/download?name=' + message.url"/>
 
+                    <svg @click="addLike(message.k)" t="1646634642977" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                         xmlns="http://www.w3.org/2000/svg" p-id="2187" width="14" height="14">
+                        <path d="M160 944c0 8.8-7.2 16-16 16h-32c-26.5 0-48-21.5-48-48V528c0-26.5 21.5-48 48-48h32c8.8 0 16 7.2 16 16v448zM96 416c-53 0-96 43-96 96v416c0 53 43 96 96 96h96c17.7 0 32-14.3 32-32V448c0-17.7-14.3-32-32-32H96zM505.6 64c16.2 0 26.4 8.7 31 13.9 4.6 5.2 12.1 16.3 10.3 32.4l-23.5 203.4c-4.9 42.2 8.6 84.6 36.8 116.4 28.3 31.7 68.9 49.9 111.4 49.9h271.2c6.6 0 10.8 3.3 13.2 6.1s5 7.5 4 14l-48 303.4c-6.9 43.6-29.1 83.4-62.7 112C815.8 944.2 773 960 728.9 960h-317c-33.1 0-59.9-26.8-59.9-59.9v-455c0-6.1 1.7-12 5-17.1 69.5-109 106.4-234.2 107-364h41.6z m0-64h-44.9C427.2 0 400 27.2 400 60.7c0 127.1-39.1 251.2-112 355.3v484.1c0 68.4 55.5 123.9 123.9 123.9h317c122.7 0 227.2-89.3 246.3-210.5l47.9-303.4c7.8-49.4-30.4-94.1-80.4-94.1H671.6c-50.9 0-90.5-44.4-84.6-95l23.5-203.4C617.7 55 568.7 0 505.6 0z"
+                              p-id="2188" :fill="zan ? '#ff6633' : '#82848a'"></path>
+                    </svg>
+                    {{ message.number == 0 ? '' : message.number }}
                 </div>
             </div>
             <hr/>
@@ -180,7 +187,8 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script src="./../api/login.js"></script>
-<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
+<script type="text/javascript"
+        src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
 
 </body>
 
@@ -214,7 +222,8 @@
                 title: '',
                 isInteger: 0,
                 content: '提醒管理员上线陪聊',
-                p: 666
+                p: 666,
+                zan: false
             };
         },
         mounted() {
@@ -223,19 +232,19 @@
             var geolocation = new BMap.Geolocation();
             geolocation.getCurrentPosition(function (r) {
                 if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                    let address=r.point.lng + "__" + r.point.lat
+                    let address = r.point.lng + "__" + r.point.lat
                     localStorage.setItem('address', address);
                 }
                 else {
                     alert('failed' + this.getStatus());
                 }
-            }, { enableHighAccuracy: true })
+            }, {enableHighAccuracy: true})
 
             var name = localStorage.getItem('myName');
             if (name == null) {
                 // 定义形容词和名词数组
                 var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
-                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎','蝎子莱莱', '鲨鱼辣椒', '蜘蛛侦探', '蟑螂恶霸', '汤姆', '杰瑞'];
+                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎', '蝎子莱莱', '鲨鱼辣椒', '蜘蛛侦探', '蟑螂恶霸', '汤姆', '杰瑞'];
 
                 // 生成唯一名称
                 name = adjectives[Math.floor(Math.random() * adjectives.length)] +
@@ -245,7 +254,7 @@
             }
 
             if (name) {
-                this.title=name+"已上线";
+                this.title = name + "已上线";
                 this.Show = true
                 setTimeout(() => {
                     this.Show = false
@@ -370,6 +379,18 @@
                 };
                 input.click();
             },
+            addLike(k) {
+                this.p++
+                let zan = this.zan;
+                this.zan=!zan
+                $axios.post("/chat/zan/" + this.p+ '/'+btoa(k))
+                    .then(({data}) => {
+
+                    })
+                    .catch(err => {
+                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                    })
+            }
         },
     });
 </script>
