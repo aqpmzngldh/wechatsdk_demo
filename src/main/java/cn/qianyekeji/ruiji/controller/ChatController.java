@@ -69,6 +69,37 @@ public class ChatController {
         if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
+        String touxiang="";
+        if ("汤姆".equals(suffix1)) {
+            touxiang="./../images/1.ico";
+        }
+        if ("杰瑞".equals(suffix1)) {
+            touxiang="./../images/2.ico";
+        }
+        if ("大熊".equals(suffix1)) {
+            touxiang="./../images/3.ico";
+        }
+        if ("小夫".equals(suffix1)) {
+            touxiang="./../images/4.ico";
+        }
+        if ("哆嗦A梦".equals(suffix1)) {
+            touxiang="./../images/5.ico";
+        }
+        if ("胖虎".equals(suffix1)) {
+            touxiang="./../images/6.ico";
+        }
+        if ("蝎子莱莱".equals(suffix1)) {
+            touxiang="./../images/7.ico";
+        }
+        if ("鲨鱼辣椒".equals(suffix1)) {
+            touxiang="./../images/8.ico";
+        }
+        if ("蜘蛛侦探".equals(suffix1)) {
+            touxiang="./../images/9.ico";
+        }
+        if ("蟑螂恶霸".equals(suffix1)) {
+            touxiang="./../images/10.ico";
+        }
 
 
         try {
@@ -127,6 +158,7 @@ public class ChatController {
             chatRecord.put("number", "0");
             chatRecord.put("address", address);
             chatRecord.put("zan", "1");
+            chatRecord.put("touXiang", touxiang);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -148,6 +180,7 @@ public class ChatController {
             chatRecord.put("number", "0");
             chatRecord.put("address", address);
             chatRecord.put("zan", "1");
+            chatRecord.put("touXiang", touxiang);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -175,7 +208,8 @@ public class ChatController {
             String url = (String) chatRecord.get("url");
             String name = (String) chatRecord.get("name");
             String number = (String) chatRecord.get("number");
-            Chat chat = new Chat(time, body, url, name, k, number);
+            String touXiang = (String) chatRecord.get("touXiang");
+            Chat chat = new Chat(time, body, url, name, k, number,touXiang);
             chats.add(chat);
         }
 
@@ -233,7 +267,7 @@ public class ChatController {
         String zong = hashOps.get(k, "zan");
 
         String[] arr2 = zong.split(",");
-        Integer num=0;
+        Integer num = 0;
         ArrayList<String> list = new ArrayList<>(Arrays.asList(arr2));
         if (list.contains(p)) {
             num++;
@@ -245,12 +279,12 @@ public class ChatController {
         String newStr2 = String.join(",", newArr2); // 将新数组转换成以逗号分隔的字符串
         hashOps.put(k, "zan", newStr2);
         //number-1
-        if (num==0){
+        if (num == 0) {
 //            不包含，这时候新增number+1
             String s = hashOps.get(k, "number");
             String a = s.length() == 0 ? "0" : s;
             hashOps.put(k, "number", (Integer.parseInt(a) + 1) + "");
-        }else{
+        } else {
 //            包含，number-1
             String s = hashOps.get(k, "number");
             String a = s.length() == 0 ? "0" : s;

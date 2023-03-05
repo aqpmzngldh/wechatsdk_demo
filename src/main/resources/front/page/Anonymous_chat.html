@@ -101,18 +101,24 @@
 
         .avatar {
             margin-right: 12px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            /*width: 40px;*/
+            /*height: 40px;*/
+            /*border-radius: 50%;*/
             overflow: hidden;
             float: left; /* 将用户头像框浮动到左侧 */
             margin-top: 5px; /* 稍微调整一下上边距，使其垂直居中 */
         }
 
+        .avatar img {
+            width: 46px;
+            height: auto;
+        }
+
     </style>
 
 </head>
-<body oncontextmenu=self.event.returnValue=false onselectstart="return false">
+<!--<body oncontextmenu=self.event.returnValue=false onselectstart="return false">-->
+<body>
 
 <!--<template>-->
 <div class="chat" id="login">
@@ -127,8 +133,9 @@
     <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
-                <!--<img :src="message.avatar" alt="Avatar">-->
-                <img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">
+                <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
+                <!--<img :src="'./../images/1.ico'" alt="请等待">-->
+                <img :src="message.touXiang" alt="请等待">
             </div>
             <div class="message-content">
                 <div class="message-header">
@@ -199,21 +206,6 @@
         data() {
             return {
                 messages: [
-                    // {
-                    //     "time":"2023/02/19 02:17:05",
-                    //     "body":"你好1呀\n",
-                    //     "url":""
-                    // },
-                    // {
-                    //     "time":"2023/02/19 02:17:38",
-                    //     "body":"",
-                    //     "url":"https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg"
-                    // },
-                    // {
-                    //     "time":"2023/02/19 02:18:31",
-                    //     "body":"",
-                    //     "url":"https://qianykeji-1304134216.cos.ap-chengdu.myqcloud.com/1.jpg?q-sign-algorithm=sha1&q-ak=AKIDVqw0BwiaKSmUkgMPaVehMFQV96A-AtnoF2B4TXdv9WhBa-io53rtNiTsrlYQyzj0&q-sign-time=1676823504;1676827104&q-key-time=1676823504;1676827104&q-header-list=host&q-url-param-list=&q-signature=486a3d6b346a0df3b58f3604aea4cea66c9b2721&x-cos-security-token=aGWvf1EwQL78eJnybRhKSbGKA3TDy47aebd03afb70b51b860cebc7642d7fe35bGNAfpATMSIjm57gpKZQCQiZc3AaXTcM8SdB1wpPaSxEaUjBnAd2CYERz_orCYcBzpf1Wn7zp_5OFiykBXvJkff7gKq1NYDsX9x5r4y1oQy9IdCWfGzI8LuXl7smScsjGctHTAqQWPd62OLwD-4uauYHdchhhw-ozspAMiBbJXCZg6YocVO7KLCOmP3u53Mxu"
-                    // }
                 ],
                 inputText: '',
                 rows: 1,
@@ -385,8 +377,7 @@
                     // 将文件追加到FormData对象
                     formData.append('file', file);
                     formData.append('name', name);
-                    // 附加任何其他表单数据到FormData对象
-                    // formData.append('name', 'John Doe');
+                    // 附加任何其他表单数据到FormData对象;
                     // 使用AJAX请求将表单数据发送到后端
                     const xhr = new XMLHttpRequest();
                     xhr.open('POST', '/chat');

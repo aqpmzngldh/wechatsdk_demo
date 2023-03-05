@@ -30,5 +30,7 @@ public class Chat implements Serializable {
     private String k;
     //当前对话所点赞的人数
     private String number;
+    //当前用户的头像
+    private String touXiang;
 
 }
