@@ -69,6 +69,9 @@ public class ChatController {
         if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
+        if (address==""||address==null){
+            return null;
+        }
         String touxiang="";
         if ("汤姆".equals(suffix1)) {
             touxiang="./../images/1.ico";
@@ -255,6 +258,10 @@ public class ChatController {
 
     @PostMapping("/zan/{p}/{k}")
     public R<String> dianzan(@PathVariable("p") String p, @PathVariable("k") String k) throws Exception {
+
+        if (p==""||p==null){
+            return null;
+        }
 
         System.out.println(p + "-----------------------");
         k = new String(Base64.getDecoder().decode(k));
