@@ -1,26 +1,17 @@
 package cn.qianyekeji.ruiji.controller;
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import cn.qianyekeji.ruiji.common.BaseContext;
 import cn.qianyekeji.ruiji.common.R;
-import cn.qianyekeji.ruiji.entity.AddressBook;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
@@ -29,11 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
-import java.net.URI;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,9 +29,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/privateChat")
 @Slf4j
-public class ChatController {
+public class PrivateChatController {
     @Value("${ruiji.path2}")
     private String basePath;
 
@@ -57,7 +43,7 @@ public class ChatController {
     private SmsService smsService;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, HttpServletRequest request, String address,String uuid, String name, String time, String body) throws Exception {
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile,String parameter,String parameter1, HttpServletRequest request, String address,String uuid, String name, String time, String body) throws Exception {
 
 
         String prefix = name.substring(0, 3); // 截取前三个字符
@@ -69,7 +55,7 @@ public class ChatController {
         if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
-        if (address==""||address==null||uuid==""||uuid==null){
+        if (parameter1==null||parameter==null){
             return null;
         }
         String touxiang="";
@@ -171,12 +157,14 @@ public class ChatController {
             return R.success(fileName);
 
         } else {
-//        log.info("传递的数据分别是{}和{}和{}",time,body,name );
+            String key99=parameter+parameter1+","+ "*";
+            System.out.println(key99);
+
             LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             time = currentDateTime.format(formatter);
 
-            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+            String key = parameter+parameter1+","+time; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", body);
             chatRecord.put("url", "");
@@ -195,20 +183,18 @@ public class ChatController {
     }
 
     @GetMapping
-    public R<List<Chat>> list() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-//        String key = today + "*";
-//        String key = "2023/2/16" + "*";
-        String key = DateTimeFormatter.ofPattern("uuuu/MM/dd")
-                .withResolverStyle(ResolverStyle.STRICT)
-                .format(LocalDate.parse(today, DateTimeFormatter.BASIC_ISO_DATE)) + "*";
+    public R<List<Chat>> list(String parameter,String parameter1) {
+        String key=parameter+parameter1+","+ "*";
+        System.out.println(key);
 
         Set<String> keys = redisTemplate.keys(key);
         List<Chat> chats = new ArrayList<>();
 
         for (String k : keys) {
             Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
-            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
+            int length = 8; // 我们要截取的子串长度为8
+            String time = k.substring(k.length() - length);
+
             String body = (String) chatRecord.get("body");
             String url = (String) chatRecord.get("url");
             String name = (String) chatRecord.get("name");

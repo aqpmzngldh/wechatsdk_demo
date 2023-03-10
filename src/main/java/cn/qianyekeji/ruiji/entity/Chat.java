@@ -32,5 +32,7 @@ public class Chat implements Serializable {
     private String number;
     //当前用户的头像
     private String touXiang;
+    //当前用户浏览器的uuid，用于私聊功能
+    private String uuid;
 
 }

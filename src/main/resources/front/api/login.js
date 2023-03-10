@@ -31,12 +31,28 @@ function chatName(data) {
         params:{...data}
     })
 }
+//匿名私聊
+function chatName2(data) {
+    return $axios({
+        'url': '/privateChat',
+        'method': 'post',
+        params:{...data}
+    })
+}
 
 //查看群聊当天聊天记录
 function chatSee() {
     return $axios({
         'url': '/chat',
         'method': 'get'
+    })
+}
+//查看私聊当天聊天记录
+function privateChatSee(data) {
+    return $axios({
+        'url': '/privateChat',
+        'method': 'get',
+        params:{...data}
     })
 }
 

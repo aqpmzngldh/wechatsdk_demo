@@ -25,22 +25,22 @@ public class QuitzTask {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @Scheduled(cron = "0 0 6 * * ?")
-    public void executeTask() {
-        // 执行要定时执行的任务
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        String time = currentDateTime.format(formatter);
-
-        String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
-        Map<String, String> chatRecord = new HashMap<>();
-        chatRecord.put("body", "大家好,我是汤姆");
-        chatRecord.put("name", "聪明的汤姆");
-        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
-        chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
-        redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
-        redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
-
-
-    }
+//    @Scheduled(cron = "0 0 6 * * ?")
+//    public void executeTask() {
+//        // 执行要定时执行的任务
+//        LocalDateTime currentDateTime = LocalDateTime.now();
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//        String time = currentDateTime.format(formatter);
+//
+//        String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+//        Map<String, String> chatRecord = new HashMap<>();
+//        chatRecord.put("body", "大家好,我是汤姆");
+//        chatRecord.put("name", "聪明的汤姆");
+//        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
+//        chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
+//        redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
+//        redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+//
+//
+//    }
 }

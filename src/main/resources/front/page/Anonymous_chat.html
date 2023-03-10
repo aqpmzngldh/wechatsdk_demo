@@ -114,14 +114,30 @@
             height: auto;
         }
 
+        .el-message-box--center {
+            width: 300px;
+        }
+
+
     </style>
+
+
+    <script>
+        //根据传递过来的参数name获取对应的值
+        function getParameter(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = location.search.substr(1).match(reg);
+            if (r != null) return (r[2]);
+            return null;
+        }
+    </script>
 
 </head>
 <!--<body oncontextmenu=self.event.returnValue=false onselectstart="return false">-->
 <body>
 
 
-<div class="chat" id="login">
+<div class="chat" id="login" v-show="quanJu">
 
     <el-alert
             v-show="Show"
@@ -166,8 +182,8 @@
     <form>
         <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
-        <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
-        <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
+        <p ref="firstParagraph" v-show="isShow">私聊模式启动，开启隐私对话吧</p>
+        <p ref="secondParagraph" v-show="isShow">私聊模式不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
             <el-input :disabled="isButtonDisabled"
                       type="textarea"
@@ -211,30 +227,24 @@
                 rows: 1,
                 isShow: true,
                 Show: false,
+                quanJu: true,
                 title: '',
                 isInteger: 0,
-                content: '提醒管理员上线陪聊',
+                content: '分享链接邀请好友',
                 p: 666,
                 zan: false,
                 isButtonDisabled: false
             };
         },
         mounted() {
+            //这uuid是对目标私聊用户的
+            // alert(getParameter("uuid"))
+            //这uuid是自己的
+            // alert(getParameter("uuid1"))
 
-            // 百度地图API功能
-            var geolocation = new BMap.Geolocation();
-            geolocation.getCurrentPosition(function (r) {
-                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                    let address = r.point.lng + "__" + r.point.lat
-                    localStorage.setItem('address', address);
-                }
-                else {
-                    alert('failed' + this.getStatus());
-                }
-            }, {enableHighAccuracy: true})
-
-            let uuid = Math.random().toString(36).substring(2, 10);
-            localStorage.setItem('uuid', uuid);
+            if (!getParameter("uuid")||!getParameter("uuid")){
+                this.$notify({type: 'warning', message: '聊天记录拉取失败，请返回重试'});
+            }
 
             var name = localStorage.getItem('myName');
             if (name == null) {
@@ -249,19 +259,6 @@
                 localStorage.setItem('myName', name);
             }
 
-            if (name) {
-                this.title = name + "已上线";
-                this.Show = true
-                setTimeout(() => {
-                    this.Show = false
-                }, 3000);
-            }
-
-            console.log(name)
-            console.log(chatSee)
-            console.log("----------------------------")
-            // this.initData()
-            // setInterval(this.initData(), 1000);
             setInterval(() => {
                 this.initData();
             }, 1000);
@@ -277,36 +274,34 @@
             const secondColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
             secondParagraph.style.color = secondColor;
 
-            // document.getElementById("myElement").href="#myElement"
-            window.onscroll = function () {
-                console.log(window.scrollY);
-            }
         },
         watch: {
             inputText(value) {
-                console.log(value + "---------------------")
                 const lines = value.split('\n');
                 this.rows = Math.max(lines.length, 1);
             },
             messages(value) {
-                console.log(value.length + "---------------------")
                 if (this.isInteger == "") {
                     this.isInteger = value.length;
                 }
                 if (this.isInteger != value.length) {
-                    // alert("999")
                     this.isInteger = value.length;
-                    this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                    this.scrollToEnd();
                 }
             },
         },
         methods: {
             async initData() {
-                const res = await chatSee()
+                let parameter = getParameter("uuid");
+                let parameter1 = getParameter("uuid1");
+                const message1 = {
+                    parameter: parameter,
+                    parameter1: parameter1
+                };
+                const res = await privateChatSee(message1)
                 if (res.code === 1) {
                     this.messages = res.data
                 } else {
-                    // this.$message.error(res.msg)
                     this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
                 }
             },
@@ -329,17 +324,20 @@
                 }
                 // 获取唯一标识符
                 let name = localStorage.getItem('myName');
-                let address = localStorage.getItem('address');
+                let uuid = localStorage.getItem('uuid');
+                let parameter = getParameter("uuid");
+                let parameter1 = getParameter("uuid1");
                 const message = {
-                    id: this.messages.length + 1,
                     name: name,
-                    address: address,
+                    uuid: uuid,
                     time: new Date().toLocaleString(),
                     body: this.inputText,
+                    parameter: parameter,
+                    parameter1: parameter1,
                     color: "#" + Math.floor(Math.random() * 16777215).toString(16) // 随机生成颜色
                 };
                 this.messages.push(message);
-                const res = await chatName(message)
+                const res = await chatName2(message)
                 this.inputText = '';
                 this.rows = 1;
                 // location.reload()
@@ -358,18 +356,14 @@
                 this.isShow = false
             },
             async tiXing() {
-                this.content = '管理员二十秒后到达战场';
-                setTimeout(() => {
-                    this.content = '提醒管理员上线陪聊'
-                }, 5000);
-                // await sss(this.p)
-                await sss({p: this.p})
+                this.$notify({type: 'warning', message: '功能尚未开发'});
             },
             selectImage() {
                 const input = document.createElement('input');
                 input.type = 'file';
                 input.accept = 'image/*';
                 let name = localStorage.getItem('myName');
+                let uuid = localStorage.getItem('uuid');
                 input.onchange = (event) => {
                     const file = event.target.files[0];
                     // 创建一个新的FormData对象
@@ -377,6 +371,7 @@
                     // 将文件追加到FormData对象
                     formData.append('file', file);
                     formData.append('name', name);
+                    formData.append('uuid', uuid);
                     // 附加任何其他表单数据到FormData对象;
                     // 使用AJAX请求将表单数据发送到后端
                     const xhr = new XMLHttpRequest();

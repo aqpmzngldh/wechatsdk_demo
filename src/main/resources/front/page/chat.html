@@ -114,6 +114,11 @@
             height: auto;
         }
 
+        .el-message-box--center {
+            width: 300px;
+        }
+
+
     </style>
 
 </head>
@@ -132,7 +137,7 @@
 
     <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
-            <div class="avatar">
+            <div class="avatar" @click="open(message.uuid)">
                 <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
                 <!--<img :src="'./../images/1.ico'" alt="请等待">-->
                 <img :src="message.touXiang" alt="请等待">
@@ -205,8 +210,7 @@
         name: 'Chat',
         data() {
             return {
-                messages: [
-                ],
+                messages: [],
                 inputText: '',
                 rows: 1,
                 isShow: true,
@@ -233,8 +237,12 @@
                 }
             }, {enableHighAccuracy: true})
 
-            let uuid = Math.random().toString(36).substring(2, 10);
-            localStorage.setItem('uuid', uuid);
+
+            var uuid = localStorage.getItem('uuid');
+            if (uuid == null) {
+                uuid = Math.random().toString(36).substring(2, 10);
+                localStorage.setItem('uuid', uuid);
+            }
 
             var name = localStorage.getItem('myName');
             if (name == null) {
@@ -330,10 +338,11 @@
                 // 获取唯一标识符
                 let name = localStorage.getItem('myName');
                 let address = localStorage.getItem('address');
+                let uuid = localStorage.getItem('uuid');
                 const message = {
-                    id: this.messages.length + 1,
                     name: name,
                     address: address,
+                    uuid: uuid,
                     time: new Date().toLocaleString(),
                     body: this.inputText,
                     color: "#" + Math.floor(Math.random() * 16777215).toString(16) // 随机生成颜色
@@ -370,6 +379,7 @@
                 input.type = 'file';
                 input.accept = 'image/*';
                 let name = localStorage.getItem('myName');
+                let uuid = localStorage.getItem('uuid');
                 input.onchange = (event) => {
                     const file = event.target.files[0];
                     // 创建一个新的FormData对象
@@ -377,6 +387,7 @@
                     // 将文件追加到FormData对象
                     formData.append('file', file);
                     formData.append('name', name);
+                    formData.append('uuid', uuid);
                     // 附加任何其他表单数据到FormData对象;
                     // 使用AJAX请求将表单数据发送到后端
                     const xhr = new XMLHttpRequest();
@@ -394,6 +405,29 @@
                     .catch(err => {
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     })
+            },
+            open(uuid) {
+                this.$confirm('您确定要跟此人私聊吗, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    center: true
+                }).then(() => {
+                    // this.quanJu=false
+                    this.$message({
+                        type: 'success',
+                        message: '成功进入私聊模式,请稍等!'
+                    });
+                    let uuid1 = localStorage.getItem('uuid');
+                    window.location.href = '/front/page/Anonymous_chat.html?uuid=' + uuid + '&uuid1=' + uuid1 + ''
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+
             }
         },
     });
