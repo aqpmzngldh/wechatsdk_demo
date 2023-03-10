@@ -136,7 +136,7 @@ public class PrivateChatController {
             }
 
             LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm:ss");
             time = currentDateTime.format(formatter);
 
             String s = parameter + parameter1;
@@ -162,7 +162,7 @@ public class PrivateChatController {
 
         } else {
             LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm:ss");
             time = currentDateTime.format(formatter);
             String s = parameter + parameter1;
             char[] chars = s.toCharArray();
@@ -188,18 +188,24 @@ public class PrivateChatController {
 
     @GetMapping
     public R<List<Chat>> list(String parameter,String parameter1) {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
+        String time1 = currentDateTime.format(formatter);
+
         String s = parameter + parameter1;
         char[] chars = s.toCharArray();
         Arrays.sort(chars);
         String sortedS = new String(chars);
-        String key=sortedS+","+ "*";
+        String key=sortedS+","+time1+ "*";
+        int position = key.length() - 3; // 获取要插入字符的位置，即倒数第三个位置
+        key = key.substring(0, position) + "/" + key.substring(position); // 在指定位置插入字符
 
         Set<String> keys = redisTemplate.keys(key);
         List<Chat> chats = new ArrayList<>();
 
         for (String k : keys) {
             Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
-            int length = 8; // 我们要截取的子串长度为8
+            int length = 14; // 我们要截取的子串长度为8
             String time = k.substring(k.length() - length);
 
             String body = (String) chatRecord.get("body");
