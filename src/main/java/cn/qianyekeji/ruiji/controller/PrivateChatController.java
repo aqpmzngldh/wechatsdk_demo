@@ -136,10 +136,10 @@ public class PrivateChatController {
             }
 
             LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             time = currentDateTime.format(formatter);
 
-            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+            String key = parameter+parameter1+","+time; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", "");
             chatRecord.put("url", fileName);
@@ -157,9 +157,6 @@ public class PrivateChatController {
             return R.success(fileName);
 
         } else {
-            String key99=parameter+parameter1+","+ "*";
-            System.out.println(key99);
-
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
             time = currentDateTime.format(formatter);
@@ -185,7 +182,6 @@ public class PrivateChatController {
     @GetMapping
     public R<List<Chat>> list(String parameter,String parameter1) {
         String key=parameter+parameter1+","+ "*";
-        System.out.println(key);
 
         Set<String> keys = redisTemplate.keys(key);
         List<Chat> chats = new ArrayList<>();

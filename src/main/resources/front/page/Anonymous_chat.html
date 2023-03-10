@@ -363,6 +363,8 @@
                 input.type = 'file';
                 input.accept = 'image/*';
                 let name = localStorage.getItem('myName');
+                let parameter = getParameter("uuid");
+                let parameter1 = getParameter("uuid1");
                 let uuid = localStorage.getItem('uuid');
                 input.onchange = (event) => {
                     const file = event.target.files[0];
@@ -372,10 +374,12 @@
                     formData.append('file', file);
                     formData.append('name', name);
                     formData.append('uuid', uuid);
+                    formData.append('parameter', parameter);
+                    formData.append('parameter1', parameter1);
                     // 附加任何其他表单数据到FormData对象;
                     // 使用AJAX请求将表单数据发送到后端
                     const xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/chat');
+                    xhr.open('POST', '/privateChat');
                     xhr.send(formData);
                 };
                 input.click();
