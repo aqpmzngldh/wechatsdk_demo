@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+<button id="getLocation">获取位置信息</button>
+<script>
+    const appId = 'wx61c514e5d83894bf' // 公众号的唯一标识
+    const jsApiList = ['getLocation'] // 需要使用的JS接口列表
+
+    function createNonceStr() {
+        return Math.random().toString(36).substr(2, 15)
+    }
+
+    function createTimeStamp() {
+        return parseInt(new Date().getTime() / 1000) + ''
+    }
+
+    async function getTicket(accessToken) {
+        const url = `https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=${accessToken}&type=jsapi`
+        const res = await axios.get(url)
+        return res.data.ticket
+    }
+
+    function getSignature(jsapiTicket, url) {
+        const nonceStr = createNonceStr()
+        const timestamp = createTimeStamp()
+
+        const sortedParams = [
+            `jsapi_ticket=${jsapiTicket}`,
+            `noncestr=${nonceStr}`,
+            `timestamp=${timestamp}`,
+            `url=${url}`
+        ].sort().join('&')
+
+        const sha1 = crypto.createHash('sha1')
+        sha1.update(sortedParams)
+        return sha1.digest('hex')
+    }
+
+    wx.config({
+        debug: false,
+        appId: 'wx61c514e5d83894bf',
+        timestamp: createTimeStamp(),
+        nonceStr: createNonceStr(),
+        signature: '',
+        jsApiList: jsApiList
+    });
+
+    wx.ready(function() {
+        // 在这里处理按钮点击事件
+        document.querySelector('#getLocation').onclick = function() {
+            wx.getLocation({
+                success: function (res) {
+                    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                    // 在这里处理获取到的位置信息
+                    console.log("-------------------",latitude,longitude,"---------------")
+                },
+                fail: function (res) {
+                    // 获取位置信息失败的处理逻辑
+                    console.log("-------------------",res)
+                }
+            });
+        };
+    });
+
+
+    // 示例用法
+    const accessToken = '66_n6DerN-Ig1BQmbwcIBdgXgmbTh3WIeqofp_LrFXrjVL9MFBrFsP00VzN9JxePCRsu6FVrZsjKBatKdNYhimreAEbcmFho6TIHnNAcPoo2cYVuG4dhShSWMU_a9wIGUiAHARPD' // 公众号的全局唯一接口调用凭据
+    const url = location.href.split('#')[0] // 当前页面的实际URL
+    getTicket(accessToken).then((jsapiTicket) => {
+        const signature = getSignature(jsapiTicket, url)
+        wx.config({
+            debug: false,
+            appId: appId,
+            timestamp: createTimeStamp(),
+            nonceStr: createNonceStr(),
+            signature: signature,
+            jsApiList: jsApiList
+        })
+    }).catch((err) => {
+        console.log('获取jsapi_ticket出错', err)
+    })
+</script>
+
+</body>
+</html>
