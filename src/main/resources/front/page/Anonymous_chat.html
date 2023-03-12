@@ -60,7 +60,7 @@
 
         .chat-input {
             flex: 1;
-            height: 40px;
+            /*height: 40px;*/
             /*margin-right: 10px;*/
             padding-bottom: 10px;
         }
@@ -68,9 +68,10 @@
         form {
             position: fixed;
             /*padding-top: 20px;*/
-            padding-left: 5%;
+            /*padding-left: 5%;*/
             bottom: 0;
-            padding-right: 5%;
+            width: 90%
+            /*padding-right: 5%;*/
         }
 
         #wc {
@@ -187,7 +188,6 @@
         <div class="chat-input">
             <el-input :disabled="isButtonDisabled"
                       type="textarea"
-                      autosize
                       v-model="inputText"
                       placeholder="回车键发送消息..."
                       @keyup.enter.native="sendMessage"
@@ -349,10 +349,15 @@
                 element.scrollIntoView(false);
             },
             diuShi() {
+                let textareaEl = document.querySelector('.chat-input .el-textarea');
+                let width = textareaEl.offsetWidth;
+                textareaEl.style.width = '70%';
                 this.isShow = true
             },
             hideParagraphs() {
-                this.inputText = '';
+                let textareaEl = document.querySelector('.chat-input .el-textarea');
+                let width = textareaEl.offsetWidth;
+                textareaEl.style.width = '100%';
                 this.isShow = false
             },
             async tiXing() {
