@@ -147,6 +147,9 @@
         .hide {
             display: none;
         }
+        [v-cloak] {
+            display: none;
+        }
 
     </style>
 
@@ -168,7 +171,7 @@
             effect="dark">
     </el-alert>
 
-    <div class="chat-history">
+    <div class="chat-history" v-cloak>
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar" @click="open(message.uuid)">
                 <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
