@@ -39,6 +39,11 @@ public class addressSeeController {
 
     @GetMapping
     public R<Set<Address>> list() {
+        // 定义中国的经纬度范围
+        double minLongitude = 73.446960;
+        double maxLongitude = 135.084727;
+        double minLatitude = 18.153520;
+        double maxLatitude = 53.563500;
         HashSet<Address> addresses = new HashSet<>();
         // 定义Set集合的key
         String key = "wcls";
@@ -56,6 +61,12 @@ public class addressSeeController {
             String latitude = data[0];
             // 获取元素中的经度数据
             String longitude = data[1];
+            // 判断经纬度是否在中国范围内，如果不在则忽略该元素
+            double lat = Double.parseDouble(latitude);
+            double lng = Double.parseDouble(longitude);
+            if (lat < minLatitude || lat > maxLatitude || lng < minLongitude || lng > maxLongitude) {
+                continue;
+            }
             Address address = new Address(latitude, longitude);
             addresses.add(address);
         }

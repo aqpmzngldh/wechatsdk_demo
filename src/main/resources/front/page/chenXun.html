@@ -56,14 +56,14 @@
             methods: {
                 async initData() {
                     const res = await addressSee()
-                    alert(JSON.stringify(res))
+                    // alert(JSON.stringify(res))
                     if (res.code === 1) {
                         this.deceiveInfo = res.data
                     } else {
                         this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
                     }
                     //初始化地图对象，加载地图
-                    var map = new AMap.Map("container", {resizeEnable: true});
+                    var map = new AMap.Map("container", {resizeEnable: true,center: [105.8610, 34.5214]});
                     var deceiveInfo = this.deceiveInfo;
                     var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
                     var markerGroup = []
@@ -73,15 +73,7 @@
                             position: [deceiveInfo[i]['lng'], deceiveInfo[i]['lat']],
                             map: map
                         });
-                        marker.content = `<div
-      style="
-        width: 160px;
-        text-align: center;
-        border: 1px solid #ebeef5;
-        color: #303133;
-        /*box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);*/
-      "
-    </div>`
+
                         markerGroup.push(marker)
                         marker.on('click', markerClick);
                     }
