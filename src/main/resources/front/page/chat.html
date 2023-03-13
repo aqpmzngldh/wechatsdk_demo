@@ -75,7 +75,10 @@
         }
 
         #wc {
-            margin-left: 20%;
+           width: 49%;
+        }
+        #nm {
+            width: 46%;
         }
 
         p {
@@ -90,9 +93,7 @@
             width: 70%;
         }
 
-        .chat-input .el-button el-button--primary {
-            margin-left: 10px;
-        }
+
 
         .message-body img {
             max-width: 50%;
@@ -204,7 +205,8 @@
         <a id="myElement"></a>
     </div>
 
-    <form>
+    <form class="my-form">
+        <el-button type="primary" v-show="isShow" id="nm"  @click="address">查看道祖位置</el-button>
         <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
         <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
@@ -414,7 +416,7 @@
                 this.isShow = false
             },
             async tiXing() {
-                this.content = '管理员二十秒后到达战场';
+                this.content = '管理员二十秒后到达';
                 setTimeout(() => {
                     this.content = '提醒管理员上线陪聊'
                 }, 5000);
@@ -475,6 +477,9 @@
                     });
                 });
 
+            },
+            address() {
+                window.location.href = '/front/page/chenXun.html'
             }
         },
     });
