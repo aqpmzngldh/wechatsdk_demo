@@ -190,6 +190,9 @@ public class ChatController {
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
             redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+
+//            存经纬度到redis的set数据结构中，方便地图查看
+            redisTemplate.opsForSet().add("wcls", address);
             return R.success("聊天记录已成功保存");
         }
     }

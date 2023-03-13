@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>实时查看道祖位置</title>
+    <title>查看各位道友位置</title>
     <link rel="icon" href="./../images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./../js/base.js"></script>
@@ -51,46 +51,20 @@
                 }
             },
             mounted() {
-                // 在 mounted 钩子函数中进行 deceiveInfo 数据的填充
-                this.deceiveInfo = [
-                    {
-                        lng: 120.264355,
-                        lat: 30.21694,
-                        age: 18,
-                        boneAge: 18,
-                        time: "位置于2023/3/13 8:00:00更新",
-                    },
-                    {
-                        lng: 120.763355,
-                        lat: 30.91694,
-                        age: 20,
-                        boneAge: 20,
-                        time: "位置于2023/3/13 9:00:00更新",
-                    }
-                ]
                 this.initData();
             },
             methods: {
                 async initData() {
-                    const res = await chatSee()
+                    const res = await addressSee()
                     alert(JSON.stringify(res))
                     if (res.code === 1) {
-                        this.messages = res.data
+                        this.deceiveInfo = res.data
                     } else {
                         this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
                     }
-
                     //初始化地图对象，加载地图
                     var map = new AMap.Map("container", {resizeEnable: true});
-                    var deceiveInfo = [
-                        {
-                            lng: 120.264355,
-                            lat: 30.21694,
-                            age: 18,
-                            boneAge: 18,
-                            time: "位置于2023/3/13 8:00:00更新",
-                        }
-                    ]
+                    var deceiveInfo = this.deceiveInfo;
                     var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
                     var markerGroup = []
                     // 添加多个点
@@ -107,11 +81,6 @@
         color: #303133;
         /*box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);*/
       "
-      <div style="border-bottom: 1px solid #ebeef5; padding: 5px 2px">${deceiveInfo[i]['time']}</div>
-      <div style="padding: 5px">
-        <div>年龄：${deceiveInfo[i]['age']}</div>
-        <div>骨龄:${deceiveInfo[i]['boneAge']}</div>
-      </div>
     </div>`
                         markerGroup.push(marker)
                         marker.on('click', markerClick);

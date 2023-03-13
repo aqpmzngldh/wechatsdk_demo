@@ -56,6 +56,13 @@ function privateChatSee(data) {
     })
 }
 
+//查看本座地址
+function addressSee() {
+    return $axios({
+        'url': '/addressSee',
+        'method': 'get'
+    })
+}
 function sendMsgApi(data) {
     return $axios({
         'url': '/user/sendMsg',
