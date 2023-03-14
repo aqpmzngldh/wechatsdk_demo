@@ -33,7 +33,11 @@
 
         #map {
             width: 100%;
-            height: 70%;
+            height: 80%;
+        }
+        .BMap_bubble_title {
+            font-size: 16px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -74,7 +78,7 @@
                 // 创建地图
                 const map = new BMapGL.Map('map')
                 // 设置地图中心点和缩放级别
-                map.centerAndZoom(new BMapGL.Point(116.404, 39.925), 15)
+                map.centerAndZoom(new BMapGL.Point(108.5525, 34.3227), 5)
                 // 循环遍历所有点，创建点标记并添加到地图上
                 this.points.forEach(point => {
                     // 创建点标记
@@ -83,8 +87,9 @@
                     map.addOverlay(marker)
                     // 创建信息窗口
                     const opts = {
-                        width: 200,
-                        height: 100,
+                        width: 30,
+                        height: 30,
+                        title:"陈浔座下："
                     }
                     const infoWindow = new BMapGL.InfoWindow(point.address, opts)
                     // 点标记添加点击事件
