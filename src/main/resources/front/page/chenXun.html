@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <title>查看各位道友位置</title>
     <link rel="icon" href="./../images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
@@ -17,9 +20,6 @@
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
     <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <style>
         body,
         html,
@@ -31,33 +31,71 @@
             font-family: "微软雅黑";
         }
 
-        #map {
-            width: 100%;
-            height: 80%;
-        }
+
         .BMap_bubble_title {
             font-size: 16px;
             font-weight: bold;
         }
+        #app {
+            position: relative;
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 70%;
+            width: 100%;
+        }
+        #vue-component {
+            position: absolute;
+            bottom: 0;
+
+            height: 30%;
+            width: 100%;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
     </style>
 </head>
 <body>
-<body>
+<div id="app">
 <div id="map"></div>
+    <div id="vue-component">
+        <el-collapse accordion>
+            <el-collapse-item>
+                <template slot="title">
+                    使用简介：
+                </template>
+                <div>此图为各位道友修炼所在，放大即可查看</div>
+            </el-collapse-item>
+            <el-collapse-item>
+                <template slot="title">
+                    陈浔简介：
+                </template>
+                <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
+            </el-collapse-item>
+        </el-collapse>
+    </div>
+</div>
 </body>
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="../../backend/plugins/vue/vue.js"></script>
-<script src="./../api/login.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
 <!-- 引入axios -->
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
-<!-- 引入组件库 -->
-<script src="../../backend/plugins/element-ui/index.js"></script>
+<script src="./../api/login.js"></script>
 <script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>
 <script>
     new Vue({
-        el: "#map",
+        el: "#app",
         data() {
             return {
                 points: []
