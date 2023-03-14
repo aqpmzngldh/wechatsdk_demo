@@ -46,7 +46,7 @@ public class addressSeeController {
         ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
         Set<String> set = zSetOps.range(key, 0, -1);
         for (String element : set) {
-            long score = zSetOps.score(key, element).longValue()+1;
+            long score = zSetOps.score(key, element).longValue();
             int index = 0;
             if (score!=0L) {
                 if (score == 1) {
@@ -65,7 +65,7 @@ public class addressSeeController {
                     index = 6;
                 }else if (score > 60 && score <= 70) {
                     index = 7;
-                }else if (score > 70 && score <= 80) {
+                }else if (score > 70) {
                     index = 8;
                 }
 

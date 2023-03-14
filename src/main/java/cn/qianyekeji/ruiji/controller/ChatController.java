@@ -199,7 +199,7 @@ public class ChatController {
             // 获取操作sortedset类型的ZSetOperations对象
             ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
             // 获取集合中元素的数量作为排序字段
-            long score = zSetOps.size("wcls");
+            long score = zSetOps.size("wcls")+1;
             // 将wcls键存储到sortedset类型中，将集合中元素的数量作为排序字段存储到score中
             zSetOps.add("wcls", address, score);
             return R.success("聊天记录已成功保存");
