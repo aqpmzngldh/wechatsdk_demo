@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,36 +40,44 @@ public class addressSeeController {
 
     @GetMapping
     public R<Set<Address>> list() {
-        // 定义中国的经纬度范围
-//        double minLongitude = 73.446960;
-//        double maxLongitude = 135.084727;
-//        double minLatitude = 18.153520;
-//        double maxLatitude = 53.563500;
+        String[] arr = {"渡劫期", "大乘期", "合体期", "炼虚期", "化神期", "元婴期", "金丹期", "筑基期", "练气期"};
         HashSet<Address> addresses = new HashSet<>();
-        // 定义Set集合的key
         String key = "wcls";
-        // 使用RedisTemplate获取Set集合的元素
-        Set<String> set = redisTemplate.opsForSet().members(key);
-        // 遍历Set集合的元素，解析其中的数据
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        Set<String> set = zSetOps.range(key, 0, -1);
         for (String element : set) {
-            // 使用Java的字符串操作方法，按照"__"分割元素中的数据
-            String[] data = element.split("__");
-            if (data.length != 2) {
-                // 数据格式不正确，忽略该元素
-                continue;
+            long score = zSetOps.score(key, element).longValue()+1;
+            int index = 0;
+            if (score!=0L) {
+                if (score == 1) {
+                    index = 0;
+                } else if (score > 1 && score <= 10) {
+                    index = 1;
+                } else if (score > 10 && score <= 20) {
+                    index = 2;
+                } else if (score > 20 && score <= 30) {
+                    index = 3;
+                }else if (score > 30 && score <= 40) {
+                    index = 4;
+                }else if (score > 40 && score <= 50) {
+                    index = 5;
+                }else if (score > 50 && score <= 60) {
+                    index = 6;
+                }else if (score > 60 && score <= 70) {
+                    index = 7;
+                }else if (score > 70 && score <= 80) {
+                    index = 8;
+                }
+
+                String[] data = element.split("__");
+                if (data.length != 2) {
+                    continue;
+                }
+                String latitude = data[0];
+                String longitude = data[1];
+                Address address = new Address(latitude, longitude, arr[index]+score+"号道友");
+                addresses.add(address);
             }
-            // 获取元素中的纬度数据
-            String latitude = data[0];
-            // 获取元素中的经度数据
-            String longitude = data[1];
-            // 判断经纬度是否在中国范围内，如果不在则忽略该元素
-//            double lat = Double.parseDouble(latitude);
-//            double lng = Double.parseDouble(longitude);
-//            if (lat < minLatitude || lat > maxLatitude || lng < minLongitude || lng > maxLongitude) {
-////                continue;
-////            }
-            Address address = new Address(latitude, longitude);
-            addresses.add(address);
         }
 
         return R.success(addresses);

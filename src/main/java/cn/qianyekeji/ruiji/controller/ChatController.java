@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -192,7 +193,15 @@ public class ChatController {
             redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
 
 //            存经纬度到redis的set数据结构中，方便地图查看
-            redisTemplate.opsForSet().add("wcls", address);
+//            redisTemplate.opsForSet().add("wcls", address);
+
+            // 不用set了，因为我要获取具体的排序，直接用sortedset，里面的score排序列用集合中元素size，这样也不会重复
+            // 获取操作sortedset类型的ZSetOperations对象
+            ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+            // 获取集合中元素的数量作为排序字段
+            long score = zSetOps.size("wcls");
+            // 将wcls键存储到sortedset类型中，将集合中元素的数量作为排序字段存储到score中
+            zSetOps.add("wcls", address, score);
             return R.success("聊天记录已成功保存");
         }
     }

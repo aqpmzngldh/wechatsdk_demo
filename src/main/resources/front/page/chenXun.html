@@ -1,6 +1,5 @@
-<!-- 案例地址：https://lbs.amap.com/demo/javascript-api/example/infowindow/add-infowindows-to-multiple-markers -->
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,122 +16,85 @@
     <!--<link rel="stylesheet" href="../styles/index.css"/>-->
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
-    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <style>
-        html,
         body,
+        html,
         #container {
+            overflow: hidden;
+            width: 100%;
             height: 100%;
+            margin: 0;
+            font-family: "微软雅黑";
         }
-        .amap-info-content {
-            padding: 0!important;
+
+        #map {
+            width: 100%;
+            height: 70%;
         }
     </style>
+</head>
 <body>
-    <div id='container'></div>
-    <script
-      type="text/javascript"
-      src="https://webapi.amap.com/maps?v=1.4.15&key=90f5f50ca5902acb7b75985d3fb10d88&plugin=AMap.MarkerClusterer,AMap.Scale,AMap.HawkEye,AMap.ToolBar,AMap.ControlBar,AMap.MapType"
-    ></script>
-    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
-    <script src="../../backend/plugins/vue/vue.js"></script>
-    <script src="./../api/login.js"></script>
-    <!-- 引入axios -->
-    <script src="../../backend/plugins/axios/axios.min.js"></script>
-    <script src="./../js/request.js"></script>
-    <!-- 引入组件库 -->
-    <script src="../../backend/plugins/element-ui/index.js"></script>
-    <script type="text/javascript">
-        new Vue({
-            el: "#container",
-            data() {
-                return {
-                    deceiveInfo: []
+<body>
+<div id="map"></div>
+</body>
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<script src="./../api/login.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>
+<script>
+    new Vue({
+        el: "#map",
+        data() {
+            return {
+                points: []
+            }
+        },
+        mounted() {
+            this.initData();
+        },
+        methods: {
+            async initData() {
+                const res = await addressSee()
+                if (res.code === 1) {
+                    this.points = res.data
+                } else {
+                    this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
                 }
-            },
-            mounted() {
-                this.initData();
-            },
-            methods: {
-                async initData() {
-                    const res = await addressSee()
-                    // alert(JSON.stringify(res))
-                    if (res.code === 1) {
-                        this.deceiveInfo = res.data
-                    } else {
-                        this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
+
+                // 创建地图
+                const map = new BMapGL.Map('map')
+                // 设置地图中心点和缩放级别
+                map.centerAndZoom(new BMapGL.Point(116.404, 39.925), 15)
+                // 循环遍历所有点，创建点标记并添加到地图上
+                this.points.forEach(point => {
+                    // 创建点标记
+                    const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
+                    // 添加点标记到地图上
+                    map.addOverlay(marker)
+                    // 创建信息窗口
+                    const opts = {
+                        width: 200,
+                        height: 100,
                     }
-                    //初始化地图对象，加载地图
-                    var map = new AMap.Map("container", {resizeEnable: true,center: [105.8610, 34.5214]});
-                    var deceiveInfo = this.deceiveInfo;
-                    var infoWindow = new AMap.InfoWindow({offset: new AMap.Pixel(0, -30)});
-                    var markerGroup = []
-                    // 添加多个点
-                    for (var i = 0, marker; i < deceiveInfo.length; i++) {
-                        var marker = new AMap.Marker({
-                            position: [deceiveInfo[i]['lng'], deceiveInfo[i]['lat']],
-                            map: map
-                        });
-
-                        markerGroup.push(marker)
-                        marker.on('click', markerClick);
-                    }
-                    function markerClick(e) {
-                        infoWindow.setContent(e.target.content);
-                        infoWindow.open(map, e.target.getPosition());
-                    }
-                    map.setFitView();
-                    // 进行聚合
-                    cluster = new AMap.MarkerClusterer(map, markerGroup, {gridSize: 80})
-                    // 同时引入工具条插件，比例尺插，类别切换件和鹰眼插件
-                    /*工具条*/
-                    AMap.plugin("AMap.ToolBar", function () {
-                        var toolbar = new AMap.ToolBar({
-                            position: 'LB',
-                            // offset: [0,0] //偏移量 x,y轴
-                        })
-                        map.addControl(toolbar)
+                    const infoWindow = new BMapGL.InfoWindow(point.address, opts)
+                    // 点标记添加点击事件
+                    marker.addEventListener('click', function () {
+                        map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
                     })
-                    /*比例尺*/
-                    AMap.plugin("AMap.Scale", function () {
-                        var toolbar = new AMap.Scale()
-                        map.addControl(toolbar)
-                    })
-                    /*鹰眼控件*/
-                    AMap.plugin("AMap.HawkEye", function () {
-                        var toolbar = new AMap.HawkEye()
-                        map.addControl(toolbar)
-                    })
-                    /*类别切换控件*/
-                    AMap.plugin("AMap.MapType", function () {
-                        var toolbar = new AMap.MapType()
-                        map.addControl(toolbar)
-                    })
-                    // 定位
-                    AMap.plugin('AMap.Geolocation', function () {
-                        var geolocation = new AMap.Geolocation({
-                            enableHighAccuracy: true,//是否使用高精度定位，默认:true
-                            timeout: 10000,          //超过10秒后停止定位，默认：5s
-                            buttonPosition: 'RB',    //定位按钮的停靠位置
-                            buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
-                            zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
-
-                        });
-                        map.addControl(geolocation);
-                        geolocation.getCurrentPosition(function (status, result) {
-                            if (status == 'complete') {
-                                // alert(JSON.stringify(result))
-                            } else {
-                                // alert('定位失败')
-                            }
-                        });
-                    });
-
-                   }
-                }
-            });
-
-
-    </script>
+                })
+            }
+        }
+    })
+</script>
 </body>
 </html>

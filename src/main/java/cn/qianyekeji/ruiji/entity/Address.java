@@ -19,5 +19,8 @@ public class Address implements Serializable {
     private String lng;
     //当前的纬度
     private String lat;
-
+    //根据经纬度计算的位置信息
+//    private String address;
+    //根据set集合大小回显不同的修道层次和顺序
+    private String address;
 }
