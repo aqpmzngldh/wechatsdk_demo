@@ -197,11 +197,17 @@ public class ChatController {
 
             // 不用set了，因为我要获取具体的排序，直接用sortedset，里面的score排序列用集合中元素size，这样也不会重复
             // 获取操作sortedset类型的ZSetOperations对象
-            ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+//            ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
             // 获取集合中元素的数量作为排序字段
-            long score = zSetOps.size("wcls")+1;
+//            long score = zSetOps.size("wcls")+1;
             // 将wcls键存储到sortedset类型中，将集合中元素的数量作为排序字段存储到score中
-            zSetOps.add("wcls", address, score);
+//            zSetOps.add("wcls", address, score);
+
+            //不用上面那样搞了，因为会通过百度地图查看id获取最新用户知道他的位置，这时候我们更改实现方式
+            //存时间戳，然后取出时候，根据和当前时间的差值比较计算，来实现等级的修炼提升，比如存储时间超过一个月了
+            //这时候就是从练气一层到练气二层
+            redisTemplate.opsForZSet().add("wcls", address, timestamp);
+
             return R.success("聊天记录已成功保存");
         }
     }
