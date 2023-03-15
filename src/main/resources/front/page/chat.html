@@ -205,11 +205,11 @@
         <a id="myElement"></a>
     </div>
 
-    <form class="my-form">
+    <form class="my-form" v-cloak>
         <el-button type="primary" v-show="isShow" id="nm"  @click="address">查看道祖位置</el-button>
         <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
-        <p ref="firstParagraph" v-show="isShow">写下你想对我，想对它说的话吧</p>
+        <p ref="firstParagraph" v-show="isShow">在线人数<span style="color: black">{{person}}</span>人,写下你想对我,想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
             <el-input :disabled="isButtonDisabled"
@@ -257,7 +257,8 @@
                 content: '提醒管理员上线陪聊',
                 p: 666,
                 zan: false,
-                isButtonDisabled: false
+                isButtonDisabled: false,
+                person: '0',
             };
         },
         mounted() {
@@ -317,6 +318,10 @@
             setInterval(() => {
                 this.initData();
             }, 1000);
+            //心跳机制，实现在线人数查询
+            setInterval(() => {
+                this.bigHeart();
+            }, 3000);
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
@@ -480,7 +485,17 @@
             },
             address() {
                 window.location.href = '/front/page/chenXun.html'
-            }
+            },
+            async bigHeart() {
+                let uuid = localStorage.getItem('uuid');
+                $axios.post("/addressSee/" + uuid)
+                    .then((res) => {
+                            this.person=res.data;
+                    })
+                    .catch(err => {
+                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                    })
+            },
         },
     });
 </script>

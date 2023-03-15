@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/addressSee")
 @Slf4j
+@EnableScheduling
 public class addressSeeController {
 
     @Autowired
@@ -215,6 +218,44 @@ public class addressSeeController {
             return 0;
         } else {
             return (int) Math.ceil(timeDiff / 86400.0); // 向上取整，计算天数
+        }
+    }
+
+
+
+    @PostMapping("/{uuid}")
+    public R<Long> number(@PathVariable("uuid") String uuid) {
+        if (uuid==null) {
+            uuid="1";
+        }
+        // 将 uuid 和时间戳信息存储到 Redis 中
+        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
+        redisTemplate.opsForZSet().add("lswc", uuid, timestamp);
+
+        // 返回当前 uuid 对应的次数
+        Long count = redisTemplate.opsForZSet().zCard("lswc");
+        count=count==null?0:count;
+        return R.success(count);
+    }
+
+    // 每隔3秒执行一次的定时任务
+    @Scheduled(fixedDelay = 3000)
+    public void removeExpiredElements() {
+        // 获取当前时间戳
+        long currentTime = Instant.now().toEpochMilli();
+
+        // 获取 Redis 中所有的元素
+        Set<ZSetOperations.TypedTuple<String>> elements = redisTemplate.opsForZSet().rangeWithScores("lswc", 0, -1);
+
+        // 遍历所有元素
+        for (ZSetOperations.TypedTuple<String> element : elements) {
+            String uuid = (String) element.getValue();
+            long timestamp = element.getScore().longValue();
+
+            // 如果当前时间与时间戳的差值大于8秒，则删除该元素
+            if ((currentTime - timestamp) > 8000) {
+                redisTemplate.opsForZSet().remove("lswc", uuid);
+            }
         }
     }
 
