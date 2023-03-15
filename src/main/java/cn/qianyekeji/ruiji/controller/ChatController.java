@@ -70,7 +70,7 @@ public class ChatController {
         if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
-        if (address==""||address==null||uuid==""||uuid==null){
+        if (uuid==""||uuid==null){
             return null;
         }
         String touxiang="";
@@ -172,6 +172,9 @@ public class ChatController {
             return R.success(fileName);
 
         } else {
+            if (address==""||address==null||uuid==""||uuid==null){
+                return null;
+            }
 //        log.info("传递的数据分别是{}和{}和{}",time,body,name );
             LocalDateTime currentDateTime = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
