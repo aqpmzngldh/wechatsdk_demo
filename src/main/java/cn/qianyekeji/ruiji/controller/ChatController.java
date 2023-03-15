@@ -14,6 +14,7 @@ import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
@@ -27,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -144,8 +142,14 @@ public class ChatController {
                 dir.mkdirs();
             }
             try {
-                //将临时文件转存到指定位置
-                multipartFile.transferTo(new File(basePath + fileName));
+                //将临时文件转存到指定位置（转存时候容易出问题，这里不转存了，改成下面代码）
+                //上传的文件保存到指定目录，而不是先复制到临时目录
+                //multipartFile.transferTo(new File(basePath + fileName));
+                InputStream inputStream = multipartFile.getInputStream();
+                OutputStream outputStream = new FileOutputStream(new File(basePath + fileName));
+                IOUtils.copy(inputStream, outputStream);
+                inputStream.close();
+                outputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
