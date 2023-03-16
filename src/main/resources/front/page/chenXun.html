@@ -37,32 +37,43 @@
             font-weight: bold;
         }
         #app {
-            position: relative;
             height: 100%;
             width: 100%;
         }
-
         #map {
-            position: absolute;
-            top: 0;
-            left: 0;
             height: 70%;
             width: 100%;
         }
         #vue-component {
-            position: absolute;
-            bottom: 0;
-
-            height: 30%;
+            height: 30%; /* 根据 #map 的高度设定 */
             width: 100%;
             padding-left: 20px;
             padding-right: 20px;
+        }
+        .van-field__control[type=search]{
+            padding-left: 10px;
         }
     </style>
 </head>
 <body>
 <div id="app">
-<div id="map"></div>
+
+    <form id="search" data-v-5219ff40="" action="#">
+        <div data-v-5219ff40="" class="van-search" style="background: rgb(250, 251, 252);">
+            <div data-v-5219ff40="" class="van-search__content van-search__content--round">
+                <div data-v-5219ff40="" class="van-cell van-cell--borderless van-field">
+                    <div class="van-field__left-icon">
+                        <i class="van-icon van-icon-search"><!----></i>
+                    </div>
+                    <div class="van-cell__value van-cell__value--alone van-field__value">
+                        <div class="van-field__body"><input type="search" placeholder="复制匿名群聊中时间标识进行搜索" class="van-field__control"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div id="map"></div>
     <div id="vue-component">
         <el-collapse accordion>
             <el-collapse-item>
