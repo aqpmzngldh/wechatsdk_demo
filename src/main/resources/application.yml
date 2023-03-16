@@ -18,9 +18,11 @@ spring:
 #    host: 127.0.0.1
 #    redis云服务ip
     host: 124.222.221.77
-    port: 6379
+#    port: 6379
+#    为了防止入侵，不用原端口号6379，生产用6378，密码也进行修改
+    port: 6378
 #    password:
-    password: MXMPbrxyc4t7sBje
+    password: MXMPbrxyc4t7sBjeredis
     database: 0
 #  cache:
 #    redis:
