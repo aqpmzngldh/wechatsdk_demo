@@ -64,19 +64,19 @@
 <div id="app">
 
 
-        <div class="van-search" style="background: rgb(250, 251, 252);">
-            <div class="van-search__content van-search__content--round">
-                <div class="van-cell van-cell--borderless van-field">
-                    <div class="van-field__left-icon">
-                        <i class="van-icon van-icon-search"><!----></i>
-                    </div>
-                    <div class="van-cell__value van-cell__value--alone van-field__value">
-                        <div class="van-field__body"><input type="search" placeholder="复制匿名群聊中时间标识进行搜索"
-                                                            class="van-field__control"></div>
-                    </div>
+    <div class="van-search" style="background: rgb(250, 251, 252);">
+        <div class="van-search__content van-search__content--round">
+            <div class="van-cell van-cell--borderless van-field">
+                <div class="van-field__left-icon">
+                    <i class="van-icon van-icon-search"><!----></i>
+                </div>
+                <div class="van-cell__value van-cell__value--alone van-field__value">
+                    <div class="van-field__body"><input v-model="inputValue" type="search" placeholder="复制匿名群聊中时间标识进行搜索"
+                                                        @keyup.enter="sendMessage" class="van-field__control"></div>
                 </div>
             </div>
         </div>
+    </div>
 
     <div id="map"></div>
     <div id="vue-component">
@@ -114,7 +114,13 @@
         el: "#app",
         data() {
             return {
-                points: []
+                points: [],
+                inputValue: '',
+                mapCenter: {
+                    lng: 108.5525,
+                    lat: 34.3227,
+                    zoom: 5
+                }
             }
         },
         mounted() {
@@ -128,11 +134,10 @@
                 } else {
                     this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
                 }
-
                 // 创建地图
                 const map = new BMapGL.Map('map')
                 // 设置地图中心点和缩放级别
-                map.centerAndZoom(new BMapGL.Point(108.5525, 34.3227), 5)
+                map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
                 // 循环遍历所有点，创建点标记并添加到地图上
                 this.points.forEach(point => {
                     // 创建点标记
@@ -151,7 +156,52 @@
                         map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
                     })
                 })
+            },
+            sendMessage() {
+                const userInput = this.inputValue;
+                $axios.post("/addressSee/id/" + btoa(userInput))
+                    .then((res) => {
+                        this.inputValue="";
+                        this.points =[];
+                        const [lng, lat] = res.data.split('__');
+                        this.mapCenter.lng=lng;
+                        this.mapCenter.lat=lat;
+                        this.mapCenter.zoom=5;
+                        const map = new BMapGL.Map('map');
+                        map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom);
+                        map.clearOverlays();
+                        const centerMarker = new BMapGL.Marker(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
+                        map.addOverlay(centerMarker);
+                        const centerOpts = {
+                            width: 30,
+                            height: 30,
+                            title: "陈浔座下："
+                        };
+                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员", centerOpts);
+                        centerMarker.addEventListener('click', function () {
+                            map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
+                        });
+                        this.points.forEach(point => {
+                            const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat));
+                            map.addOverlay(marker);
+                            const opts = {
+                                width: 30,
+                                height: 30,
+                                title: "陈浔座下："
+                            };
+                            const infoWindow = new BMapGL.InfoWindow(point.address, opts);
+                            marker.addEventListener('click', function () {
+                                map.openInfoWindow(infoWindow, marker.getPosition());
+                            });
+                        });
+                        map.panTo(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
+                    })
+                    .catch(err => {
+                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                    });
             }
+
+
         }
     })
 </script>

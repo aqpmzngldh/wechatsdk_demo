@@ -158,7 +158,10 @@ public class ChatController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             time = currentDateTime.format(formatter);
 
-            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+//            因为我要更进行地图查询功能，直接从聊天界面复制过去的我们已经给时间戳截取了，这样的话我们
+//            直接用hash中前半段去匹配比较麻烦，所以这时候直接显示上去，到时候就能复制整个键
+//            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+            String key = time + new Random().nextInt(100);; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", "");
             chatRecord.put("url", fileName);
@@ -184,7 +187,7 @@ public class ChatController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
             time = currentDateTime.format(formatter);
 
-            String key = time + "-" + UUID.randomUUID().toString(); // 生成唯一键
+            String key = time + new Random().nextInt(100);; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", body);
             chatRecord.put("url", "");
@@ -233,7 +236,8 @@ public class ChatController {
 
         for (String k : keys) {
             Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
-            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
+//            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
+            String time = k;
             String body = (String) chatRecord.get("body");
             String url = (String) chatRecord.get("url");
             String name = (String) chatRecord.get("name");
