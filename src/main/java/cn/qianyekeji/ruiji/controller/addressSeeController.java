@@ -261,18 +261,19 @@ public class addressSeeController {
 
     @PostMapping("/id/{userInput}")
     public R<String> person(@PathVariable("userInput") String userInput) {
-        userInput = new String(Base64.getDecoder().decode(userInput));
-        // 使用 opsForHash 方法获取哈希值
-        Map<Object, Object> hash = redisTemplate.opsForHash().entries(userInput);
+        String[] parts = new String[0];
+        try {
+            userInput = new String(Base64.getDecoder().decode(userInput));
+            // 使用 opsForHash 方法获取哈希值
+            Map<Object, Object> hash = redisTemplate.opsForHash().entries(userInput);
 
-        // 获取地址键的值，并用 "__" 分隔符拆分
-        String address = (String) hash.get("address");
-        String[] parts = address.split("__");
-
-        // 如果哈希值中没有地址键或地址键的值为空，则返回 null
-        if (address == null || address.isEmpty() || parts.length != 2) {
-            return null;
+            // 获取地址键的值，并用 "__" 分隔符拆分
+            String address = (String) hash.get("address");
+            parts = address.split("__");
+        } catch (Exception e) {
+            return R.error("");
         }
+
         // 返回地址键的值
         String result = parts[0] + "__" + parts[1];
         return R.success(result);

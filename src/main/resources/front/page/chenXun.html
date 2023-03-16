@@ -161,6 +161,11 @@
                 const userInput = this.inputValue;
                 $axios.post("/addressSee/id/" + btoa(userInput))
                     .then((res) => {
+                        if (res.code==0){
+                            this.inputValue="";
+                            this.$notify({type: 'warning', message: '格式不正确，重新输入'});
+                            return;
+                        }
                         this.inputValue="";
                         this.points =[];
                         const [lng, lat] = res.data.split('__');
