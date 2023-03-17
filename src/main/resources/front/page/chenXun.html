@@ -43,7 +43,11 @@
             overflow-x: hidden; /* 禁用水平滚动 */
         }
 
-        #map {
+        #container {
+            height: 60%;
+            width: 100%;
+        }
+        #panorama {
             height: 60%;
             width: 100%;
         }
@@ -78,7 +82,8 @@
         </div>
     </div>
 
-    <div id="map"></div>
+    <div id="container" v-show="isShow"></div>
+    <div id="panorama" v-show="!isShow"></div>
     <div id="vue-component">
         <el-collapse accordion>
             <el-collapse-item>
@@ -108,7 +113,10 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script src="./../api/login.js"></script>
-<script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>
+<!--<script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>-->
+<!--<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ty1gMdbnin7qqILlQKLMSdtcoYc4OSYA"></script>-->
+<script  src='//api.map.baidu.com/api?type=webgl&v=1.0&ak=DR8ITz2lk7BHYEwiar4tie7VEDBX7EVy'></script>
+
 <script>
     new Vue({
         el: "#app",
@@ -120,7 +128,8 @@
                     lng: 108.5525,
                     lat: 34.3227,
                     zoom: 5
-                }
+                },
+                isShow: true
             }
         },
         mounted() {
@@ -135,7 +144,7 @@
                     this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
                 }
                 // 创建地图
-                const map = new BMapGL.Map('map')
+                const map = new BMapGL.Map('container')
                 // 设置地图中心点和缩放级别
                 map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
                 // 循环遍历所有点，创建点标记并添加到地图上
@@ -172,7 +181,7 @@
                         this.mapCenter.lng=lng;
                         this.mapCenter.lat=lat;
                         this.mapCenter.zoom=5;
-                        const map = new BMapGL.Map('map');
+                        const map = new BMapGL.Map('container');
                         map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom);
                         map.clearOverlays();
                         const centerMarker = new BMapGL.Marker(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
@@ -182,7 +191,7 @@
                             height: 30,
                             title: "陈浔座下："
                         };
-                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员", centerOpts);
+                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员,点击抓捕", centerOpts);
                         centerMarker.addEventListener('click', function () {
                             map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
                         });
@@ -191,9 +200,11 @@
                     .catch(err => {
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     });
+            },
+            panorama() {
+                var panorama = new BMapGL.Panorama('panorama'); //默认为显示导航控件
+                panorama.setPosition(new BMapGL.Point(116.316169, 40.005567));
             }
-
-
         }
     })
 </script>
