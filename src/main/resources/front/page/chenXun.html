@@ -62,6 +62,11 @@
         .van-field__control[type=search] {
             padding-left: 10px;
         }
+        #app .el-button--info.is-plain {
+            width: 100%;
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -84,6 +89,7 @@
 
     <div id="container" v-show="isShow"></div>
     <div id="panorama" v-show="!isShow"></div>
+    <el-button type="info"  @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
     <div id="vue-component">
         <el-collapse accordion>
             <el-collapse-item>
@@ -125,8 +131,8 @@
                 points: [],
                 inputValue: '',
                 mapCenter: {
-                    lng: 108.5525,
-                    lat: 34.3227,
+                    lng: 108.94467,
+                    lat: 34.33121,
                     zoom: 5
                 },
                 isShow: true
@@ -163,6 +169,7 @@
                     // 点标记添加点击事件
                     marker.addEventListener('click', function () {
                         map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
+                        this.isShow=false
                     })
                 })
             },
@@ -189,9 +196,10 @@
                         const centerOpts = {
                             width: 30,
                             height: 30,
-                            title: "陈浔座下："
+                            title: "陈浔座下：",
+                            clickHandler: this.handleInfoWindowClick
                         };
-                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员,点击抓捕", centerOpts);
+                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员", centerOpts);
                         centerMarker.addEventListener('click', function () {
                             map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
                         });
@@ -201,11 +209,17 @@
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     });
             },
-            panorama() {
-                var panorama = new BMapGL.Panorama('panorama'); //默认为显示导航控件
-                panorama.setPosition(new BMapGL.Point(116.316169, 40.005567));
-            }
-        }
+            arrest(){
+                this.panorama(this.mapCenter.lng, this.mapCenter.lat)
+            },
+            panorama(a,b) {
+                this.isShow=false;
+                var panorama = new BMapGL.Panorama('panorama');
+                //默认为显示导航控件
+                panorama.setPosition(new BMapGL.Point(a, b));
+            },
+
+        },
     })
 </script>
 </body>
