@@ -186,19 +186,6 @@
                         centerMarker.addEventListener('click', function () {
                             map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
                         });
-                        this.points.forEach(point => {
-                            const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat));
-                            map.addOverlay(marker);
-                            const opts = {
-                                width: 30,
-                                height: 30,
-                                title: "陈浔座下："
-                            };
-                            const infoWindow = new BMapGL.InfoWindow(point.address, opts);
-                            marker.addEventListener('click', function () {
-                                map.openInfoWindow(infoWindow, marker.getPosition());
-                            });
-                        });
                         map.panTo(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
                     })
                     .catch(err => {
