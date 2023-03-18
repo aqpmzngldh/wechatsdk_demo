@@ -216,8 +216,15 @@ public class ChatController {
             //不用上面那样搞了，因为会通过百度地图查看id获取最新用户知道他的位置，这时候我们更改实现方式
             //存时间戳，然后取出时候，根据和当前时间的差值比较计算，来实现等级的修炼提升，比如存储时间超过一个月了
             //这时候就是从练气一层到练气二层
-            redisTemplate.opsForZSet().add("wcls", address, timestamp);
-
+//            redisTemplate.opsForZSet().add("wcls", address, timestamp);
+            // 获取当前address在sorted set中的分值
+            Double score = redisTemplate.opsForZSet().score("wcls", address);
+            if (score == null) {
+                // 如果分值为null，则说明该address不存在，直接添加
+                redisTemplate.opsForZSet().add("wcls", address, timestamp);
+            } else {
+                // 如果分值不为null，则说明该address已存在，不更新timestamp
+            }
             return R.success("聊天记录已成功保存");
         }
     }
