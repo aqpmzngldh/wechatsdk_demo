@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Test;
+import org.springframework.data.redis.connection.RedisGeoCommands;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -43,6 +44,6 @@ public class ceshi {
 
     @Test
     void def() {
-
+        System.out.println(RedisGeoCommands.DistanceUnit.class.getName());
     }
 }

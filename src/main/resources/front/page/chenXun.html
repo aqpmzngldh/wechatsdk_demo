@@ -47,6 +47,7 @@
             height: 60%;
             width: 100%;
         }
+
         #panorama {
             height: 60%;
             width: 100%;
@@ -62,6 +63,7 @@
         .van-field__control[type=search] {
             padding-left: 10px;
         }
+
         #app .el-button--info.is-plain {
             width: 100%;
             margin-top: 10px;
@@ -89,20 +91,28 @@
 
     <div id="container" v-show="isShow"></div>
     <div id="panorama" v-show="!isShow"></div>
-    <el-button type="info"  @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
+    <el-button type="info" @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
     <div id="vue-component">
-        <el-collapse accordion>
+        <el-collapse @change="handleChange" accordion>
             <el-collapse-item>
                 <template slot="title">
                     使用简介：
                 </template>
-                <div>此图为各位道友修炼所在，放大即可查看,点击红点即可查看修炼情况,练气期一天升级一层，练气之上10天升级一层，匿名群聊里面发送消息即可加入修炼</div>
+                <div>此图为各位道友修炼所在，放大即可查看,点击红点即可查看修炼情况,练气期一天升级一层，练气之上10天升级一层，匿名群聊里面发送消息即可加入修炼
+                    <br>抓捕功能：搜索(回车键)后点击抓捕即可
+                </div>
             </el-collapse-item>
             <el-collapse-item>
                 <template slot="title">
                     陈浔简介：
                 </template>
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
+            </el-collapse-item>
+            <el-collapse-item name="4">
+                <template slot="title">
+                    陈浔简介：
+                </template>
+                <div>此消息为动态加载。{{ttt}}</div>
             </el-collapse-item>
         </el-collapse>
     </div>
@@ -121,7 +131,9 @@
 <script src="./../api/login.js"></script>
 <!--<script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>-->
 <!--<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ty1gMdbnin7qqILlQKLMSdtcoYc4OSYA"></script>-->
-<script  src='//api.map.baidu.com/api?type=webgl&v=1.0&ak=DR8ITz2lk7BHYEwiar4tie7VEDBX7EVy'></script>
+<script src='//api.map.baidu.com/api?type=webgl&v=1.0&ak=DR8ITz2lk7BHYEwiar4tie7VEDBX7EVy'></script>
+<script type="text/javascript"
+        src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
 
 <script>
     new Vue({
@@ -135,7 +147,8 @@
                     lat: 34.33121,
                     zoom: 5
                 },
-                isShow: true
+                isShow: true,
+                ttt: "爱你0922"
             }
         },
         mounted() {
@@ -169,7 +182,7 @@
                     // 点标记添加点击事件
                     marker.addEventListener('click', function () {
                         map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
-                        this.isShow=false
+                        this.isShow = false
                     })
                 })
             },
@@ -177,17 +190,17 @@
                 const userInput = this.inputValue;
                 $axios.post("/addressSee/id/" + btoa(userInput))
                     .then((res) => {
-                        if (res.code==0){
-                            this.inputValue="";
+                        if (res.code == 0) {
+                            this.inputValue = "";
                             this.$notify({type: 'warning', message: '格式不正确，重新输入'});
                             return;
                         }
-                        this.inputValue="";
-                        this.points =[];
+                        this.inputValue = "";
+                        this.points = [];
                         const [lng, lat] = res.data.split('__');
-                        this.mapCenter.lng=lng;
-                        this.mapCenter.lat=lat;
-                        this.mapCenter.zoom=5;
+                        this.mapCenter.lng = lng;
+                        this.mapCenter.lat = lat;
+                        this.mapCenter.zoom = 5;
                         const map = new BMapGL.Map('container');
                         map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom);
                         map.clearOverlays();
@@ -209,15 +222,42 @@
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     });
             },
-            arrest(){
+            arrest() {
                 this.panorama(this.mapCenter.lng, this.mapCenter.lat)
             },
-            panorama(a,b) {
-                this.isShow=false;
+            panorama(a, b) {
+                this.isShow = false;
                 var panorama = new BMapGL.Panorama('panorama');
                 //默认为显示导航控件
                 panorama.setPosition(new BMapGL.Point(a, b));
             },
+            handleChange(val) {
+                // alert(val)
+                if (val == 4) {
+                    alert("1")
+                    var geolocation = new BMap.Geolocation();
+                    geolocation.getCurrentPosition(function (r) {
+                        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                            let address = r.point.lng + "__" + r.point.lat
+
+                            $axios.post("/addressSee/address/" + address)
+                                .then((res) => {
+                                    if (res.code == 1) {
+                                        console.log(res)
+                                    }
+                                }).catch(err => {
+                                this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                            });
+
+
+                        }
+                        else {
+                            alert('failed' + this.getStatus());
+                        }
+                    }, {enableHighAccuracy: true})
+                    console.log(val);
+                }
+            }
 
         },
     })
