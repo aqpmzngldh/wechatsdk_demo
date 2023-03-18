@@ -109,12 +109,7 @@
                 </template>
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
             </el-collapse-item>
-            <!--<el-collapse-item name="4">-->
-                <!--<template slot="title">-->
-                    <!--陈浔简介：-->
-                <!--</template>-->
-                <!--<div>此消息为动态加载。{{ttt}}</div>-->
-            <!--</el-collapse-item>-->
+
             <el-collapse-item name="4">
                 <template slot="title">
                     附近的人：
@@ -143,9 +138,10 @@
 <script src="./../api/login.js"></script>
 <!--<script src="//api.map.baidu.com/api?type=webgl&v=1.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>-->
 <!--<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ty1gMdbnin7qqILlQKLMSdtcoYc4OSYA"></script>-->
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>
 <script src='//api.map.baidu.com/api?type=webgl&v=1.0&ak=DR8ITz2lk7BHYEwiar4tie7VEDBX7EVy'></script>
-<script type="text/javascript"
-        src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
+<!--<script type="text/javascript"-->
+        <!--src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>-->
 
 <script>
     new Vue({
@@ -172,8 +168,7 @@
                     lat: 34.33121,
                     zoom: 5
                 },
-                isShow: true,
-                ttt: "爱你0922"
+                isShow: true
             }
         },
         mounted() {
@@ -191,7 +186,7 @@
                         $axios.post("/addressSee/address/" + address)
                             .then((res) => {
                                 if (res.code == 1) {
-                                    // console.log(res)
+                                    console.log(res)
                                     self.messages=res.data;
                                 }
                             }).catch(err => {
@@ -278,8 +273,37 @@
             handleChange(val) {
                 if (val == 4) {
                     this.isShow = true;
-                    alert(JSON.stringify(this.messages))
+                    this.points = [];
+                    const map = new BMapGL.Map('container')
+                    map.clearOverlays();
+                    // alert(JSON.stringify(this.messages[0].content))
+                    // 遍历 this.messages 数组，将经纬度信息添加到 this.points 数组中
+                    this.messages.forEach((message, index) => {
+                        const [lng, lat] = message.content.name.split('__');
+                        this.points.push({ lng: Number(lng), lat: Number(lat) });
+                    });
 
+                    // 设置地图中心点和缩放级别
+                    map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
+                    // 循环遍历所有点，创建点标记并添加到地图上
+                    this.points.forEach(point => {
+                        // 创建点标记
+                        const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
+                        // 添加点标记到地图上
+                        map.addOverlay(marker)
+                        // 创建信息窗口
+                        const opts = {
+                            width: 30,
+                            height: 30,
+                            title: "陈浔座下："
+                        }
+                        const infoWindow = new BMapGL.InfoWindow("在线人员", opts)
+                        // 点标记添加点击事件
+                        marker.addEventListener('click', function () {
+                            map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
+                            this.isShow = false
+                        })
+                    })
                 }
             }
 
