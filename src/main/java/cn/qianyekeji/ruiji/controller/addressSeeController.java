@@ -333,7 +333,7 @@ public class addressSeeController {
 
         System.out.println(resultList);
         //清空geo数据类型中的所有内容
-//        redisTemplate.delete(key);
+        redisTemplate.delete(key);
         return R.success(resultList);
     }
 
