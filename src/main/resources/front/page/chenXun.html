@@ -115,7 +115,7 @@
                     附近的人：
                 </template>
                 <div v-for="(message, index) in messages" :key="message.id">
-                <div v-if="message.distance">当前在线人数{{index+1}}距离您{{ message.distance.value }}km</div>
+                <div v-if="message.distance">当前在线人{{index+1}}距离您{{ message.distance.value }}km</div>
                 <div v-else>
                     当前大厅在线人数0人，无法查询进一步消息。
                 </div>
