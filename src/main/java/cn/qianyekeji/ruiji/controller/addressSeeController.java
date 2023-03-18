@@ -322,7 +322,7 @@ public class addressSeeController {
         // 另一部分是在线人员(这里的在线人员指的只是大厅里的人员)的经纬度
 
         //计算传入的经纬度和其他在线人员的经纬度之间的距离，并返回距离列表
-        Circle circle = new Circle(point, new Distance(100000000, Metrics.KILOMETERS));
+        Circle circle = new Circle(point, new Distance(3000, Metrics.KILOMETERS));
         GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = redisTemplate.opsForGeo().radius(key, circle);
         List<GeoResult<RedisGeoCommands.GeoLocation<String>>> resultList = new ArrayList<>();
         for (GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult : geoResults) {

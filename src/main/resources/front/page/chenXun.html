@@ -93,6 +93,7 @@
     <div id="panorama" v-show="!isShow"></div>
     <el-button type="info" @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
     <div id="vue-component">
+        <!--<el-collapse @change="handleChange" accordion>-->
         <el-collapse @change="handleChange" accordion>
             <el-collapse-item>
                 <template slot="title">
@@ -108,11 +109,22 @@
                 </template>
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
             </el-collapse-item>
+            <!--<el-collapse-item name="4">-->
+                <!--<template slot="title">-->
+                    <!--陈浔简介：-->
+                <!--</template>-->
+                <!--<div>此消息为动态加载。{{ttt}}</div>-->
+            <!--</el-collapse-item>-->
             <el-collapse-item name="4">
                 <template slot="title">
-                    陈浔简介：
+                    附近的人：
                 </template>
-                <div>此消息为动态加载。{{ttt}}</div>
+                <div v-for="(message, index) in messages" :key="message.id">
+                <div v-if="message.distance">当前在线人数{{index+1}}距离您{{ message.distance.value }}km</div>
+                <div v-else>
+                    当前大厅在线人数0人，无法查询进一步消息。
+                </div>
+                </div>
             </el-collapse-item>
         </el-collapse>
     </div>
@@ -140,6 +152,19 @@
         el: "#app",
         data() {
             return {
+                messages: [
+                    // {
+                    //     "value":0,
+                    //     "metric":"KILOMETERS",
+                    //     "normalizedValue":0,
+                    //     "unit":"km"
+                    // },{
+                    //     "value":1,
+                    //     "metric":"KILOMETERS",
+                    //     "normalizedValue":0,
+                    //     "unit":"km"
+                    // }
+                ],
                 points: [],
                 inputValue: '',
                 mapCenter: {
@@ -156,6 +181,25 @@
         },
         methods: {
             async initData() {
+
+                var geolocation = new BMap.Geolocation();
+                let self = this;
+                geolocation.getCurrentPosition(function (r) {
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        let address = r.point.lng + "__" + r.point.lat
+
+                        $axios.post("/addressSee/address/" + address)
+                            .then((res) => {
+                                if (res.code == 1) {
+                                    // console.log(res)
+                                    self.messages=res.data;
+                                }
+                            }).catch(err => {
+                            this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                        });
+                    }
+                }, {enableHighAccuracy: true})
+
                 const res = await addressSee()
                 if (res.code === 1) {
                     this.points = res.data
@@ -232,30 +276,10 @@
                 panorama.setPosition(new BMapGL.Point(a, b));
             },
             handleChange(val) {
-                // alert(val)
                 if (val == 4) {
-                    alert("1")
-                    var geolocation = new BMap.Geolocation();
-                    geolocation.getCurrentPosition(function (r) {
-                        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                            let address = r.point.lng + "__" + r.point.lat
+                    this.isShow = true;
+                    alert(JSON.stringify(this.messages))
 
-                            $axios.post("/addressSee/address/" + address)
-                                .then((res) => {
-                                    if (res.code == 1) {
-                                        console.log(res)
-                                    }
-                                }).catch(err => {
-                                this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                            });
-
-
-                        }
-                        else {
-                            alert('failed' + this.getStatus());
-                        }
-                    }, {enableHighAccuracy: true})
-                    console.log(val);
                 }
             }
 
