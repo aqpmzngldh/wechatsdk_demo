@@ -187,7 +187,7 @@
 
     <form>
         <el-button type="primary" v-show="isShow" id="nm" @click="open" >撤回消息选项</el-button>
-        <el-button type="primary" v-show="isShow" id="wc" >分享房间链接给好友</el-button>
+        <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
 
         <p ref="firstParagraph" v-show="isShow">私聊模式启动，开启隐私对话吧</p>
         <p ref="secondParagraph" v-show="isShow">私聊模式不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -236,7 +236,7 @@
                 quanJu: true,
                 title: '',
                 isInteger: 0,
-                content: '分享链接邀请好友',
+                content: '分享链接给好友',
                 p: 666,
                 zan: false,
                 isButtonDisabled: false
@@ -436,7 +436,10 @@
                         message: '取消输入'
                     });
                 });
-            }
+            },
+            async tiXing() {
+                this.content = '右上角-链接给好友';
+            },
         },
     });
 </script>
