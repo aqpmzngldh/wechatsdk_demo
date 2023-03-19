@@ -75,7 +75,10 @@
         }
 
         #wc {
-            margin-left: 20%;
+            width: 49%;
+        }
+        #nm {
+            width: 46%;
         }
 
         p {
@@ -117,7 +120,7 @@
             height: auto;
         }
 
-        .el-message-box--center {
+        .el-message-box {
             width: 300px;
         }
 
@@ -183,7 +186,8 @@
     </div>
 
     <form>
-        <!--<el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>-->
+        <el-button type="primary" v-show="isShow" id="nm" @click="open" >撤回消息选项</el-button>
+        <el-button type="primary" v-show="isShow" id="wc" >分享房间链接给好友</el-button>
 
         <p ref="firstParagraph" v-show="isShow">私聊模式启动，开启隐私对话吧</p>
         <p ref="secondParagraph" v-show="isShow">私聊模式不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -400,6 +404,38 @@
                     .catch(err => {
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     })
+            },
+            open() {
+                this.$prompt('请复制时间标识进行删除', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^(0[1-9]|1[012])\/(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
+                    inputErrorMessage: '格式不正确，请重新输入',
+                }).then(({ value }) => {
+                    // 调用后端接口，传入 value 作为参数
+                    let parameter = getParameter("uuid");
+                    let parameter1 = getParameter("uuid1");
+                    let params=parameter+parameter1
+                    $axios.post('/addressSee/delete/' + params+ '/' +btoa(value))
+                        .then(response => {
+                        // 处理接口返回结果
+
+                            this.$message({
+                            type: 'success',
+                            message: '已成功删除'
+                        });
+                    }).catch(error => {
+                        this.$message({
+                            type: 'error',
+                            message: '删除失败，请稍后再试'
+                        });
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
             }
         },
     });
