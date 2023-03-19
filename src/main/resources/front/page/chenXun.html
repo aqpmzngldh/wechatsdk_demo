@@ -182,8 +182,8 @@
                 geolocation.getCurrentPosition(function (r) {
                     if (this.getStatus() == BMAP_STATUS_SUCCESS) {
                         let address = r.point.lng + "__" + r.point.lat
-
-                        $axios.post("/addressSee/address/" + address)
+                        let uuid = localStorage.getItem('uuid');
+                        $axios.post("/addressSee/address/" + address+ '/' +uuid)
                             .then((res) => {
                                 if (res.code == 1) {
                                     console.log(res)

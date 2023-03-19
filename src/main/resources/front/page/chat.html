@@ -489,8 +489,8 @@
                 window.location.href = '/front/page/chenXun.html'
             },
             async bigHeart() {
-                // let uuid = localStorage.getItem('uuid');
-                $axios.post("/addressSee/" + this.add)
+                let uuid = localStorage.getItem('uuid');
+                $axios.post("/addressSee/" + this.add+ '/' +uuid)
                     .then((res) => {
                             this.person=res.data;
                     })
