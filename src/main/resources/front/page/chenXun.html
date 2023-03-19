@@ -109,18 +109,16 @@
                 </template>
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
             </el-collapse-item>
-
+            <el-collapse v-if="messages.length > 0">
             <el-collapse-item name="4">
                 <template slot="title">
                     附近的人：
                 </template>
                 <div v-for="(message, index) in messages" :key="message.id">
-                <div v-if="message.distance">当前在线人{{index+1}}距离您{{ message.distance.value }}km</div>
-                <div v-else>
-                    当前大厅在线人数0人，无法查询进一步消息。
-                </div>
+                <div v-if="message!==''">当前在线人{{index+1}}距离您{{ message.distance.value }}m</div>
                 </div>
             </el-collapse-item>
+            </el-collapse>
         </el-collapse>
     </div>
 </div>
@@ -168,7 +166,8 @@
                     lat: 34.33121,
                     zoom: 5
                 },
-                isShow: true
+                isShow: true,
+                ls:true
             }
         },
         mounted() {

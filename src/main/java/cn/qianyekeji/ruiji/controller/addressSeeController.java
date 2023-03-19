@@ -325,18 +325,18 @@ public class addressSeeController {
         redisTemplate.opsForGeo().add(key, point, member);
         //这时候geo数据类型中有两部分，一部分是传入的经纬度
         // 另一部分是在线人员(这里的在线人员指的只是大厅里的人员)的经纬度
-        Circle circle = new Circle(point, new Distance(3000, Metrics.KILOMETERS));
+        Circle circle = new Circle(point, new Distance(3000000, Metrics.MILES));
         GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = redisTemplate.opsForGeo().radius(key, circle);
         List<GeoResult<RedisGeoCommands.GeoLocation<String>>> resultList = new ArrayList<>();
         for (GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult : geoResults) {
             RedisGeoCommands.GeoLocation<String> location = geoResult.getContent();
             // 判断当前遍历到的location是否是传入的经纬度
             if (!location.getName().equals(member)) {
-                double distance = redisTemplate.opsForGeo().distance(key, member, location.getName(), Metrics.KILOMETERS).getValue();
-                resultList.add(new GeoResult<>(location, new Distance(distance, Metrics.KILOMETERS)));
+                double distance = redisTemplate.opsForGeo().distance(key, member, location.getName(), Metrics.MILES).getValue();
+                resultList.add(new GeoResult<>(location, new Distance(distance, Metrics.MILES)));
             }
         }
-        System.out.println(resultList);
+//        System.out.println(resultList);
         //清空geo数据类型中的所有内容
         redisTemplate.delete(key);
         return R.success(resultList);
