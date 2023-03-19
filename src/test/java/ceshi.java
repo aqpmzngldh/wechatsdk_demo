@@ -44,6 +44,12 @@ public class ceshi {
 
     @Test
     void def() {
-        System.out.println(RedisGeoCommands.DistanceUnit.class.getName());
+        String user="120.2155118__30.25308298_111";
+        String userWithoutEnding = user.substring(0, user.lastIndexOf("_"));
+        String[] userCoordinates = userWithoutEnding.split("__");
+        String userLongitude = userCoordinates[0];
+        String userLatitude = userCoordinates[1];
+        System.out.println(userLongitude);
+        System.out.println(userLatitude);
     }
 }

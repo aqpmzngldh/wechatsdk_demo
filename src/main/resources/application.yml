@@ -7,22 +7,22 @@ spring:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
 #      本地数据库
-      url: jdbc:mysql://localhost:3306/reggie
+#      url: jdbc:mysql://localhost:3306/reggie
 #      云服务数据库
-#      url: jdbc:mysql://124.222.221.77:3306/reggie
+      url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
-      password:
-#      password: MXMPbrxyc4t7sBje
+#      password:
+      password: MXMPbrxyc4t7sBje
   redis:
 #    redis本地主机ip
-    host: 127.0.0.1
+#    host: 127.0.0.1
 #    redis云服务ip
-#    host: 124.222.221.77
-    port: 6379
+    host: 124.222.221.77
+#    port: 6379
 #    为了防止入侵，不用原端口号6379，生产用6378，密码也进行修改
-#    port: 6378
-    password:
-#    password: MXMPbrxyc4t7sBjeredis
+    port: 6378
+#    password:
+    password: MXMPbrxyc4t7sBjeredis
     database: 0
 #  cache:
 #    redis:
