@@ -94,7 +94,7 @@
     <el-button type="info" @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
     <div id="vue-component">
         <!--<el-collapse @change="handleChange" accordion>-->
-        <el-collapse @change="handleChange" accordion>
+        <el-collapse  accordion>
             <el-collapse-item>
                 <template slot="title">
                     使用简介：
@@ -109,7 +109,7 @@
                 </template>
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
             </el-collapse-item>
-            <el-collapse v-if="messages.length > 0">
+            <el-collapse @change="handleChange" v-if="messages.length > 0">
             <el-collapse-item name="4">
                 <template slot="title">
                     附近的人：
@@ -270,7 +270,9 @@
                 panorama.setPosition(new BMapGL.Point(a, b));
             },
             handleChange(val) {
+                alert("1")
                 if (val == 4) {
+                    alert("2")
                     this.isShow = true;
                     this.points = [];
                     const map = new BMapGL.Map('container')
