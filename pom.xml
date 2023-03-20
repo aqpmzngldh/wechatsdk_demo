@@ -87,15 +87,12 @@
             <version>2.1.0</version>
         </dependency>
 
-
+        <!--springboot的2.4.5版本对应redis版本不支持使用redis的geo，所以这里引入-->
+        <!--两个条件：1.redis服务器版本大于3.2-->
+                 <!--2.redis的依赖版本也要支持geo呢-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-redis</artifactId>
             <version>2.6.2</version>
         </dependency>
 
