@@ -1,69 +1,52 @@
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <style type="text/css">
-        #address {
-            text-align: center;
-            margin-top: 10%;
-        }
-
-        span {
-            color: red;
-        }
-    </style>
-    <!-- 百度地图 -->
-    <script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
-    <title>浏览器定位</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
+    <title>复制粘贴测试</title>
 </head>
-
-<body>
-<div id="address">
-    <div>根据百度地图定位获取到地理位置信息</div>
-    <p>省份：<span id="province"></span></p>
-    <p> 城市：<span id="city"></span></p>
-    <p>详细地址:<span id="detail"></span></p>
+<div id="login">
+    <button @click="copyToClipboard(lss)">复制链接</button>
 </div>
-</body>
 
-</html>
-<script type="text/javascript">
-    // 百度地图API功能
-    var geolocation = new BMap.Geolocation();
-    geolocation.getCurrentPosition(function (r) {
-        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-            console.log(r.point.lng + "__" + r.point.lat);
-            getAddress(r.point.lng, r.point.lat);
-        }
-        else {
-            alert('failed' + this.getStatus());
-        }
-    }, { enableHighAccuracy: true })
-    //关于状态码
-    //BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
-    //BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
-    //BMAP_STATUS_UNKNOWN_LOCATION	位置结果未知。对应数值“2”。
-    //BMAP_STATUS_UNKNOWN_ROUTE	导航结果未知。对应数值“3”。
-    //BMAP_STATUS_INVALID_KEY	非法密钥。对应数值“4”。
-    //BMAP_STATUS_INVALID_REQUEST	非法请求。对应数值“5”。
-    //BMAP_STATUS_PERMISSION_DENIED	没有权限。对应数值“6”。(自 1.1 新增)
-    //BMAP_STATUS_SERVICE_UNAVAILABLE	服务不可用。对应数值“7”。(自 1.1 新增)
-    //BMAP_STATUS_TIMEOUT	超时。对应数值“8”。(自 1.1 新增)
-    //通过经纬度获取地址信息
-    function getAddress(lng, lat) {
-        var myGeo = new BMap.Geocoder();
-        // 根据坐标得到地址描述
-        myGeo.getLocation(new BMap.Point(lng, lat), function (result) {
-            if (result) {
-                var province = result.addressComponents.province;
-                var city = result.addressComponents.city;
-                var detail = result.address;
-                console.log(province)
-                console.log(city)
-                document.getElementById("province").innerText = province;
-                document.getElementById("city").innerText = city;
-                document.getElementById("detail").innerText = detail;
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script>
+    new Vue({
+        el: "#login",
+        data() {
+            return {
+                lss: "123"
+            };
+
+        },
+        methods: {
+            copyToClipboard(text) {
+                var input = document.createElement('input');
+                input.setAttribute('value', text);
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('已复制到剪贴板！');
             }
-        });
-    }
+        }
+    })
 </script>
