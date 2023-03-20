@@ -124,6 +124,10 @@
             width: 300px;
         }
 
+        [v-cloak] {
+            display: none;
+        }
+
 
     </style>
 
@@ -152,7 +156,7 @@
             effect="dark">
     </el-alert>
 
-    <div class="chat-history">
+    <div class="chat-history" v-cloak>
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar">
                 <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
@@ -187,7 +191,7 @@
 
     <form>
         <el-button type="primary" v-show="isShow" id="nm" @click="open" >撤回消息选项</el-button>
-        <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
+        <el-button type="primary" v-show="isShow" id="wc" @click="copy">分享链接给好友</el-button>
 
         <p ref="firstParagraph" v-show="isShow">私聊模式启动，开启隐私对话吧</p>
         <p ref="secondParagraph" v-show="isShow">私聊模式不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -437,9 +441,33 @@
                     });
                 });
             },
-            async tiXing() {
-                this.content = '右上角-链接给好友';
+            copy() {
+                this.$confirm('此操作将复制链接, 是否继续?', '提示', {
+                    confirmButtonText: '复制本房间链接',
+                    cancelButtonText: '随机生成房间链接',
+                    type: 'warning'
+                }).then(() => {
+                    let parameter = getParameter("uuid");
+                    let parameter1 = getParameter("uuid1");
+                    let nmae="https://qianyekeji.cn/front/page/Anonymous_chat.html?uuid="+parameter+"&uuid1="+parameter1
+                    this.copyToClipboard(nmae);
+                    this.$notify({type: 'success', message: '已复制本房间链接到剪切板'});
+                }).catch(() => {
+                    let parameter = Math.random().toString(36).substring(2, 10);
+                    let parameter1 = Math.random().toString(36).substring(2, 10);
+                    let nmae="https://qianyekeji.cn/front/page/Anonymous_chat.html?uuid="+parameter+"&uuid1="+parameter1
+                    this.copyToClipboard(nmae);
+                    this.$notify({type: 'success', message: '随机生成房间链接成功,已复制'});
+                });
             },
+            copyToClipboard(text) {
+                var input = document.createElement('input');
+                input.setAttribute('value', text);
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+            }
         },
     });
 </script>

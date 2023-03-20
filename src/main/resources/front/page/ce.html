@@ -16,7 +16,7 @@
     <title>复制粘贴测试</title>
 </head>
 <div id="login">
-    <button @click="copyToClipboard(lss)">复制链接</button>
+    <el-button type="text" @click="open">点击打开 Message Box</el-button>
 </div>
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -38,6 +38,17 @@
 
         },
         methods: {
+            open() {
+                this.$confirm('此操作将复制链接, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.copyToClipboard('https://www.example.com');
+                }).catch(() => {
+                    // do nothing
+                });
+            },
             copyToClipboard(text) {
                 var input = document.createElement('input');
                 input.setAttribute('value', text);
