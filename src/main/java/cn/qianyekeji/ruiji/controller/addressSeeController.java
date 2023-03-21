@@ -12,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
-import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.*;
+import org.springframework.data.redis.domain.geo.GeoReference;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +41,8 @@ public class addressSeeController {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
    /* @GetMapping
     public R<Set<Address>> list() {
@@ -304,7 +304,7 @@ public class addressSeeController {
 
         Point point = new Point(Double.parseDouble(longitude), Double.parseDouble(latitude));
         String key = "geoaddress";
-        String member = address;
+        String member = address+uuid2;
 
         //在将获取的经纬度存入Redis的Geo数据类型中之前，这时候我们获取在线的sortedset在线人员lswc键中所有的value
         //然后将这些value存入geo数据类型
@@ -318,25 +318,22 @@ public class addressSeeController {
                 String userLatitude = userCoordinates[1];
                 Point userPoint = new Point(Double.parseDouble(userLongitude), Double.parseDouble(userLatitude));
                 members.put(userWithoutEnding, userPoint);
-            }
-            redisTemplate.opsForGeo().add(key, members);
-        }
-        // 再将传入的经纬度存储到Redis的Geo数据类型中
-        redisTemplate.opsForGeo().add(key, point, member);
-        //这时候geo数据类型中有两部分，一部分是传入的经纬度
-        // 另一部分是在线人员(这里的在线人员指的只是大厅里的人员)的经纬度
-        Circle circle = new Circle(point, new Distance(3000000, Metrics.MILES));
-        GeoResults<RedisGeoCommands.GeoLocation<String>> geoResults = redisTemplate.opsForGeo().radius(key, circle);
-        List<GeoResult<RedisGeoCommands.GeoLocation<String>>> resultList = new ArrayList<>();
-        for (GeoResult<RedisGeoCommands.GeoLocation<String>> geoResult : geoResults) {
-            RedisGeoCommands.GeoLocation<String> location = geoResult.getContent();
-            // 判断当前遍历到的location是否是传入的经纬度
-            if (!location.getName().equals(member)) {
-                double distance = redisTemplate.opsForGeo().distance(key, member, location.getName(), Metrics.MILES).getValue();
-                resultList.add(new GeoResult<>(location, new Distance(distance, Metrics.MILES)));
+                redisTemplate.opsForGeo().add(key, new Point(Double.parseDouble(userLongitude),Double.parseDouble(userLatitude)),user);
             }
         }
-//        System.out.println(resultList);
+
+
+        GeoResults<RedisGeoCommands.GeoLocation<String>> results = stringRedisTemplate.opsForGeo().search(
+                        key,
+                        GeoReference.fromCoordinate(Double.parseDouble(longitude), Double.parseDouble(latitude)),
+                        new Distance(3000000),
+                        RedisGeoCommands.GeoSearchCommandArgs.newGeoSearchArgs().includeDistance()
+                );
+        if (results == null) {
+            return R.success(Collections.emptyList());
+        }
+        List<GeoResult<RedisGeoCommands.GeoLocation<String>>> resultList = results.getContent();
+
         //清空geo数据类型中的所有内容
         redisTemplate.delete(key);
         return R.success(resultList);

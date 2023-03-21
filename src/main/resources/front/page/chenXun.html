@@ -278,7 +278,8 @@
                     // alert(JSON.stringify(this.messages[0].content))
                     // 遍历 this.messages 数组，将经纬度信息添加到 this.points 数组中
                     this.messages.forEach((message, index) => {
-                        const [lng, lat] = message.content.name.split('__');
+                        var s = message.content.name.substring(0, message.content.name.lastIndexOf("_"));
+                        const [lng, lat] = s.split('__');
                         this.points.push({ lng: Number(lng), lat: Number(lat) });
                     });
 
