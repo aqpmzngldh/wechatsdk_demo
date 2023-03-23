@@ -1,3 +1,5 @@
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 
@@ -51,5 +53,17 @@ public class ceshi {
         String userLatitude = userCoordinates[1];
         System.out.println(userLongitude);
         System.out.println(userLatitude);
+    }
+
+    @Test
+    void eee(){
+        String jsonString = "{\"code\":200,\"msg\":\"success\",\"result\":{\"content\":\"生活就像淋浴，方向转错，水深火热。\",\"source\":\"佚名\"}}";
+
+        JSONObject jsonObject = JSONUtil.parseObj(jsonString);
+        String content = jsonObject.getJSONObject("result").getStr("content");
+        String s = jsonObject.getStr("code");
+
+        System.out.println(content);
+        System.out.println(s);
     }
 }

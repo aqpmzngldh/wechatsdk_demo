@@ -49,6 +49,13 @@
             <version>1.2.76</version>
             <!--json转换使用-->
         </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.7.17</version>
+            <!--包含json转换等更强功能-->
+        </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
