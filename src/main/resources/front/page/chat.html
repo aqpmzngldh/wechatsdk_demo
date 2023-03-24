@@ -154,6 +154,19 @@
             display: none;
         }
 
+
+        .drawer-wrapper.drawer-wrapper .el-drawer {
+            width: 40% !important;
+            padding-top: 5%;
+            padding-left: 2%;
+            padding-right: 2%;
+            background: whitesmoke;
+        }
+        .el-drawer div{
+            color: blue;
+            padding-bottom: 15%;
+        }
+
     </style>
 
 </head>
@@ -209,7 +222,25 @@
 
     <form class="my-form" v-cloak>
         <el-button type="primary" v-show="isShow" id="nm"  @click="address">查看道祖位置</el-button>
-        <el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>
+        <!--<el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>-->
+
+        <el-button type="primary" v-show="isShow" id="wc" @click="drawer1" >
+            更多功能
+        </el-button>
+        <div class="drawer-wrapper">
+        <el-drawer
+                title="我是标题"
+                :visible.sync="drawer"
+                :with-header="false"
+                direction="ltr"
+                :modal="false">
+            <div @click="synopsis">网站简介</div>
+            <div @click="room">开房间</div>
+            <div @click="add">加入管理员</div>
+            <div @click="tiXing">提醒管理上线</div>
+        </el-drawer>
+        </div>
+
 
         <p ref="firstParagraph" v-show="isShow">在线人数<span style="color: black">{{person}}</span>人,写下你想对我,想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
@@ -249,6 +280,7 @@
         name: 'Chat',
         data() {
             return {
+                drawer: false,
                 messages: [],
                 inputText: '',
                 rows: 1,
@@ -425,12 +457,12 @@
                 this.isShow = false
             },
             async tiXing() {
-                this.content = '管理员二十秒后到达';
-                setTimeout(() => {
-                    this.content = '提醒管理员上线陪聊'
-                }, 5000);
-                // await sss(this.p)
-                await sss({p: this.p})
+                // this.content = '管理员二十秒后到达';
+                // setTimeout(() => {
+                //     this.content = '提醒管理员上线陪聊'
+                // }, 5000);
+                // // await sss(this.p)
+                // await sss({p: this.p})
             },
             selectImage() {
                 const input = document.createElement('input');
@@ -500,6 +532,19 @@
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     })
             },
+            drawer1(){
+                this.drawer=!this.drawer
+            },
+            add(){
+
+            },
+            room(){
+
+            },
+            synopsis(){
+
+            }
+
         },
     });
 </script>
