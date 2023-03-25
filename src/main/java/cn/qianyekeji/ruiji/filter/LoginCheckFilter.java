@@ -67,7 +67,8 @@ public class LoginCheckFilter implements Filter {
                 "/MP_verify_03jsGPvZkHlHOejC.txt",
                 "/e94e1abec6a39542e13386eaaa1bdb3d.txt",
                 "/privateChat/**",
-                "/addressSee/**"
+                "/addressSee/**",
+                "/other/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"
