@@ -39,6 +39,14 @@ function chatName2(data) {
         params:{...data}
     })
 }
+//匿名开房间
+function chatName3(data) {
+    return $axios({
+        'url': '/other',
+        'method': 'post',
+        params:{...data}
+    })
+}
 
 //查看群聊当天聊天记录
 function chatSee() {
@@ -51,6 +59,15 @@ function chatSee() {
 function privateChatSee(data) {
     return $axios({
         'url': '/privateChat',
+        'method': 'get',
+        params:{...data}
+    })
+}
+
+//查看开房间当天聊天记录
+function roomChatSee(data) {
+    return $axios({
+        'url': '/other',
         'method': 'get',
         params:{...data}
     })

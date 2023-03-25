@@ -66,4 +66,12 @@ public class ceshi {
         System.out.println(content);
         System.out.println(s);
     }
+
+    @Test
+    void rrr(){
+        String k="0566cghmortwxxyz,03/25 11:41:43";
+        int length = 14; // 我们要截取的子串长度为8
+        String time = k.substring(k.length() - length);
+        System.out.println(time);
+    }
 }
