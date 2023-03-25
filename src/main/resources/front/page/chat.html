@@ -234,7 +234,7 @@
                 :with-header="false"
                 direction="ltr"
                 :modal="false">
-            <div @click="synopsis">网站简介</div>
+            <div><a href="/front/page/about.html">网站简介</a></div>
             <div @click="room">开房间</div>
             <div @click="join">加入管理员</div>
             <div @click="tiXing">提醒管理上线</div>
@@ -325,6 +325,7 @@
                 localStorage.setItem('uuid', uuid);
             }
 
+            // localStorage.setItem('myName', "淘气的杰瑞");
             var name = localStorage.getItem('myName');
             if (name == null) {
                 // 定义形容词和名词数组
@@ -539,9 +540,6 @@
 
             },
             room(){
-
-            },
-            synopsis(){
 
             }
 
