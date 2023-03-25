@@ -239,6 +239,7 @@
                 :modal="false">
             <div><a href="/front/page/about.html">网站简介</a></div>
             <div @click="room">开房间</div>
+            <div @click="changeName">改名</div>
             <div @click="join">加入管理员</div>
             <div @click="tiXing">提醒管理上线</div>
         </el-drawer>
@@ -554,6 +555,23 @@
                         message: '开房成功'
                     });
                     window.location.href = '/front/page/room_chat.html?value=' + value;
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+            },
+            changeName(){
+                this.$prompt('请输入新名字', '改名提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(({ value }) => {
+                    this.$message({
+                        type: 'success',
+                        message: '改名成功'
+                    });
+                    localStorage.setItem('myName', value);
                 }).catch(() => {
                     this.$message({
                         type: 'info',
