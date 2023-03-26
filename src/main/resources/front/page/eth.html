@@ -26,11 +26,18 @@
         .about .el-input__inner{
             margin-top: 20px;
         }
+        [v-cloak] {
+            display: none;
+        }
+        #container{
+            height: 300px;
+        }
     </style>
 </head>
 
 <body>
-<div class="about">
+<div class="about" v-cloak>
+    <div id="container"></div>
     <el-input v-model="value1" placeholder="请输入自己拥有的ETH数量" @input="handleInput"></el-input>
     <el-input v-model="value2" placeholder="显示计算结果" disabled></el-input>
     <p v-show="cnm">您距离退休还差{{number}}枚ETH</p>
@@ -47,6 +54,7 @@
 <!-- 引入axios -->
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
+<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
 <script>
     new Vue({
         el: ".about",
@@ -61,6 +69,36 @@
         },
         mounted() {
             //调用蜜蜂获取今日eth价格赋值给handleInput的参数，并获取最近7日价格给echarts展示折线图
+            var dom = document.getElementById('container');
+            var myChart = echarts.init(dom, null, {
+                renderer: 'canvas',
+                useDirtyRect: false
+            });
+            var app = {};
+            var option;
+
+            option = {
+                xAxis: {
+                    type: 'category',
+                    data: ['3/21', '3/22', '3/23', '3/24', '3/25', '3/26', '3/27']
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        type: 'line',
+                        smooth: true
+                    }
+                ]
+            };
+            if (option && typeof option === 'object') {
+                myChart.setOption(option);
+            }
+            window.addEventListener('resize', myChart.resize);
+
+            //查询当前实时价格进行计算
             this.initData();
         },
         methods: {
