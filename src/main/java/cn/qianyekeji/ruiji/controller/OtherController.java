@@ -247,48 +247,38 @@ public class OtherController {
 
     }
 
-    @PostMapping("/zan/{p}/{k}")
-    public R<String> dianzan(@PathVariable("p") String p, @PathVariable("k") String k) throws Exception {
-
-        if (p==""||p==null){
-            return null;
+    @PostMapping("/value/{k}")
+    public R<String> dianzan(@PathVariable("k") String k) throws Exception {
+        Set<String> members = redisTemplate.opsForSet().members("guanli");
+        int guanli = members.size();
+        if (guanli>5){
+            return R.error("当前管理员已满，请明天后重试");
+        }
+        String newValue = k + "---0";
+        if (guanli>0) {
+            for (String value : members) {
+                String[] parts = value.split("---"); // 按照---分隔符分割元素
+                if (parts.length == 2 && parts[0].equals(k)) {
+                    //这时候有同名邮箱这时候进一步判断激活状态是成功1还是失败0
+                    if (parts[1].equals("0")) {
+                        //激活失败，返回前段让用户去激活
+                        return R.error("请登录该邮箱后完成管理员激活");
+                    } else {
+                        //已经是激活成功转态
+                        return R.error("您已经是管理员，无需进一步操作");
+                    }
+                }else{
+                    //数据库中的数据里没有同名邮箱
+                    redisTemplate.opsForSet().add("guanli", newValue);
+                    return R.error("请登录该邮箱后完成管理员激活");
+                }
+            }
+        }else {
+            //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活
+            redisTemplate.opsForSet().add("guanli", newValue);
+            return R.error("请登录该邮箱后完成管理员激活");
         }
 
-        System.out.println(p + "-----------------------");
-        k = new String(Base64.getDecoder().decode(k));
-        System.out.println(k + "-----------------------");
-        //每次点赞的时候首先判断传递的uuid是否在hash结构中key为zan的字符串中
-        //如果不在，那我们新增这个，然后number+1
-        //如果在那我们删除掉这个，然后number-1
-        HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
-        // 将新值设置为哈希类型字段的值
-        String zong = hashOps.get(k, "zan");
-
-        String[] arr2 = zong.split(",");
-        Integer num = 0;
-        ArrayList<String> list = new ArrayList<>(Arrays.asList(arr2));
-        if (list.contains(p)) {
-            num++;
-            list.remove(p);
-        } else {
-            list.add(p);
-        }
-        String[] newArr2 = list.toArray(new String[0]);
-        String newStr2 = String.join(",", newArr2); // 将新数组转换成以逗号分隔的字符串
-        hashOps.put(k, "zan", newStr2);
-        //number-1
-        if (num == 0) {
-//            不包含，这时候新增number+1
-            String s = hashOps.get(k, "number");
-            String a = s.length() == 0 ? "0" : s;
-            hashOps.put(k, "number", (Integer.parseInt(a) + 1) + "");
-        } else {
-//            包含，number-1
-            String s = hashOps.get(k, "number");
-            String a = s.length() == 0 ? "0" : s;
-            hashOps.put(k, "number", (Integer.parseInt(a) - 1) + "");
-        }
         return null;
-
     }
 }

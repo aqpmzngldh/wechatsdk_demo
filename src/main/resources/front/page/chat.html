@@ -541,7 +541,25 @@
                 this.drawer=!this.drawer
             },
             join(){
-
+                this.$prompt('请输入您的邮箱', '管理提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    inputErrorMessage: '邮箱格式不正确，请重新输入',
+                }).then(({ value }) => {
+                    $axios.post("/other/value/" + value)
+                        .then((res) => {
+                            this.$notify({type: 'warning', message: res.msg});
+                        })
+                        .catch(err => {
+                            this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                        })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
             },
             room(){
                 this.$prompt('请输入4位随机数字为房间号', '开房提示', {
