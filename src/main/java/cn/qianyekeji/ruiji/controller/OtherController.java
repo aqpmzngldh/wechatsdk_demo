@@ -272,15 +272,16 @@ public class OtherController {
                     }
                 } else {
                     //数据库中的数据里没有同名邮箱
-                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+//                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
                     redisTemplate.opsForSet().add("guanli", newValue);
                     return R.error("请登录该邮箱后完成管理员激活");
                 }
             }
         }
         //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活,然后发送邮件让他去激活
-//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
-        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
         redisTemplate.opsForSet().add("guanli", newValue);
         return R.error("请登录该邮箱后完成管理员激活");
     }
@@ -299,7 +300,8 @@ public class OtherController {
                     redisTemplate.opsForSet().remove("guanli", value);
                     redisTemplate.opsForSet().add("guanli", parts[0] + "---" + parts[1]);
                     response.setContentType("text/html;charset=UTF-8");
-                    response.getWriter().write("激活成功，请<a href='http://localhost:8089/front/page/chat.html'>登录</a>");
+//                    response.getWriter().write("激活成功，请<a href='http://localhost:8089/front/page/chat.html'>登录</a>");
+                    response.getWriter().write("激活成功，请<a href='https://qianyekeji.cn/front/page/chat.html'>登录</a>");
                     return null;
                 } else {
                     //已经是激活成功转态,页面回写已激活
