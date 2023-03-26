@@ -311,4 +311,16 @@ public class OtherController {
         }
         return null;
     }
+    @PostMapping("/tiXing")
+    public R<String> tiXing() throws Exception {
+        Set<String> members = redisTemplate.opsForSet().members("guanli");
+        for (String value : members) {
+            String[] parts = value.split("---"); // 按照---分隔符分割元素
+            if (parts.length == 2 && parts[1].equals("1")) {
+                mailUtil.send("",parts[0],"【匿名群聊提醒】","有人来找你聊天了", Collections.singletonList(""));
+
+            }
+        }
+        return null;
+    }
 }

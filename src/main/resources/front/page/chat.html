@@ -462,12 +462,10 @@
                 this.isShow = false
             },
             async tiXing() {
-                // this.content = '管理员二十秒后到达';
-                // setTimeout(() => {
-                //     this.content = '提醒管理员上线陪聊'
-                // }, 5000);
-                // // await sss(this.p)
-                // await sss({p: this.p})
+                $axios.post("/other/tiXing")
+                    .then((res) => {
+                        this.$notify({type: 'success', message: '已提醒，管理员火速赶来中...'});
+                    })
             },
             selectImage() {
                 const input = document.createElement('input');
