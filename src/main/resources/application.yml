@@ -67,3 +67,4 @@ mail:
 
 
 #除了这些配置文件还有dishcontroller中的http://路径要改一下
+#othercontroller里面邮箱的本地和外地
