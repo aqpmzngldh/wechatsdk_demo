@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>网站简介</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/address.css"/>
+    <style>
+        body {
+            padding: 30px;
+            font-size: 41px;
+            font-family: fangsong;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="about">
+    <el-input v-model="value1" placeholder="请输入自己拥有的ETH数量" @input="handleInput"></el-input>
+    <el-input v-model="value2" placeholder="显示计算结果" disabled></el-input>
+    <p v-show="cnm">您距离退休还差{{number}}枚ETH</p>
+    <p v-show="!cnm">可以不用努力了</p>
+</div>
+
+<!-- 开发环境版本,包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<script src="./../api/address.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script>
+    new Vue({
+        el: ".about",
+        data() {
+            return {
+                value1: "",
+                value2: "",
+                number: 1000,
+                cnm: true
+            };
+        },
+        mounted() {
+            //调用蜜蜂获取今日eth价格赋值给handleInput的参数，并获取最近7日价格给echarts展示折线图
+
+        },
+        methods: {
+            handleInput(value) {
+                this.value2 = value * 2;
+                this.number=1000-value
+                if (this.number<0){
+                    this.cnm=false
+                }else {
+                    this.cnm=true
+                }
+            },
+            goBack() {
+                history.go(-1)
+            }
+        }
+    })
+</script>
+</body>
+</html>
