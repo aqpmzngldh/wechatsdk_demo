@@ -5,6 +5,7 @@ import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
+import cn.qianyekeji.ruiji.utils.MailUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,11 @@ public class OtherController {
     private GiteeUploader giteeUploader;
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private MailUtil mailUtil;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile,String parameter,String parameter1, HttpServletRequest request, String address,String uuid, String name, String time, String body) throws Exception {
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, String parameter, String parameter1, HttpServletRequest request, String address, String uuid, String name, String time, String body) throws Exception {
 
 
         String prefix = name.substring(0, 3); // 截取前三个字符
@@ -53,39 +56,39 @@ public class OtherController {
         if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
-        if (parameter==null||parameter.length()!=4){
+        if (parameter == null || parameter.length() != 4) {
             return null;
         }
-        String touxiang="";
+        String touxiang = "";
         if ("汤姆".equals(suffix1)) {
-            touxiang="./../images/1.ico";
+            touxiang = "./../images/1.ico";
         }
         if ("杰瑞".equals(suffix1)) {
-            touxiang="./../images/2.ico";
+            touxiang = "./../images/2.ico";
         }
         if ("大熊".equals(suffix1)) {
-            touxiang="./../images/3.ico";
+            touxiang = "./../images/3.ico";
         }
         if ("小夫".equals(suffix1)) {
-            touxiang="./../images/4.ico";
+            touxiang = "./../images/4.ico";
         }
         if ("哆嗦A梦".equals(suffix1)) {
-            touxiang="./../images/5.ico";
+            touxiang = "./../images/5.ico";
         }
         if ("胖虎".equals(suffix1)) {
-            touxiang="./../images/6.ico";
+            touxiang = "./../images/6.ico";
         }
         if ("蝎子莱莱".equals(suffix1)) {
-            touxiang="./../images/7.ico";
+            touxiang = "./../images/7.ico";
         }
         if ("鲨鱼辣椒".equals(suffix1)) {
-            touxiang="./../images/8.ico";
+            touxiang = "./../images/8.ico";
         }
         if ("蜘蛛侦探".equals(suffix1)) {
-            touxiang="./../images/9.ico";
+            touxiang = "./../images/9.ico";
         }
         if ("蟑螂恶霸".equals(suffix1)) {
-            touxiang="./../images/10.ico";
+            touxiang = "./../images/10.ico";
         }
 
 
@@ -138,7 +141,7 @@ public class OtherController {
             time = currentDateTime.format(formatter);
 
             String s = parameter;
-            String key = s+","+time; // 生成唯一键
+            String key = s + "," + time; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", "");
             chatRecord.put("url", fileName);
@@ -160,7 +163,7 @@ public class OtherController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd HH:mm:ss");
             time = currentDateTime.format(formatter);
             String s = parameter;
-            String key = s+","+time; // 生成唯一键
+            String key = s + "," + time; // 生成唯一键
             Map<String, String> chatRecord = new HashMap<>();
             chatRecord.put("body", body);
             chatRecord.put("url", "");
@@ -185,7 +188,7 @@ public class OtherController {
         String time1 = currentDateTime.format(formatter);
 
         String s = parameter;
-        String key=s+","+time1+ "*";
+        String key = s + "," + time1 + "*";
         int position = key.length() - 3; // 获取要插入字符的位置，即倒数第三个位置
         key = key.substring(0, position) + "/" + key.substring(position); // 在指定位置插入字符
 
@@ -203,7 +206,7 @@ public class OtherController {
             String number = (String) chatRecord.get("number");
             String touXiang = (String) chatRecord.get("touXiang");
             String uuid = (String) chatRecord.get("uuid");
-            Chat chat = new Chat(time, body, url, name, k, number,touXiang,uuid);
+            Chat chat = new Chat(time, body, url, name, k, number, touXiang, uuid);
             chats.add(chat);
         }
 
@@ -251,11 +254,11 @@ public class OtherController {
     public R<String> dianzan(@PathVariable("k") String k) throws Exception {
         Set<String> members = redisTemplate.opsForSet().members("guanli");
         int guanli = members.size();
-        if (guanli>5){
+        if (guanli > 5) {
             return R.error("当前管理员已满，请明天后重试");
         }
         String newValue = k + "---0";
-        if (guanli>0) {
+        if (guanli > 0) {
             for (String value : members) {
                 String[] parts = value.split("---"); // 按照---分隔符分割元素
                 if (parts.length == 2 && parts[0].equals(k)) {
@@ -267,18 +270,45 @@ public class OtherController {
                         //已经是激活成功转态
                         return R.error("您已经是管理员，无需进一步操作");
                     }
-                }else{
+                } else {
                     //数据库中的数据里没有同名邮箱
+                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
                     redisTemplate.opsForSet().add("guanli", newValue);
                     return R.error("请登录该邮箱后完成管理员激活");
                 }
             }
-        }else {
-            //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活
-            redisTemplate.opsForSet().add("guanli", newValue);
-            return R.error("请登录该邮箱后完成管理员激活");
         }
+        //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活,然后发送邮件让他去激活
+//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+        redisTemplate.opsForSet().add("guanli", newValue);
+        return R.error("请登录该邮箱后完成管理员激活");
+    }
 
+    @GetMapping("/active/{k}")
+    public R<String> active(@PathVariable("k") String k, HttpServletResponse response) throws Exception {
+        System.out.println(k);
+        Set<String> members = redisTemplate.opsForSet().members("guanli");
+        for (String value : members) {
+            String[] parts = value.split("---"); // 按照---分隔符分割元素
+            if (parts.length == 2 && parts[0].equals(k)) {
+                //这时候有同名邮箱这时候进一步判断激活状态是成功1还是失败0
+                if (parts[1].equals("0")) {
+                    //把0改成1，设置成已激活，然后页面回写已激活，请登录：localhost...
+                    parts[1]="1";
+                    redisTemplate.opsForSet().remove("guanli", value);
+                    redisTemplate.opsForSet().add("guanli", parts[0] + "---" + parts[1]);
+                    response.setContentType("text/html;charset=UTF-8");
+                    response.getWriter().write("激活成功，请<a href='http://localhost:8089/front/page/chat.html'>登录</a>");
+                    return null;
+                } else {
+                    //已经是激活成功转态,页面回写已激活
+                    response.setContentType("text/html;charset=UTF-8");
+                    response.getWriter().write("您已经是管理员，无需进一步操作");
+                    return null;
+                }
+            }
+        }
         return null;
     }
 }
