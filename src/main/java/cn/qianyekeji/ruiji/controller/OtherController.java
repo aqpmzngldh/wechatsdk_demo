@@ -1,5 +1,9 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.hutool.core.lang.Dict;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
@@ -13,14 +17,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -324,5 +329,23 @@ public class OtherController {
             }
         }
         return null;
+    }
+
+    @PostMapping("/ETH")
+    public R<Double> eth() throws Exception {
+//        URL url = new URL( "https://data.mifengcha.com/api/v3/price?slug=ethereum&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE");
+        String URL = "https://data.mifengcha.com/api/v3/price?slug=ethereum&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE";
+        RestTemplate restTemplate = new RestTemplate();
+        String forObject = restTemplate.getForObject(URL, String.class);
+        Dict dict = Dict.create();
+        dict.put("data", forObject);
+        JSONObject jsonObject = JSONUtil.parseObj(dict);
+        // 获取数据对象数组
+        JSONArray dataArray = jsonObject.getJSONArray("data");
+        // 获取数组中的第一个对象
+        JSONObject dataObject = dataArray.getJSONObject(0);
+        // 获取 u 属性的值
+        double uValue = dataObject.getDouble("u");
+        return R.success(uValue);
     }
 }

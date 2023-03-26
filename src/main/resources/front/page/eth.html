@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>网站简介</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
     <link rel="icon" href="./../images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./../js/base.js"></script>
@@ -17,9 +19,12 @@
     <style>
         body {
             padding: 30px;
-            font-size: 41px;
+            font-size: 20px;
             font-family: fangsong;
             text-align: center;
+        }
+        .about .el-input__inner{
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -50,17 +55,27 @@
                 value1: "",
                 value2: "",
                 number: 1000,
-                cnm: true
+                cnm: true,
+                price: ""
             };
         },
         mounted() {
             //调用蜜蜂获取今日eth价格赋值给handleInput的参数，并获取最近7日价格给echarts展示折线图
-
+            this.initData();
         },
         methods: {
+             initData() {
+                 $axios.post("/other/ETH")
+                     .then((res) => {
+                         this.price=res.data
+                     })
+                     .catch(err => {
+                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                     })
+            },
             handleInput(value) {
-                this.value2 = value * 2;
-                this.number=1000-value
+                this.value2 = value * this.price+"USDT";
+                this.number=(1000-value)
                 if (this.number<0){
                     this.cnm=false
                 }else {
