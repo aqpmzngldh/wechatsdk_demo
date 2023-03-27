@@ -64,7 +64,9 @@
                 value2: "",
                 number: 1000,
                 cnm: true,
-                price: ""
+                price: "",
+                X: [],
+                Y: []
             };
         },
         mounted() {
@@ -80,14 +82,16 @@
             option = {
                 xAxis: {
                     type: 'category',
-                    data: ['3/21', '3/22', '3/23', '3/24', '3/25', '3/26', '3/27']
+                    // data: ['3/21', '3/22', '3/23', '3/24', '3/25', '3/26', '3/27']
+                    data: this.X
                 },
                 yAxis: {
                     type: 'value'
                 },
                 series: [
                     {
-                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        // data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        data: this.Y,
                         type: 'line',
                         smooth: true
                     }
@@ -111,7 +115,15 @@
                  }, 2000);
                  $axios.post("/other/eth")
                      .then((res) => {
+                         //这个的res.data数据格式是：["1737.678--03-21","1717.78--03-22","1735.34--03-23"]
+                         //我现在想把以--分隔，然后前面的给到echarts的y轴，后面的时间给到x轴
                          alert(JSON.stringify(res.data))
+                         let data = res.data;
+                         for (let i = 0; i < data.length; i++) {
+                             let item = data[i].split("--");
+                             this.Y.push(item[0]);
+                             this.X.push(item[1]);
+                         }
                      })
                      .catch(err => {
                          this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
