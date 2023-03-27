@@ -227,7 +227,7 @@
         <el-button type="primary" v-show="isShow" id="nm"  @click="address">查看道祖位置</el-button>
         <!--<el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>-->
 
-        <el-button type="primary" v-show="isShow" id="wc" @click="drawer1" >
+        <el-button type="primary" v-show="isShow" id="wc" @click="drawer=!drawer" >
             更多功能
         </el-button>
         <div class="drawer-wrapper">
@@ -242,6 +242,7 @@
             <div @click="changeName">改名</div>
             <div @click="join">加入管理员</div>
             <div @click="tiXing">提醒管理上线</div>
+            <div><a href="/front/page/eth.html">echarts之ETH</a></div>
         </el-drawer>
         </div>
 

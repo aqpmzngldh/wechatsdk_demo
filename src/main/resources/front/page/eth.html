@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>网站简介</title>
+    <title>eth实时价格计算</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
     <link rel="icon" href="./../images/favico.ico">
@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="./../styles/address.css"/>
     <style>
         body {
-            padding: 30px;
+            padding: 15px;
             font-size: 20px;
             font-family: fangsong;
             text-align: center;
@@ -70,28 +70,24 @@
             };
         },
         mounted() {
-            //调用蜜蜂获取今日eth价格赋值给handleInput的参数，并获取最近7日价格给echarts展示折线图
-            //查询当前实时价格进行计算
             this.initData();
         },
         methods: {
              initData() {
+                 let vm = this;
                  setTimeout(function() {
                      $axios.post("/other/ETH")
                          .then((res) => {
-                             this.price=res.data
+                             vm.price=res.data
                          })
                  }, 2000);
                  $axios.post("/other/eth")
                      .then((res) => {
-                         //这个的res.data数据格式是：["1737.678--03-21","1717.78--03-22","1735.34--03-23"]
-                         //我现在想把以--分隔，然后前面的给到echarts的y轴，后面的时间给到x轴
-                         alert(JSON.stringify(res.data))
                          let data = res.data;
                          for (let i = 0; i < data.length; i++) {
                              let item = data[i].split("--");
                              this.Y.push(item[0]);
-                             this.X.push(item[1]);
+                             this.X.push(item[1].slice(-2));
                          }
                          this.initChart(); // 数据获取完毕后，手动调用初始化 echarts 图表方法
                      })
@@ -107,9 +103,6 @@
                 }else {
                     this.cnm=true
                 }
-            },
-            goBack() {
-                history.go(-1)
             },
             initChart() {
                 var dom = document.getElementById('container');
