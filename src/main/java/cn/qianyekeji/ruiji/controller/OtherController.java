@@ -27,8 +27,11 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -347,5 +350,46 @@ public class OtherController {
         // 获取 u 属性的值
         double uValue = dataObject.getDouble("u");
         return R.success(uValue);
+    }
+
+    @PostMapping("/eth")
+    public R<List<String>> ETH() throws Exception {
+        // 当前时间的凌晨
+        Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        long nowMillis = now.toEpochMilli();
+
+        // 7天前21号凌晨
+        LocalDate localDate = LocalDate.now().minusDays(7).withDayOfMonth(21);
+        Instant instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
+        long startMillis = instant.toEpochMilli();
+
+        String URL = "https://data.mifengcha.com/api/v3/price/history?slug=ethereum&interval=1d&start="+startMillis+"&end="+nowMillis+"&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE";
+        RestTemplate restTemplate = new RestTemplate();
+        String forObject = restTemplate.getForObject(URL, String.class);
+        //因为蜜蜂提供数据的特殊，这里要拼接一下再取要不然报错
+        Dict dict = Dict.create();
+        dict.put("data", forObject);
+        JSONObject jsonObject = JSONUtil.parseObj(dict);
+        // 获取数据对象数组
+        JSONArray dataArray = jsonObject.getJSONArray("data");
+        List<String> uValues = new ArrayList<>();
+        // 循环遍历每一个数据对象，获取 u 值并存储到 uValues 中
+        for (int i = 0; i < dataArray.size(); i++) {
+            JSONObject dataObject = dataArray.getJSONObject(i);
+            double uValue = dataObject.getDouble("u");
+            Long t = new Double(dataObject.getDouble("T")).longValue();
+            String time = getTime(t);
+            String s = uValue +"--"+ time;
+            uValues.add(s);
+        }
+
+        return R.success(uValues);
+    }
+    public String getTime(Long timestamp) {
+        Instant instant = Instant.ofEpochMilli(timestamp);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd")
+                .withZone(ZoneId.of("UTC"));
+        String formattedDateTime = formatter.format(instant);
+        return formattedDateTime;
     }
 }

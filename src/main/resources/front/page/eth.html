@@ -103,9 +103,15 @@
         },
         methods: {
              initData() {
-                 $axios.post("/other/ETH")
+                 setTimeout(function() {
+                     $axios.post("/other/ETH")
+                         .then((res) => {
+                             this.price=res.data
+                         })
+                 }, 2000);
+                 $axios.post("/other/eth")
                      .then((res) => {
-                         this.price=res.data
+                         alert(JSON.stringify(res.data))
                      })
                      .catch(err => {
                          this.$notify({type: 'warning', message: '程序出错，请联系管理员'});

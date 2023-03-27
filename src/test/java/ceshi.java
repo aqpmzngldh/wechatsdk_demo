@@ -8,6 +8,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -74,4 +79,36 @@ public class ceshi {
         String time = k.substring(k.length() - length);
         System.out.println(time);
     }
+    @Test
+    void ttt(){
+//        // 时间戳start对应2023年3月21日凌晨，计算其对应的毫秒值
+//        Instant start = Instant.parse("2023-03-21T00:00:00Z");
+//        long startMillis = start.toEpochMilli();
+//        System.out.println("start = " + startMillis);
+//
+//        // 时间戳end对应2023年3月27日凌晨，计算其对应的毫秒值
+//        Instant end = Instant.parse("2023-03-27T00:00:00Z");
+//        long endMillis = end.toEpochMilli();
+//        System.out.println("end = " + endMillis);
+        // 当前时间的凌晨
+        Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        long nowMillis = now.toEpochMilli();
+        System.out.println("now = " + nowMillis);
+
+        // 7天前21号凌晨
+        LocalDate localDate = LocalDate.now().minusDays(7).withDayOfMonth(21);
+        Instant instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
+        long startMillis = instant.toEpochMilli();
+        System.out.println("start = " + startMillis);
+    }
+    @Test
+    void timestampToDateTime() {
+        long timestamp = 1679356800000L; // 2022-07-21 00:00:00 UTC
+        Instant instant = Instant.ofEpochMilli(timestamp);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd")
+                .withZone(ZoneId.of("UTC"));
+        String formattedDateTime = formatter.format(instant);
+        System.out.println("Timestamp " + timestamp + " corresponds to " + formattedDateTime);
+    }
+
 }
