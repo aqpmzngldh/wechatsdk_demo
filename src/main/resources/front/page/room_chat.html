@@ -372,8 +372,7 @@
                 input.type = 'file';
                 input.accept = 'image/*';
                 let name = localStorage.getItem('myName');
-                let parameter = getParameter("uuid");
-                let parameter1 = getParameter("uuid1");
+                let parameter = getParameter("value");
                 let uuid = localStorage.getItem('uuid');
                 input.onchange = (event) => {
                     const file = event.target.files[0];
@@ -384,11 +383,10 @@
                     formData.append('name', name);
                     formData.append('uuid', uuid);
                     formData.append('parameter', parameter);
-                    formData.append('parameter1', parameter1);
                     // 附加任何其他表单数据到FormData对象;
                     // 使用AJAX请求将表单数据发送到后端
                     const xhr = new XMLHttpRequest();
-                    xhr.open('POST', '/privateChat');
+                    xhr.open('POST', '/other');
                     xhr.send(formData);
                 };
                 input.click();
@@ -413,7 +411,7 @@
                     // 调用后端接口，传入 value 作为参数
                     let parameter = getParameter("value");
                     let params=parameter
-                    $axios.post('/addressSee/delete/' + params+ '/' +btoa(value))
+                    $axios.post('/addressSee/delete1/' + params+ '/' +btoa(value))
                         .then(response => {
                         // 处理接口返回结果
 

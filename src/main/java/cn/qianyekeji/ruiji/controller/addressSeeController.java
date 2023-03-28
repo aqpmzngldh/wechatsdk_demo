@@ -352,4 +352,14 @@ public class addressSeeController {
         return R.success("1");
     }
 
+    @PostMapping("/delete1/{param1}/{param2}")
+    public R<String> delete1(@PathVariable("param1") String param1,@PathVariable("param2") String param2) {
+        param2 = new String(Base64.getDecoder().decode(param2));
+        String s = param1 + "," + param2;
+        System.out.println(s);
+        Boolean delete = redisTemplate.delete(s);
+        System.out.println(delete);
+        return R.success("1");
+    }
+
 }
