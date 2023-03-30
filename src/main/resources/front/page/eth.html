@@ -121,6 +121,31 @@
                     yAxis: {
                         type: 'value'
                     },
+                    //弹窗显示
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        },
+                        formatter: function(params) {
+                            var yValue = params[0].data;
+                            return 'Y 轴值：' + yValue;
+                        }
+                    },
+                    dataZoom: [
+                        //加滑动
+                        {
+                            type: 'slider',
+                            start: 50,
+                            end: 100
+                        },
+                        //折线图里面滑动
+                        {
+                            type: 'inside',
+                            start: 50,
+                            end: 100
+                        }
+                    ],
                     series: [
                         {
                             data: this.Y,
@@ -132,6 +157,10 @@
                 if (option && typeof option === 'object') {
                     myChart.setOption(option);
                 }
+                // myChart.on('click', function (params) {
+                //     alert(params.value);
+                //     alert(params.name);
+                // });
                 window.addEventListener('resize', myChart.resize);
             }
 

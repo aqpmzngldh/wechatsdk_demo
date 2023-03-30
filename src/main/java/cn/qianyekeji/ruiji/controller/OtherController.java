@@ -358,8 +358,8 @@ public class OtherController {
         Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
         long nowMillis = now.toEpochMilli();
 
-        // 7天前21号凌晨
-        LocalDate localDate = LocalDate.now().minusDays(7).withDayOfMonth(21);
+        // 15天之前的凌晨
+        LocalDate localDate = LocalDate.now().minusDays(15);
         Instant instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
         long startMillis = instant.toEpochMilli();
 
