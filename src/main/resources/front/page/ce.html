@@ -1,63 +1,47 @@
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <link rel="icon" href="./../images/favico.ico">
-    <!--不同屏幕尺寸根字体设置-->
-    <script src="./../js/base.js"></script>
-    <!--element-ui的样式-->
-    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
-    <!--引入vant样式-->
-    <link rel="stylesheet" href="../styles/vant.min.css"/>
-    <!-- 引入样式  -->
-    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
-    <!--本页面内容的样式-->
-    <link rel="stylesheet" href="./../styles/login.css"/>
-    <title>复制粘贴测试</title>
-</head>
-<div id="login">
-    <el-button type="text" @click="open">点击打开 Message Box</el-button>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+
+<div class="message">
+    <div class="avatar"></div>
+    <div class="content">这是一条消息</div>
 </div>
+<div id="abc"></div>
 
-<!-- 开发环境版本，包含了有帮助的命令行警告 -->
-<script src="../../backend/plugins/vue/vue.js"></script>
-<!-- 引入组件库 -->
-<script src="../../backend/plugins/element-ui/index.js"></script>
-<!-- 引入vant样式 -->
-<script src="./../js/vant.min.js"></script>
-<!-- 引入axios -->
-<script src="../../backend/plugins/axios/axios.min.js"></script>
-<script src="./../js/request.js"></script>
 <script>
-    new Vue({
-        el: "#login",
-        data() {
-            return {
-                lss: "123"
-            };
+    // 监听消息内容的长按事件
+    const messages = document.querySelectorAll('.message');
+    messages.forEach((message) => {
+        let isPressed = false;
+        let longPressTimerId;
 
-        },
-        methods: {
-            open() {
-                this.$confirm('此操作将复制链接, 是否继续?', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    this.copyToClipboard('https://www.example.com');
-                }).catch(() => {
-                    // do nothing
-                });
-            },
-            copyToClipboard(text) {
-                var input = document.createElement('input');
-                input.setAttribute('value', text);
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-                alert('已复制到剪贴板！');
-            }
+        message.addEventListener('touchstart', onMessagePressStart);
+        message.addEventListener('touchend', onMessagePressEnd);
+        message.addEventListener('mousedown', onMessagePressStart);
+        message.addEventListener('mouseup', onMessagePressEnd);
+
+        function onMessagePressStart(event) {
+            isPressed = true;
+            // 设置计时器，1秒后触发长按事件
+            longPressTimerId = setTimeout(() => {
+                if (isPressed) {
+                    // 取消默认事件，避免影响用户选择文本
+                    event.preventDefault();
+                    // 获取长按的消息元素
+                    const message = event.target;
+                    // 获取长按的消息内容
+                    const messageContent = message.innerText;
+                    // 弹出用户的消息内容
+                    alert(messageContent);
+                }
+            }, 1000);
         }
-    })
+
+        function onMessagePressEnd() {
+            // 取消长按事件的计时器
+            clearTimeout(longPressTimerId);
+            isPressed = false;
+        }
+    });
 </script>
+
