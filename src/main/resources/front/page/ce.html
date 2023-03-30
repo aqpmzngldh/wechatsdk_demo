@@ -6,7 +6,7 @@
     <div class="avatar"></div>
     <div class="content">这是一条消息</div>
 </div>
-<div id="abc"></div>
+<input type="text" id="abc">
 
 <script>
     // 监听消息内容的长按事件
@@ -31,6 +31,7 @@
                     const message = event.target;
                     // 获取长按的消息内容
                     const messageContent = message.innerText;
+                    document.getElementById("abc").value=messageContent
                     // 弹出用户的消息内容
                     alert(messageContent);
                 }
