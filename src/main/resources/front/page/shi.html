@@ -89,7 +89,7 @@
         <el-form-item label="送货人手机号" prop="phone">
             <el-input v-model="form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="送货车牌">
+        <el-form-item label="送货车牌" prop="sign">
             <el-input v-model="form.sign"></el-input>
         </el-form-item>
 
@@ -109,7 +109,7 @@
 
         <div id="wc">
             <el-button type="primary" @click="onSubmit('form')">提交</el-button>
-            <el-button>导出excel</el-button>
+            <el-button @click="excel">导出excel</el-button>
         </div>
     </el-form>
 </div>
@@ -146,6 +146,9 @@
                     phone: [
                         {required: true, message: '请输入手机号', trigger: 'blur'},
                         {pattern: /^1[3-9]\d{9}$/, message: '输入不合法，请重新输入', trigger: 'blur'}
+                    ],
+                    sign: [
+                        {required: true, message: '请输入车牌', trigger: 'blur'},
                     ]
                 }
             };
@@ -184,8 +187,15 @@
                         });
                     }
                 });
+            },
+            excel(){
+                $axios.post("/ceShi/excel")
+                    .then((res) => {
+                        if (res.code === 1) {
+                            this.$notify({type: 'warning', message: '导出成功'});
+                        }
+                    })
             }
-
         }
     })
 </script>

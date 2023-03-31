@@ -1,7 +1,17 @@
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.qianyekeji.ruiji.service.CeShiService;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,6 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author liangshuai
@@ -124,6 +135,18 @@ public class ceshi {
 
     @Test
     void oo(){
+        //在内存中创建一个Excel文件
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        //创建工作表，指定工作表名称
+        XSSFSheet sheet = workbook.createSheet("基础数据表");
+        //创建行，0表示第一行
+        XSSFRow row = sheet.createRow(0);
+        row.createCell(0).setCellValue("送货时间");
+        row.createCell(1).setCellValue("送货人姓名");
+        row.createCell(2).setCellValue("送货人手机号");
+        row.createCell(3).setCellValue("送货车牌");
+        row.createCell(4).setCellValue("货品品类");
+        row.createCell(5).setCellValue("货品数量");
 
     }
 
