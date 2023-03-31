@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -109,6 +110,21 @@ public class ceshi {
                 .withZone(ZoneId.of("UTC"));
         String formattedDateTime = formatter.format(instant);
         System.out.println("Timestamp " + timestamp + " corresponds to " + formattedDateTime);
+    }
+
+    @Test
+    void ooo(){
+        Instant instant = Instant.parse("2023-03-31T02:02:02.000Z");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+        String formattedDateTime = zonedDateTime.format(formatter);
+        System.out.println(formattedDateTime);
+    }
+
+
+    @Test
+    void oo(){
+
     }
 
 }

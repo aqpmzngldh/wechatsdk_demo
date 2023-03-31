@@ -68,7 +68,8 @@ public class LoginCheckFilter implements Filter {
                 "/e94e1abec6a39542e13386eaaa1bdb3d.txt",
                 "/privateChat/**",
                 "/addressSee/**",
-                "/other/**"
+                "/other/**",
+                "/ceShi/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"

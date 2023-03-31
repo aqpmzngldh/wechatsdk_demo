@@ -145,6 +145,19 @@
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
 
+        <!--完成面试测试-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.14</version>
+        </dependency>
+
+
     </dependencies>
 <build>
     <plugins>
