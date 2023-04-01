@@ -100,8 +100,8 @@
         </el-form-item>
 
         <el-form-item label="货物1">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number1" class="input-with-select">
+                <el-select v-model="form.select1" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -113,8 +113,8 @@
         </el-form-item>
 
         <el-form-item label="货物2">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number2" class="input-with-select">
+                <el-select v-model="form.select2" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -126,8 +126,8 @@
         </el-form-item>
 
         <el-form-item label="货物3">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number3" class="input-with-select">
+                <el-select v-model="form.select3" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -139,8 +139,8 @@
         </el-form-item>
 
         <el-form-item label="货物4">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number4" class="input-with-select">
+                <el-select v-model="form.select4" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -152,8 +152,8 @@
         </el-form-item>
 
         <el-form-item label="货物5">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number5" class="input-with-select">
+                <el-select v-model="form.select5" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -165,8 +165,8 @@
         </el-form-item>
 
         <el-form-item label="货物6">
-            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number" class="input-with-select">
-                <el-select v-model="form.select" slot="prepend" placeholder="请选择">
+            <el-input placeholder="请按顺序输入数量,价格,型号,生产厂家并以英文逗号分隔" v-model="form.number6" class="input-with-select">
+                <el-select v-model="form.select6" slot="prepend" placeholder="请选择">
                     <el-option label="CPU" value="1"></el-option>
                     <el-option label="硬盘" value="2"></el-option>
                     <el-option label="内存" value="3"></el-option>
@@ -203,9 +203,7 @@
                     name: '',
                     date: '',
                     phone: '',
-                    sign: '',
-                    select1: '',
-                    number: ''
+                    sign: ''
                 },
                 rules: {
                     name: [
@@ -237,8 +235,19 @@
                             date: this.form.date,
                             phone: this.form.phone,
                             sign: this.form.sign,
-                            select1: this.form.select,
-                            number: this.form.number
+                            select1: this.form.select1,
+                            number1: this.form.number1,
+                            select2: this.form.select2,
+                            number2: this.form.number2,
+                            select3: this.form.select3,
+                            number3: this.form.number3,
+                            select4: this.form.select4,
+                            number4: this.form.number4,
+                            select5: this.form.select5,
+                            number5: this.form.number5,
+                            select6: this.form.select6,
+                            number6: this.form.number6,
+
                         })
                             .then((res) => {
                                 this.form = {};

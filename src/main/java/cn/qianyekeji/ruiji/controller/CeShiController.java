@@ -44,30 +44,116 @@ public class CeShiController {
     public R<String> dianzan(@RequestBody ceshi ceShi) throws Exception {
         System.out.println(ceShi);
         Instant parse = Instant.parse(ceShi.getDate());
-        String select1 = ceShi.getSelect1();
-        //选择的货这边改一下
-        if (select1 != null) {
-            String select11 = ceShi.getSelect1();
-            if (select11.equals("1")) {
-                ceShi.setSelect1("CPU");
-            } else if (select11.equals("2")) {
-                ceShi.setSelect1("硬盘");
-            } else if (select11.equals("2")) {
-                ceShi.setSelect1("内存");
-            } else if (select11.equals("2")) {
-                ceShi.setSelect1("显卡");
-            } else if (select11.equals("2")) {
-                ceShi.setSelect1("键盘");
-            } else if (select11.equals("2")) {
-                ceShi.setSelect1("鼠标");
-            }
-        }
         //日期获取的格式这边改一下
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(parse, ZoneId.systemDefault());
         String formattedDateTime = zonedDateTime.format(formatter);
-
         ceShi.setDate(formattedDateTime);
+
+        String select1 = ceShi.getSelect1();
+        String select2 = ceShi.getSelect2();
+        String select3 = ceShi.getSelect3();
+        String select4 = ceShi.getSelect4();
+        String select5 = ceShi.getSelect5();
+        String select6 = ceShi.getSelect6();
+
+        String number1 = ceShi.getNumber1();
+        String number2 = ceShi.getNumber2();
+        String number3 = ceShi.getNumber3();
+        String number4 = ceShi.getNumber4();
+        String number5 = ceShi.getNumber5();
+        String number6 = ceShi.getNumber6();
+        //选择的货这边改一下
+        if (select1 != null&&number1!=null) {
+            if (select1.equals("1")) {
+                ceShi.setSelect1("CPU");
+            } else if (select1.equals("2")) {
+                ceShi.setSelect1("硬盘");
+            } else if (select1.equals("2")) {
+                ceShi.setSelect1("内存");
+            } else if (select1.equals("2")) {
+                ceShi.setSelect1("显卡");
+            } else if (select1.equals("2")) {
+                ceShi.setSelect1("键盘");
+            } else if (select1.equals("2")) {
+                ceShi.setSelect1("鼠标");
+            }
+        }
+        if (select2 != null&&number2!=null) {
+            if (select2.equals("1")) {
+                ceShi.setSelect2("CPU");
+            } else if (select2.equals("2")) {
+                ceShi.setSelect2("硬盘");
+            } else if (select2.equals("2")) {
+                ceShi.setSelect2("内存");
+            } else if (select2.equals("2")) {
+                ceShi.setSelect2("显卡");
+            } else if (select2.equals("2")) {
+                ceShi.setSelect2("键盘");
+            } else if (select2.equals("2")) {
+                ceShi.setSelect2("鼠标");
+            }
+        }
+        if (select3 != null&&number3!=null) {
+            if (select3.equals("1")) {
+                ceShi.setSelect3("CPU");
+            } else if (select3.equals("2")) {
+                ceShi.setSelect3("硬盘");
+            } else if (select3.equals("2")) {
+                ceShi.setSelect3("内存");
+            } else if (select3.equals("2")) {
+                ceShi.setSelect3("显卡");
+            } else if (select3.equals("2")) {
+                ceShi.setSelect3("键盘");
+            } else if (select3.equals("2")) {
+                ceShi.setSelect3("鼠标");
+            }
+        }
+        if (select4 != null&&number4!=null) {
+            if (select4.equals("1")) {
+                ceShi.setSelect4("CPU");
+            } else if (select4.equals("2")) {
+                ceShi.setSelect4("硬盘");
+            } else if (select4.equals("2")) {
+                ceShi.setSelect4("内存");
+            } else if (select4.equals("2")) {
+                ceShi.setSelect4("显卡");
+            } else if (select4.equals("2")) {
+                ceShi.setSelect4("键盘");
+            } else if (select4.equals("2")) {
+                ceShi.setSelect4("鼠标");
+            }
+        }
+        if (select5 != null&&number5!=null) {
+            if (select5.equals("1")) {
+                ceShi.setSelect5("CPU");
+            } else if (select5.equals("2")) {
+                ceShi.setSelect5("硬盘");
+            } else if (select5.equals("2")) {
+                ceShi.setSelect5("内存");
+            } else if (select5.equals("2")) {
+                ceShi.setSelect5("显卡");
+            } else if (select5.equals("2")) {
+                ceShi.setSelect5("键盘");
+            } else if (select5.equals("2")) {
+                ceShi.setSelect5("鼠标");
+            }
+        }
+        if (select6 != null&&number6!=null) {
+            if (select6.equals("1")) {
+                ceShi.setSelect6("CPU");
+            } else if (select6.equals("2")) {
+                ceShi.setSelect6("硬盘");
+            } else if (select6.equals("2")) {
+                ceShi.setSelect6("内存");
+            } else if (select6.equals("2")) {
+                ceShi.setSelect6("显卡");
+            } else if (select6.equals("2")) {
+                ceShi.setSelect6("键盘");
+            } else if (select6.equals("2")) {
+                ceShi.setSelect6("鼠标");
+            }
+        }
         ceShiService.save(ceShi);
         return R.success("1");
     }
@@ -109,7 +195,7 @@ public class CeShiController {
             cell = row.createCell(4);
             cell.setCellValue(list.get(i).getSelect1() == null ? "0" : list.get(i).getSelect1());
             cell = row.createCell(5);
-            cell.setCellValue(list.get(i).getNumber() == null ? "0" : list.get(i).getNumber());
+//            cell.setCellValue(list.get(i).getNumber() == null ? "0" : list.get(i).getNumber());
         }
 
         File file = new File("D:\\ceshi.xlsx");
