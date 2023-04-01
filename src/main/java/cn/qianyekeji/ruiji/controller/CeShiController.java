@@ -39,6 +39,9 @@ import java.util.concurrent.TimeUnit;
 public class CeShiController {
     @Autowired
     private CeShiService ceShiService;
+    @Value("${ruiji.path3}")
+    private String basePath;
+
 
     @PostMapping
     public R<String> dianzan(@RequestBody ceshi ceShi) throws Exception {
@@ -55,7 +58,7 @@ public class CeShiController {
     }
 
     @PostMapping("/excel")
-    public R<String> excel() throws Exception {
+    public void excel(HttpServletResponse response) throws Exception {
 
         List<ceshi> list = ceShiService.list();
         System.out.println(list);
@@ -312,16 +315,41 @@ public class CeShiController {
 //            cell.setCellValue(list.get(i).getNumber() == null ? "0" : list.get(i).getNumber());
         }
 
-        File file = new File("D:\\ceshi.xlsx");
+        File file = new File(basePath);
         if (file.exists()) {
             file.delete();
         }
         //通过输出流将workbook对象下载到磁盘
-        FileOutputStream out = new FileOutputStream("D:\\ceshi.xlsx");
+        FileOutputStream out = new FileOutputStream(basePath);
         workbook.write(out);
         out.flush();
         out.close();
         workbook.close();
-        return R.success("1");
+
+    }
+
+
+    @GetMapping
+    public void ex(HttpServletResponse response) {
+        System.out.println(basePath);
+        try {
+            //输入流，通过输入流读取文件内容
+            FileInputStream fileInputStream = new FileInputStream(basePath);
+            //输出流，通过输出流将文件写回浏览器
+            ServletOutputStream outputStream = response.getOutputStream();
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            while ((len = fileInputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, len);
+                outputStream.flush();
+            }
+            //关闭资源
+            outputStream.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

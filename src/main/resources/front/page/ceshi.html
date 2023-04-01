@@ -268,11 +268,8 @@
             },
             excel() {
                 $axios.post("/ceShi/excel")
-                    .then((res) => {
-                        if (res.code === 1) {
-                            this.$notify({type: 'warning', message: '导出成功'});
-                        }
-                    })
+                $axios.get("/ceShi")
+                this.$notify({type: 'warning', message: '导出成功'});
             }
         }
     })
