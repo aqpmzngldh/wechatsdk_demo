@@ -268,7 +268,7 @@
             },
             excel() {
                 $axios.post("/ceShi/excel")
-                $axios.get("/ceShi")
+                open("/ceShi")
                 this.$notify({type: 'warning', message: '导出成功'});
             }
         }

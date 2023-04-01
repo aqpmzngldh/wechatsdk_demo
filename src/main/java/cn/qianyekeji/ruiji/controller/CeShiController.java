@@ -305,14 +305,6 @@ public class CeShiController {
                 cell = row.createCell(9);
                 cell.setCellValue("0");
             }
-
-            System.out.println(list.get(i).getSelect1()+list.get(i).getNumber1()+"-----");
-            System.out.println(list.get(i).getSelect2()+list.get(i).getNumber2());
-            System.out.println(list.get(i).getSelect3()+list.get(i).getNumber3());
-            System.out.println(list.get(i).getSelect4()+list.get(i).getNumber4());
-            System.out.println(list.get(i).getSelect5()+list.get(i).getNumber5());
-            System.out.println(list.get(i).getSelect6()+list.get(i).getNumber6()+"------");
-//            cell.setCellValue(list.get(i).getNumber() == null ? "0" : list.get(i).getNumber());
         }
 
         File file = new File(basePath);
