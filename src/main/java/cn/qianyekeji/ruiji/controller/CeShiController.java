@@ -50,110 +50,6 @@ public class CeShiController {
         String formattedDateTime = zonedDateTime.format(formatter);
         ceShi.setDate(formattedDateTime);
 
-        String select1 = ceShi.getSelect1();
-        String select2 = ceShi.getSelect2();
-        String select3 = ceShi.getSelect3();
-        String select4 = ceShi.getSelect4();
-        String select5 = ceShi.getSelect5();
-        String select6 = ceShi.getSelect6();
-
-        String number1 = ceShi.getNumber1();
-        String number2 = ceShi.getNumber2();
-        String number3 = ceShi.getNumber3();
-        String number4 = ceShi.getNumber4();
-        String number5 = ceShi.getNumber5();
-        String number6 = ceShi.getNumber6();
-        //选择的货这边改一下
-        if (select1 != null&&number1!=null) {
-            if (select1.equals("1")) {
-                ceShi.setSelect1("CPU");
-            } else if (select1.equals("2")) {
-                ceShi.setSelect1("硬盘");
-            } else if (select1.equals("2")) {
-                ceShi.setSelect1("内存");
-            } else if (select1.equals("2")) {
-                ceShi.setSelect1("显卡");
-            } else if (select1.equals("2")) {
-                ceShi.setSelect1("键盘");
-            } else if (select1.equals("2")) {
-                ceShi.setSelect1("鼠标");
-            }
-        }
-        if (select2 != null&&number2!=null) {
-            if (select2.equals("1")) {
-                ceShi.setSelect2("CPU");
-            } else if (select2.equals("2")) {
-                ceShi.setSelect2("硬盘");
-            } else if (select2.equals("2")) {
-                ceShi.setSelect2("内存");
-            } else if (select2.equals("2")) {
-                ceShi.setSelect2("显卡");
-            } else if (select2.equals("2")) {
-                ceShi.setSelect2("键盘");
-            } else if (select2.equals("2")) {
-                ceShi.setSelect2("鼠标");
-            }
-        }
-        if (select3 != null&&number3!=null) {
-            if (select3.equals("1")) {
-                ceShi.setSelect3("CPU");
-            } else if (select3.equals("2")) {
-                ceShi.setSelect3("硬盘");
-            } else if (select3.equals("2")) {
-                ceShi.setSelect3("内存");
-            } else if (select3.equals("2")) {
-                ceShi.setSelect3("显卡");
-            } else if (select3.equals("2")) {
-                ceShi.setSelect3("键盘");
-            } else if (select3.equals("2")) {
-                ceShi.setSelect3("鼠标");
-            }
-        }
-        if (select4 != null&&number4!=null) {
-            if (select4.equals("1")) {
-                ceShi.setSelect4("CPU");
-            } else if (select4.equals("2")) {
-                ceShi.setSelect4("硬盘");
-            } else if (select4.equals("2")) {
-                ceShi.setSelect4("内存");
-            } else if (select4.equals("2")) {
-                ceShi.setSelect4("显卡");
-            } else if (select4.equals("2")) {
-                ceShi.setSelect4("键盘");
-            } else if (select4.equals("2")) {
-                ceShi.setSelect4("鼠标");
-            }
-        }
-        if (select5 != null&&number5!=null) {
-            if (select5.equals("1")) {
-                ceShi.setSelect5("CPU");
-            } else if (select5.equals("2")) {
-                ceShi.setSelect5("硬盘");
-            } else if (select5.equals("2")) {
-                ceShi.setSelect5("内存");
-            } else if (select5.equals("2")) {
-                ceShi.setSelect5("显卡");
-            } else if (select5.equals("2")) {
-                ceShi.setSelect5("键盘");
-            } else if (select5.equals("2")) {
-                ceShi.setSelect5("鼠标");
-            }
-        }
-        if (select6 != null&&number6!=null) {
-            if (select6.equals("1")) {
-                ceShi.setSelect6("CPU");
-            } else if (select6.equals("2")) {
-                ceShi.setSelect6("硬盘");
-            } else if (select6.equals("2")) {
-                ceShi.setSelect6("内存");
-            } else if (select6.equals("2")) {
-                ceShi.setSelect6("显卡");
-            } else if (select6.equals("2")) {
-                ceShi.setSelect6("键盘");
-            } else if (select6.equals("2")) {
-                ceShi.setSelect6("鼠标");
-            }
-        }
         ceShiService.save(ceShi);
         return R.success("1");
     }
@@ -167,20 +63,19 @@ public class CeShiController {
         XSSFWorkbook workbook = new XSSFWorkbook();
         //创建工作表，指定工作表名称
         XSSFSheet sheet = workbook.createSheet("测试数据表");
-        sheet.setColumnWidth(0, (25 * 256));
-        sheet.setColumnWidth(1, (25 * 256));
-        sheet.setColumnWidth(2, (25 * 256));
-        sheet.setColumnWidth(3, (25 * 256));
-        sheet.setColumnWidth(4, (25 * 256));
-        sheet.setColumnWidth(5, (25 * 256));
+
         //创建行，0表示第一行
         XSSFRow row = sheet.createRow(0);
         row.createCell(0).setCellValue("送货时间");
         row.createCell(1).setCellValue("送货人姓名");
         row.createCell(2).setCellValue("送货人手机号");
         row.createCell(3).setCellValue("送货车牌");
-        row.createCell(4).setCellValue("货品品类");
-        row.createCell(5).setCellValue("货品数量");
+        row.createCell(4).setCellValue("CPU数量");
+        row.createCell(5).setCellValue("硬盘数量");
+        row.createCell(6).setCellValue("内存数量");
+        row.createCell(7).setCellValue("显卡数量");
+        row.createCell(8).setCellValue("键盘数量");
+        row.createCell(9).setCellValue("鼠标数量");
         XSSFCell cell;
         for (int i = 0; i < list.size(); i++) {
             row = sheet.createRow(i + 1);
@@ -192,9 +87,228 @@ public class CeShiController {
             cell.setCellValue(list.get(i).getPhone());
             cell = row.createCell(3);
             cell.setCellValue(list.get(i).getSign());
-            cell = row.createCell(4);
-            cell.setCellValue(list.get(i).getSelect1() == null ? "0" : list.get(i).getSelect1());
-            cell = row.createCell(5);
+
+            if ("1".equals(list.get(i).getSelect1())){
+                cell = row.createCell(4);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("1".equals(list.get(i).getSelect2())){
+                cell = row.createCell(4);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("1".equals(list.get(i).getSelect3())){
+                cell = row.createCell(4);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("1".equals(list.get(i).getSelect4())){
+                cell = row.createCell(4);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("1".equals(list.get(i).getSelect5())){
+                cell = row.createCell(4);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("1".equals(list.get(i).getSelect6())){
+                cell = row.createCell(4);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(4);
+                cell.setCellValue("0");
+            }
+
+
+            if ("2".equals(list.get(i).getSelect1())){
+                cell = row.createCell(5);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("2".equals(list.get(i).getSelect2())){
+                cell = row.createCell(5);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("2".equals(list.get(i).getSelect3())){
+                cell = row.createCell(5);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("2".equals(list.get(i).getSelect4())){
+                cell = row.createCell(5);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("2".equals(list.get(i).getSelect5())){
+                cell = row.createCell(5);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("2".equals(list.get(i).getSelect6())){
+                cell = row.createCell(5);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(5);
+                cell.setCellValue("0");
+            }
+
+
+            if ("3".equals(list.get(i).getSelect1())){
+                cell = row.createCell(6);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("3".equals(list.get(i).getSelect2())){
+                cell = row.createCell(6);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("3".equals(list.get(i).getSelect3())){
+                cell = row.createCell(6);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("3".equals(list.get(i).getSelect4())){
+                cell = row.createCell(6);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("3".equals(list.get(i).getSelect5())){
+                cell = row.createCell(6);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("3".equals(list.get(i).getSelect6())){
+                cell = row.createCell(6);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(6);
+                cell.setCellValue("0");
+            }
+
+
+            if ("4".equals(list.get(i).getSelect1())){
+                cell = row.createCell(7);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("4".equals(list.get(i).getSelect2())){
+                cell = row.createCell(7);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("4".equals(list.get(i).getSelect3())){
+                cell = row.createCell(7);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("4".equals(list.get(i).getSelect4())){
+                cell = row.createCell(7);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("4".equals(list.get(i).getSelect5())){
+                cell = row.createCell(7);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("4".equals(list.get(i).getSelect6())){
+                cell = row.createCell(7);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(7);
+                cell.setCellValue("0");
+            }
+
+
+            if ("5".equals(list.get(i).getSelect1())){
+                cell = row.createCell(8);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("5".equals(list.get(i).getSelect2())){
+                cell = row.createCell(8);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("5".equals(list.get(i).getSelect3())){
+                cell = row.createCell(8);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("5".equals(list.get(i).getSelect4())){
+                cell = row.createCell(8);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("5".equals(list.get(i).getSelect5())){
+                cell = row.createCell(8);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("5".equals(list.get(i).getSelect6())){
+                cell = row.createCell(8);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(8);
+                cell.setCellValue("0");
+            }
+
+
+            if ("6".equals(list.get(i).getSelect1())){
+                cell = row.createCell(9);
+                String number1 = list.get(i).getNumber1();
+                String s = number1.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("6".equals(list.get(i).getSelect2())){
+                cell = row.createCell(9);
+                String number2 = list.get(i).getNumber2();
+                String s = number2.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("6".equals(list.get(i).getSelect3())){
+                cell = row.createCell(9);
+                String number3 = list.get(i).getNumber3();
+                String s = number3.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("6".equals(list.get(i).getSelect4())){
+                cell = row.createCell(9);
+                String number4 = list.get(i).getNumber4();
+                String s = number4.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("6".equals(list.get(i).getSelect5())){
+                cell = row.createCell(9);
+                String number5 = list.get(i).getNumber5();
+                String s = number5.split(",")[0];
+                cell.setCellValue(s);
+            }else if ("6".equals(list.get(i).getSelect6())){
+                cell = row.createCell(9);
+                String number6 = list.get(i).getNumber6();
+                String s = number6.split(",")[0];
+                cell.setCellValue(s);
+            }else{
+                cell = row.createCell(9);
+                cell.setCellValue("0");
+            }
+
+            System.out.println(list.get(i).getSelect1()+list.get(i).getNumber1()+"-----");
+            System.out.println(list.get(i).getSelect2()+list.get(i).getNumber2());
+            System.out.println(list.get(i).getSelect3()+list.get(i).getNumber3());
+            System.out.println(list.get(i).getSelect4()+list.get(i).getNumber4());
+            System.out.println(list.get(i).getSelect5()+list.get(i).getNumber5());
+            System.out.println(list.get(i).getSelect6()+list.get(i).getNumber6()+"------");
 //            cell.setCellValue(list.get(i).getNumber() == null ? "0" : list.get(i).getNumber());
         }
 
