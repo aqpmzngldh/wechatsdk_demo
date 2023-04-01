@@ -268,8 +268,15 @@
             },
             excel() {
                 $axios.post("/ceShi/excel")
-                open("/ceShi")
-                this.$notify({type: 'warning', message: '导出成功'});
+                axios.get('/ceShi',{ responseType: 'blob' })
+                    .then(response => {
+                        const url = URL.createObjectURL(new Blob([response.data]))
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.download = 'ceshi.xlsx'
+                        link.click()
+                        URL.revokeObjectURL(url)
+                    })
             }
         }
     })
