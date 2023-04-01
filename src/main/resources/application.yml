@@ -37,7 +37,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 #    想要打印sql配置这个
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-#    结合实体类中的long类型的id，配置了后可以自动生成主键
+    cache-enabled: false
+  #    结合实体类中的long类型的id，配置了后可以自动生成主键
   global-config:
     db-config:
       id-type: assign_id
@@ -52,9 +53,9 @@ ruiji:
   path2: /www/server/img2/
 
   #  面试测试excel路径
-  path3: D:\img2\ceshi.xlsx
+#  path3: D:\img2\ceshi.xlsx
   #  面试测试excel云路径
-#  path3: /www/server/ceshi.xlsx
+  path3: /www/server/ceshi.xlsx
 
 #企业邮箱发邮件
 mail:
