@@ -325,6 +325,7 @@ public class CeShiController {
     public void ex(HttpServletResponse response) {
         System.out.println(basePath);
         try {
+            Thread.sleep(2000);
             //输入流，通过输入流读取文件内容
             FileInputStream fileInputStream = new FileInputStream(basePath);
             //输出流，通过输出流将文件写回浏览器
