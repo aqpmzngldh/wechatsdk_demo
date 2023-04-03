@@ -371,4 +371,28 @@ public class ChatController {
         return null;
 
     }
+
+
+    @PostMapping("/banned/{p}")
+    public R<String> banned(@PathVariable("p") String p) throws Exception {
+        if (p!=null) {
+            try {
+                p = new String(Base64.getDecoder().decode(p));
+                if (p == null || p.length() == 0 || p.split(",").length != 2) {
+                    return R.error("您没有资格操作");
+                }
+                if (!"0922".equals(p.split(",")[1])) {
+                    return R.error("您没有资格操作");
+                }
+                // 使用 opsForHash 方法获取哈希值
+                Map<Object, Object> hash = redisTemplate.opsForHash().entries(p.split(",")[0]);
+                String ipAddress = (String) hash.get("ipAddress");
+                redisTemplate.opsForSet().add("banned_ips", ipAddress);
+                return R.error("封禁成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return R.error("无效操作");
+    }
 }

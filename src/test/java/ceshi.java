@@ -160,5 +160,11 @@ public class ceshi {
             }
         }
     }
+    @Test
+    void  p(){
+        String s="1,2";
+        int length = s.split(",").length;
+        System.out.println(length);
+    }
 
 }

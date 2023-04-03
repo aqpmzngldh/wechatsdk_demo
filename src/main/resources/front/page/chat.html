@@ -261,6 +261,7 @@
             <div @click="changeName">改名</div>
             <div @click="join">加入管理员</div>
             <div @click="tiXing">提醒管理上线</div>
+            <div @click="banned">封禁某人</div>
             <div><a href="/front/page/eth.html">echarts之ETH</a></div>
             <div @click="music=!music">我喜欢的歌</div>
         </el-drawer>
@@ -627,6 +628,22 @@
                         message: '改名成功'
                     });
                     localStorage.setItem('myName', value);
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
+            },
+            banned(){
+                this.$prompt('请复制时间标识进行封禁', '封禁提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                }).then(({ value }) => {
+                    $axios.post("/chat/banned/" +btoa(value))
+                        .then((res) => {
+                            this.$notify({type: 'warning', message: res.msg});
+                        })
                 }).catch(() => {
                     this.$message({
                         type: 'info',
