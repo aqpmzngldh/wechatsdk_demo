@@ -121,6 +121,14 @@ public class ChatController {
         // 设置过期时间为 2 分钟
         redisTemplate.expire(ipAddress, 2, TimeUnit.MINUTES);
 
+        //这是先进行封印判断，在的直接返回
+        Boolean isBanned2 = redisTemplate.opsForSet().isMember("banned_ips", ipAddress);
+        if (isBanned2) {
+            // IP 地址已经被封禁
+            return null;
+        }
+
+        //这个是两分钟超过12条消息的自动封印
         int threshold = 12;
         // 获取该 IP 地址对应的计数器的当前值
         String s = redisTemplate.opsForValue().get(ipAddress);
@@ -375,9 +383,11 @@ public class ChatController {
 
     @PostMapping("/banned/{p}")
     public R<String> banned(@PathVariable("p") String p) throws Exception {
+        System.out.println(p);
         if (p!=null) {
             try {
                 p = new String(Base64.getDecoder().decode(p));
+                System.out.println(p);
                 if (p == null || p.length() == 0 || p.split(",").length != 2) {
                     return R.error("您没有资格操作");
                 }
