@@ -18,6 +18,8 @@
     <!--<link rel="stylesheet" href="../styles/index.css"/>-->
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/login.css"/>
+    <!-- require APlayer -->
+    <link rel="stylesheet" href="../js/APlayer.min.css">
 
     <style scoped>
         .chat {
@@ -181,6 +183,10 @@
             font-size: 50%;
             padding-bottom: 3px;
         }
+        .aplayer .aplayer-lrc{
+            display: none !important;
+            padding-left: 999px !important;
+        }
 
     </style>
 
@@ -276,8 +282,16 @@
         <a href="https://beian.miit.gov.cn/">陕ICP备2022014746号-1</a>
         </div>
     </form>
+    <meting-js
+            v-show="isShow"
+            server="netease"
+            type="playlist"
+            fixed="true"
+            autoplay="true"
+            volume="0.6"
+            id="8276475427">
+    </meting-js>
 </div>
-
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="../../backend/plugins/vue/vue.js"></script>
@@ -291,6 +305,10 @@
 <script src="./../api/login.js"></script>
 <script type="text/javascript"
         src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>
+<!-- require APlayer -->
+<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<!-- require MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
 
 </body>
 
