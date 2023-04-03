@@ -491,12 +491,14 @@
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '70%';
                 this.isShow = true
+                this.music = true
             },
             hideParagraphs() {
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '100%';
                 this.isShow = false
+                this.music = false
             },
             async tiXing() {
                 $axios.post("/other/tiXing")
