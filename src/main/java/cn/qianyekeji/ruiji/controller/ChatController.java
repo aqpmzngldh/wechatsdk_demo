@@ -111,26 +111,49 @@ public class ChatController {
             }
         }
 
-        try {
+//        try {
             String ipAddress = request.getHeader("X-Forwarded-For");
             if (ipAddress == null) {
                 ipAddress = request.getRemoteAddr();
             }
-            LambdaQueryWrapper<Sms> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(Sms::getIpAddress, ipAddress);
-            Sms sms1 = smsService.getOne(queryWrapper);
-            if (sms1 == null) {
-                Sms sms = new Sms();
-                sms.setNumber("1");
-                sms.setIpAddress(ipAddress);
-                smsService.save(sms);
+        // 对该 IP 地址对应的计数器进行自增操作
+        redisTemplate.opsForValue().increment(ipAddress);
+        // 设置过期时间为 2 分钟
+        redisTemplate.expire(ipAddress, 2, TimeUnit.MINUTES);
+
+        int threshold = 12;
+        // 获取该 IP 地址对应的计数器的当前值
+        String s = redisTemplate.opsForValue().get(ipAddress);
+        // 如果当前值超过了阈值，就进行封禁操作
+        if (s != null && Integer.parseInt(s) > threshold) {
+            // 添加到set集合键banned_ips永久封禁该 IP 地址
+            Boolean isBanned = redisTemplate.opsForSet().isMember("banned_ips", ipAddress);
+            if (isBanned) {
+                // IP 地址已经被封禁
             } else {
-                sms1.setNumber((Integer.parseInt(sms1.getNumber()) + 1) + "");
-                smsService.updateById(sms1);
+                // 将该 IP 地址添加到已封禁的 IP 地址集合中
+                redisTemplate.opsForSet().add("banned_ips", ipAddress);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            return null;
         }
+
+
+//            这里咱就不存到mysql了，全部交给redis管理
+//            LambdaQueryWrapper<Sms> queryWrapper = new LambdaQueryWrapper<>();
+//            queryWrapper.eq(Sms::getIpAddress, ipAddress);
+//            Sms sms1 = smsService.getOne(queryWrapper);
+//            if (sms1 == null) {
+//                Sms sms = new Sms();
+//                sms.setNumber("1");
+//                sms.setIpAddress(ipAddress);
+//                smsService.save(sms);
+//            } else {
+//                sms1.setNumber((Integer.parseInt(sms1.getNumber()) + 1) + "");
+//                smsService.updateById(sms1);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
         if (multipartFile != null) {
