@@ -65,7 +65,7 @@ public class ChatController {
         List<String> prefixList = Arrays.asList("淘气的", "爱动的", "调皮的", "可爱的", "聪明的");
         List<String> suffixList = Arrays.asList("大熊", "哆嗦A梦", "小夫", "胖虎", "蝎子莱莱", "鲨鱼辣椒", "蜘蛛侦探", "蟑螂恶霸", "汤姆", "杰瑞");
 
-        if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)||body.length()>50) {
+        if (!prefixList.contains(prefix) || !suffixList.contains(suffix1)) {
             return null;
         }
         if (uuid==""||uuid==null){
@@ -186,7 +186,7 @@ public class ChatController {
             return R.success(fileName);
 
         } else {
-            if (address==""||address==null||uuid==""||uuid==null){
+            if (address==""||address==null||uuid==""||uuid==null||body.length()>50){
                 return null;
             }
 //        log.info("传递的数据分别是{}和{}和{}",time,body,name );
