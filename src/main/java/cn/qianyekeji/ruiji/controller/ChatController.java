@@ -198,6 +198,7 @@ public class ChatController {
             chatRecord.put("name", name);
             chatRecord.put("number", "0");
             chatRecord.put("address", address);
+            chatRecord.put("ipAddress", ipAddress);
             chatRecord.put("zan", "1");
             chatRecord.put("uuid", uuid);
             chatRecord.put("touXiang", touxiang);
@@ -224,6 +225,7 @@ public class ChatController {
             chatRecord.put("name", name);
             chatRecord.put("number", "0");
             chatRecord.put("address", address);
+            chatRecord.put("ipAddress", ipAddress);
             chatRecord.put("uuid", uuid);
             chatRecord.put("zan", "1");
             chatRecord.put("touXiang", touxiang);
