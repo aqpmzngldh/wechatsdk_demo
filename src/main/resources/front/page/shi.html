@@ -1,14 +1,43 @@
-<!-- require APlayer -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
-<meting-js
-        server="netease"
-        type="playlist"
-        fixed="true"
-        autoplay="true"
-        volume="0.6"
-        id="2440040711">
-</meting-js>
-<!-- require APlayer -->
-<script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
-<!-- require MetingJS -->
-<script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+<style>
+    #myDiv {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100px;
+        height: 100px;
+        background-color: red;
+    }
+
+</style>
+<div id="myDiv">拖动我</div>
+<script>
+    var myDiv = document.getElementById('myDiv');
+
+    var isDragging = false;
+    var mouseX = 0;
+    var mouseY = 0;
+    var startX = 0;
+    var startY = 0;
+
+    myDiv.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        startX = myDiv.offsetLeft;
+        startY = myDiv.offsetTop;
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            var deltaX = e.clientX - mouseX;
+            var deltaY = e.clientY - mouseY;
+            myDiv.style.left = startX + deltaX + 'px';
+            myDiv.style.top = startY + deltaY + 'px';
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        isDragging = false;
+    });
+
+</script>
