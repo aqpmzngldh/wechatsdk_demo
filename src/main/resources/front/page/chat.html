@@ -169,6 +169,7 @@
             padding-left: 2%;
             padding-right: 2%;
             background: whitesmoke;
+            overflow-y: scroll; /* 启用垂直滚动 */
         }
         .el-drawer div{
             color: blue;
@@ -261,6 +262,7 @@
             <div @click="join">加入管理员</div>
             <div @click="tiXing">提醒管理上线</div>
             <div><a href="/front/page/eth.html">echarts之ETH</a></div>
+            <div @click="music=!music">我喜欢的歌</div>
         </el-drawer>
         </div>
 
@@ -283,7 +285,7 @@
         </div>
     </form>
     <meting-js
-            v-show="isShow"
+            v-show="music"
             server="netease"
             type="playlist"
             fixed="true"
@@ -331,7 +333,8 @@
                 zan: false,
                 isButtonDisabled: false,
                 person: '0',
-                add: ''
+                add: '',
+                music: false
             };
         },
         mounted() {
