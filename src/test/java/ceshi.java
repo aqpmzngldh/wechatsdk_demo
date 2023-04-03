@@ -150,4 +150,15 @@ public class ceshi {
 
     }
 
+    @Test
+    void ppp(){
+        String ss="爸到爸";
+        String [] arr={"狗","傻","爷","爹","妈","爸","B","b","操","奶子","胸","逼","猪","黄","电影","片","视频","日"};
+        for (String s : arr) {
+            if(ss.contains(s)){
+                System.out.println("ss contains " + s);
+            }
+        }
+    }
+
 }
