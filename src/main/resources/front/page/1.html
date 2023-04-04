@@ -20,6 +20,7 @@
         body {
             font-family: auto;
         }
+
         .foot {
             width: 100%;
             height: 8%;
@@ -30,55 +31,66 @@
             position: absolute;
             bottom: 0;
         }
+
         .foot-box {
-            width: 20%;
+            width: 33%;
             color: #82848a;
             text-align: center;
         }
+
         .foot-text {
             font-size: 8px;
             margin-top: -4px;
         }
+
         .foot-view {
             font-size: 26px;
         }
+
         .active {
-            color: #ff6633;
+            color: cornflowerblue;
+        }
+        .foot-box img{
+            width: 58px;
         }
     </style>
 </head>
 
 <body>
 <div class="about" v-cloak>
-    <div class="foot">
-        <div class="foot-box active">
-            <div class="foot-view">
-                <i class="el-icon-s-home"></i></div>
-            <div class="foot-text">首页</div>
-        </div>
-        <div class="foot-box">
-            <div class="foot-view">
-                <i class="el-icon-map-location"></i>
-            </div>
-            <div class="foot-text">地图</div>
-        </div>
-        <div class="foot-box">
-            <div class="foot-view">
-                <i class="el-icon-chat-dot-round"></i></div>
-            <div class="foot-text">消息</div>
-        </div>
-        <div class="foot-box">
-            <div class="foot-view">
-                <i class="el-icon-chat-dot-round"></i></div>
-            <div class="foot-text">消息</div>
-        </div>
-        <div class="foot-box">
-            <div class="foot-view"><i class="el-icon-user"></i></div>
-            <div class="foot-text">我的</div>
-        </div>
-    </div>
-
-
+    <foot-bar :active-btn="1"></foot-bar>
+    <!--<div class="foot">-->
+    <!--<div class="foot-box" data-url="/front/page/about.html">-->
+        <!--<div class="foot-view">-->
+            <!--<i class="el-icon-s-home"></i>-->
+        <!--</div>-->
+        <!--<div class="foot-text">首页</div>-->
+    <!--</div>-->
+    <!--<div class="foot-box" data-url="/front/page/about.html">-->
+        <!--<div class="foot-view">-->
+            <!--<i class="el-icon-map-location"></i>-->
+        <!--</div>-->
+        <!--<div class="foot-text">地图</div>-->
+    <!--</div>-->
+    <!--<div class="foot-box" data-url="/front/page/about.html">-->
+        <!--<div class="foot-view">-->
+            <!--<i class="el-icon-chat-dot-round"></i>-->
+        <!--</div>-->
+        <!--<div class="foot-text">消息</div>-->
+    <!--</div>-->
+    <!--<div class="foot-box" data-url="/front/page/about.html">-->
+        <!--<div class="foot-view">-->
+            <!--<i class="el-icon-chat-dot-round"></i>-->
+        <!--</div>-->
+        <!--<div class="foot-text">消息</div>-->
+    <!--</div>-->
+    <!--<div class="foot-box" data-url="/front/page/about.html">-->
+        <!--<div class="foot-view">-->
+            <!--<i class="el-icon-user"></i>-->
+        <!--</div>-->
+        <!--<div class="foot-text">我的</div>-->
+    <!--</div>-->
+    <!--</div>-->
 </div>
 
 <!-- 开发环境版本,包含了有帮助的命令行警告 -->
@@ -92,114 +104,48 @@
 <script src="../../backend/plugins/axios/axios.min.js"></script>
 <script src="./../js/request.js"></script>
 <script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+<script src="../js/footer.js"></script>
 <script>
     new Vue({
         el: ".about",
         data() {
             return {
-                value1: "",
-                value2: "",
-                number: 1000,
-                cnm: true,
-                price: "",
-                X: [],
-                Y: []
+
             };
         },
         mounted() {
-
+            this.initData();
         },
         methods: {
             initData() {
-                let vm = this;
-                setTimeout(function () {
-                    $axios.post("/other/ETH")
-                        .then((res) => {
-                            vm.price = res.data
-                        })
-                }, 2000);
-                $axios.post("/other/eth")
-                    .then((res) => {
-                        let data = res.data;
-                        for (let i = 0; i < data.length; i++) {
-                            let item = data[i].split("--");
-                            this.Y.push(item[0]);
-                            this.X.push(item[1].slice(-2));
-                        }
-                        this.initChart(); // 数据获取完毕后，手动调用初始化 echarts 图表方法
-                    })
-                    .catch(err => {
-                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                    })
-            },
-            handleInput(value) {
-                this.value2 = value * this.price + "USDT";
-                this.number = (1000 - value)
-                if (this.number < 0) {
-                    this.cnm = false
-                } else {
-                    this.cnm = true
-                }
-            },
-            initChart() {
-                var dom = document.getElementById('container');
-                var myChart = echarts.init(dom, null, {
-                    renderer: 'canvas',
-                    useDirtyRect: false
-                });
-                var app = {};
-                var option;
-
-                option = {
-                    xAxis: {
-                        type: 'category',
-                        data: this.X
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    //弹窗显示
-                    tooltip: {
-                        trigger: 'axis',
-                        axisPointer: {
-                            type: 'cross'
-                        },
-                        formatter: function (params) {
-                            var yValue = params[0].data;
-                            return 'Y 轴值：' + yValue;
-                        }
-                    },
-                    dataZoom: [
-                        //加滑动
-                        {
-                            type: 'slider',
-                            start: 50,
-                            end: 100
-                        },
-                        //折线图里面滑动
-                        {
-                            type: 'inside',
-                            start: 50,
-                            end: 100
-                        }
-                    ],
-                    series: [
-                        {
-                            data: this.Y,
-                            type: 'line',
-                            smooth: true
-                        }
-                    ]
-                };
-                if (option && typeof option === 'object') {
-                    myChart.setOption(option);
-                }
-                // myChart.on('click', function (params) {
-                //     alert(params.value);
-                //     alert(params.name);
+                // // 获取所有底部按钮元素
+                // const footBoxes = document.querySelectorAll('.foot-box');
+                // // 为每个底部按钮添加点击事件
+                // footBoxes.forEach(box => {
+                //     box.addEventListener('click', () => {
+                //         // 获取该按钮对应的页面的URL
+                //         const url = box.dataset.url;
+                //         // 获取当前页面的URL
+                //         const currentUrl = window.location.href;
+                //         // 如果要重定向到的URL和当前页面的URL不同，才进行重定向
+                //         if (url !== currentUrl) {
+                //             window.location.href = url;
+                //         }
+                //
+                //         // 取消其他底部按钮的选中状态
+                //         footBoxes.forEach(otherBox => otherBox.classList.remove('active'));
+                //         // 将该按钮设为选中状态
+                //         box.classList.add('active');
+                //         // 更改被选中按钮的文本颜色
+                //         const activeBox = document.querySelector('.foot-box.active');
+                //         activeBox.querySelector('.foot-text').style.color = 'red';
+                //     });
                 // });
-                window.addEventListener('resize', myChart.resize);
-            }
+
+
+
+            },
+
 
         }
     })
