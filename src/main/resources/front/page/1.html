@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>eth实时价格计算</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/address.css"/>
+    <style>
+        body {
+            font-family: auto;
+        }
+        .foot {
+            width: 100%;
+            height: 8%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 -1px 2px 1px rgb(0 0 0 / 10%);
+            position: absolute;
+            bottom: 0;
+        }
+        .foot-box {
+            width: 20%;
+            color: #82848a;
+            text-align: center;
+        }
+        .foot-text {
+            font-size: 8px;
+            margin-top: -4px;
+        }
+        .foot-view {
+            font-size: 26px;
+        }
+        .active {
+            color: #ff6633;
+        }
+    </style>
+</head>
+
+<body>
+<div class="about" v-cloak>
+    <div class="foot">
+        <div class="foot-box active">
+            <div class="foot-view">
+                <i class="el-icon-s-home"></i></div>
+            <div class="foot-text">首页</div>
+        </div>
+        <div class="foot-box">
+            <div class="foot-view">
+                <i class="el-icon-map-location"></i>
+            </div>
+            <div class="foot-text">地图</div>
+        </div>
+        <div class="foot-box">
+            <div class="foot-view">
+                <i class="el-icon-chat-dot-round"></i></div>
+            <div class="foot-text">消息</div>
+        </div>
+        <div class="foot-box">
+            <div class="foot-view">
+                <i class="el-icon-chat-dot-round"></i></div>
+            <div class="foot-text">消息</div>
+        </div>
+        <div class="foot-box">
+            <div class="foot-view"><i class="el-icon-user"></i></div>
+            <div class="foot-text">我的</div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- 开发环境版本,包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<script src="./../api/address.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+<script>
+    new Vue({
+        el: ".about",
+        data() {
+            return {
+                value1: "",
+                value2: "",
+                number: 1000,
+                cnm: true,
+                price: "",
+                X: [],
+                Y: []
+            };
+        },
+        mounted() {
+
+        },
+        methods: {
+            initData() {
+                let vm = this;
+                setTimeout(function () {
+                    $axios.post("/other/ETH")
+                        .then((res) => {
+                            vm.price = res.data
+                        })
+                }, 2000);
+                $axios.post("/other/eth")
+                    .then((res) => {
+                        let data = res.data;
+                        for (let i = 0; i < data.length; i++) {
+                            let item = data[i].split("--");
+                            this.Y.push(item[0]);
+                            this.X.push(item[1].slice(-2));
+                        }
+                        this.initChart(); // 数据获取完毕后，手动调用初始化 echarts 图表方法
+                    })
+                    .catch(err => {
+                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                    })
+            },
+            handleInput(value) {
+                this.value2 = value * this.price + "USDT";
+                this.number = (1000 - value)
+                if (this.number < 0) {
+                    this.cnm = false
+                } else {
+                    this.cnm = true
+                }
+            },
+            initChart() {
+                var dom = document.getElementById('container');
+                var myChart = echarts.init(dom, null, {
+                    renderer: 'canvas',
+                    useDirtyRect: false
+                });
+                var app = {};
+                var option;
+
+                option = {
+                    xAxis: {
+                        type: 'category',
+                        data: this.X
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    //弹窗显示
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross'
+                        },
+                        formatter: function (params) {
+                            var yValue = params[0].data;
+                            return 'Y 轴值：' + yValue;
+                        }
+                    },
+                    dataZoom: [
+                        //加滑动
+                        {
+                            type: 'slider',
+                            start: 50,
+                            end: 100
+                        },
+                        //折线图里面滑动
+                        {
+                            type: 'inside',
+                            start: 50,
+                            end: 100
+                        }
+                    ],
+                    series: [
+                        {
+                            data: this.Y,
+                            type: 'line',
+                            smooth: true
+                        }
+                    ]
+                };
+                if (option && typeof option === 'object') {
+                    myChart.setOption(option);
+                }
+                // myChart.on('click', function (params) {
+                //     alert(params.value);
+                //     alert(params.name);
+                // });
+                window.addEventListener('resize', myChart.resize);
+            }
+
+        }
+    })
+</script>
+</body>
+</html>
