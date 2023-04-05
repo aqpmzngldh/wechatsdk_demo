@@ -271,32 +271,42 @@ public class ChatController {
 
     @GetMapping
     public R<List<Chat>> list() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        List<Chat> chats;
+        Long count = redisTemplate.opsForValue().increment("counter", 1L);
+        if (count > 30) {
+            redisTemplate.opsForValue().decrement("counter", 1L);
+            return R.error("1");
+        }
+        try {
+            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        String key = today + "*";
 //        String key = "2023/2/16" + "*";
-        String key = DateTimeFormatter.ofPattern("uuuu/MM/dd")
-                .withResolverStyle(ResolverStyle.STRICT)
-                .format(LocalDate.parse(today, DateTimeFormatter.BASIC_ISO_DATE)) + "*";
+            String key = DateTimeFormatter.ofPattern("uuuu/MM/dd")
+                    .withResolverStyle(ResolverStyle.STRICT)
+                    .format(LocalDate.parse(today, DateTimeFormatter.BASIC_ISO_DATE)) + "*";
 
-        Set<String> keys = redisTemplate.keys(key);
-        List<Chat> chats = new ArrayList<>();
+            Set<String> keys = redisTemplate.keys(key);
+            chats = new ArrayList<>();
 
-        for (String k : keys) {
-            Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
-//            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
-            String time = k;
-            String body = (String) chatRecord.get("body");
-            String url = (String) chatRecord.get("url");
-            String name = (String) chatRecord.get("name");
-            String number = (String) chatRecord.get("number");
-            String touXiang = (String) chatRecord.get("touXiang");
-            String uuid = (String) chatRecord.get("uuid");
-            Chat chat = new Chat(time, body, url, name, k, number,touXiang,uuid);
-            chats.add(chat);
+            for (String k : keys) {
+                Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
+    //            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
+                String time = k;
+                String body = (String) chatRecord.get("body");
+                String url = (String) chatRecord.get("url");
+                String name = (String) chatRecord.get("name");
+                String number = (String) chatRecord.get("number");
+                String touXiang = (String) chatRecord.get("touXiang");
+                String uuid = (String) chatRecord.get("uuid");
+                Chat chat = new Chat(time, body, url, name, k, number,touXiang,uuid);
+                chats.add(chat);
+            }
+
+            // 将聊天记录按时间先后排序
+            chats.sort((c1, c2) -> c1.getTime().compareTo(c2.getTime()));
+        } finally {
+            redisTemplate.opsForValue().decrement("counter", 1L);
         }
-
-        // 将聊天记录按时间先后排序
-        chats.sort((c1, c2) -> c1.getTime().compareTo(c2.getTime()));
 
         return R.success(chats);
     }
