@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图片压缩-转blob</title>
+</head>
+<body>
+<input type="file" id="input">
+<div style="display: flex">
+    <img src="" alt="原图" id="original_img" style="margin-right: 20px;width: 800px">
+    <img src="" alt="压缩后的图片" id="compress_img" style="width: 800px">
+</div>
+</body>
+<script>
+    window.onload=function () {
+        let input=document.getElementById('input');
+        let originalImg=document.getElementById('original_img');
+        let compressImg=document.getElementById('compress_img');
+        input.addEventListener('change',function (e) {
+            let file=e.target.files[0];
+            console.log(file);
+            imgCompress(file,'image/webp',0.5).then(res=>{
+                compressImg.src=res.url;
+                compressImg.onload=function(){
+                    URL.revokeObjectURL(res.url);
+                }
+                console.log(res.file);//压缩后的文件对象
+            }).catch(e=>{
+                console.log(e);
+            })
+        })
+
+        //图片压缩方法2
+        //imgFile：图片原文件,File或Blob实例
+        //imgType：压缩后的图片的格式，可选image/webp或image/jpeg，其他格式无效
+        //quality：压缩质量，0~1，仅当imgType为有效值时生效
+        function imgCompress(imgFile,imgType,quality) {
+            if(!imgType){
+                imgType='image/webp';//默认输出webp格式的图片
+            }
+            return new Promise((resolve,reject)=>{
+                let src=URL.createObjectURL(imgFile);
+                let img=new Image();//创建一个img标签
+                img.src=src;
+                img.onload=function () {
+                    try {
+                        originalImg.src=src;
+                        URL.revokeObjectURL(src);//释放内存
+                        let width=this.width;
+                        let height=this.height;
+                        let imgCanvas=document.createElement('canvas');//创建canvas元素
+                        imgCanvas.width=width;
+                        imgCanvas.height=height;
+                        let ctx=imgCanvas.getContext('2d');//2d渲染
+                        ctx.drawImage(this,0,0,width,height);//将图片以原有尺寸绘制到canvas中
+                        //转换成base64并压缩，可以从0到1的区间内选择图片的质量。如果超出取值范围，将会使用默认值0.92。其他参数会被忽略
+                        if(imgType==='image/webp'||imgType==='image/jpeg'){
+                            imgCanvas.toBlob(function (b) {
+                                let compressUrl=URL.createObjectURL(b);//压缩后的文件url
+                                let fileName=imgFile.name.substring(0,imgFile.name.lastIndexOf('.'))+'.'+imgType.split('/')[1];//重构文件名
+                                let file=blobToFile(b,fileName,imgType);//Blob实例转成File实例
+                                resolve({
+                                    url:compressUrl,
+                                    file:file,
+                                });
+                                imgCanvas=null;//释放内存
+                            },imgType,quality);
+                        } else {
+                            imgCanvas.toBlob(function (b) {
+                                let compressUrl=URL.createObjectURL(b);
+                                let fileName=imgFile.name.substring(0,imgFile.name.lastIndexOf('.'))+'.'+imgType.split('/')[1];
+                                let file=blobToFile(b,fileName,imgType);
+                                resolve({
+                                    url:compressUrl,
+                                    file:file,
+                                },imgType);
+                                imgCanvas=null;//释放内存
+                            },imgType);
+                        }
+                    }catch (e) {
+                        reject(e);
+                    }
+                }
+            })
+        }
+
+        //blob转file
+        function blobToFile(blob,fileName,type) {
+            return new window.File([blob], fileName, {type: type});
+        }
+    }
+</script>
+</html>
