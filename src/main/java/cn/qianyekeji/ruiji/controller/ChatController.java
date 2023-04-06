@@ -272,12 +272,6 @@ public class ChatController {
     @GetMapping
     public R<List<Chat>> list() {
         List<Chat> chats;
-        Long count = redisTemplate.opsForValue().increment("counter", 1L);
-        if (count > 30) {
-            redisTemplate.opsForValue().decrement("counter", 1L);
-            return R.error("1");
-        }
-        try {
             String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 //        String key = today + "*";
 //        String key = "2023/2/16" + "*";
@@ -304,9 +298,6 @@ public class ChatController {
 
             // 将聊天记录按时间先后排序
             chats.sort((c1, c2) -> c1.getTime().compareTo(c2.getTime()));
-        } finally {
-            redisTemplate.opsForValue().decrement("counter", 1L);
-        }
 
         return R.success(chats);
     }
