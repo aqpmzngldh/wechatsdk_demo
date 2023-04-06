@@ -284,8 +284,8 @@ public class ChatController {
 
             for (String k : keys) {
                 Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(k);
-    //            String time = k.substring(k.lastIndexOf("_") + 1, k.indexOf("-"));
-                String time = k;
+                String time = k.substring(0, k.length() - 2);
+//                String time = k;
                 String body = (String) chatRecord.get("body");
                 String url = (String) chatRecord.get("url");
                 String name = (String) chatRecord.get("name");
@@ -396,9 +396,12 @@ public class ChatController {
                     return R.error("您没有资格操作");
                 }
                 // 使用 opsForHash 方法获取哈希值
-                Map<Object, Object> hash = redisTemplate.opsForHash().entries(p.split(",")[0]);
-                String ipAddress = (String) hash.get("ipAddress");
-                redisTemplate.opsForSet().add("banned_ips", ipAddress);
+                Set<String> matchingKeys = redisTemplate.keys(p.split(",")[0]+"*");
+                for (String matchingKey : matchingKeys) {
+                    Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(matchingKey);
+                    String ipAddress = (String) chatRecord.get("ipAddress");
+                    redisTemplate.opsForSet().add("banned_ips", ipAddress);
+                }
                 return R.error("封禁成功");
             } catch (Exception e) {
                 e.printStackTrace();

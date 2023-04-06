@@ -270,12 +270,13 @@ public class addressSeeController {
         String[] parts = new String[0];
         try {
             userInput = new String(Base64.getDecoder().decode(userInput));
-            // 使用 opsForHash 方法获取哈希值
-            Map<Object, Object> hash = redisTemplate.opsForHash().entries(userInput);
-
-            // 获取地址键的值，并用 "__" 分隔符拆分
-            String address = (String) hash.get("address");
-            parts = address.split("__");
+            Set<String> matchingKeys = redisTemplate.keys(userInput+"*");
+            for (String matchingKey : matchingKeys) {
+                Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(matchingKey);
+                // 获取地址键的值，并用 "__" 分隔符拆分
+                String address = (String) chatRecord.get("address");
+                parts = address.split("__");
+            }
         } catch (Exception e) {
             return R.error("");
         }
