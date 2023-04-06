@@ -197,9 +197,8 @@ public class OtherController {
 
         String s = parameter;
         String key = s + "," + time1 + "*";
-        int position = key.length() - 3; // 获取要插入字符的位置，即倒数第三个位置
-        key = key.substring(0, position) + "/" + key.substring(position); // 在指定位置插入字符
-
+//        int position = key.length() - 3; // 获取要插入字符的位置，即倒数第三个位置
+//        key = key.substring(0, position) + "/" + key.substring(position); // 在指定位置插入字符
         Set<String> keys = redisTemplate.keys(key);
         List<Chat> chats = new ArrayList<>();
 

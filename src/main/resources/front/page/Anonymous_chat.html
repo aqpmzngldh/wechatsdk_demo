@@ -288,14 +288,7 @@
 
         },
         watch: {
-            inputText(value) {
-                const lines = value.split('\n');
-                this.rows = Math.max(lines.length, 1);
-            },
             messages(value) {
-                if (this.isInteger == "") {
-                    this.isInteger = value.length;
-                }
                 if (this.isInteger != value.length) {
                     this.isInteger = value.length;
                     this.scrollToEnd();
