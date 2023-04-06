@@ -100,8 +100,8 @@
         }
 
         .message-body img {
-            max-width: 50%;
-            max-height: 50%;
+            width: 50%;
+            height: 50%;
             object-fit: cover;
         }
 
@@ -174,7 +174,7 @@
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
 
-                    <img v-if="!message.body"
+                    <img @click="big($event)" v-if="!message.body"
                          :src="'/chat/download?name=' + message.url"/>
 
                     <svg @click="addLike(message.k,message.zan)" t="1646634642977" class="icon" viewBox="0 0 1024 1024"
@@ -505,6 +505,13 @@
 
             blobToFile(blob, fileName, type) {
                 return new window.File([blob], fileName, {type: type});
+            },
+            big(event){
+                let imgEl = event.target;
+                let width = imgEl.offsetWidth;
+                let height = imgEl.offsetHeight;
+                imgEl.style.width = '100%';
+                imgEl.style.height = '100%';
             }
         },
     });
