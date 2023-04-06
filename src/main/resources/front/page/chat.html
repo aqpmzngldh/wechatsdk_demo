@@ -241,7 +241,7 @@
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
 
                     <img v-if="!message.body"
-                         :src="'/www/server/img2/' + message.url"/>
+                         :src="'/chat/download?name=' + message.url"/>
 
                     <svg @click="addLike(message.k,message.zan)" t="1646634642977" class="icon" viewBox="0 0 1024 1024"
                          version="1.1"
