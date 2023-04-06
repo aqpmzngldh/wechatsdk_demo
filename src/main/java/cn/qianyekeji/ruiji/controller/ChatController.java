@@ -392,17 +392,20 @@ public class ChatController {
                 if (p == null || p.length() == 0 || p.split(",").length != 2) {
                     return R.error("您没有资格操作");
                 }
-                if (!"0922".equals(p.split(",")[1])) {
-                    return R.error("您没有资格操作");
+
+                Set<String> members = redisTemplate.opsForSet().members("guanli");
+                for (String member : members) {
+                    String[] parts = member.split("---"); // 按照---分隔符分割元素
+                    if ("1".equals(parts[1])&&p.split(",")[1].equals(parts[0])){
+                        Set<String> matchingKeys = redisTemplate.keys(p.split(",")[0]+"*");
+                        for (String matchingKey : matchingKeys) {
+                            Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(matchingKey);
+                            String ipAddress = (String) chatRecord.get("ipAddress");
+                            redisTemplate.opsForSet().add("banned_ips", ipAddress);
+                        }
+                        return R.error("封禁成功");
+                    }
                 }
-                // 使用 opsForHash 方法获取哈希值
-                Set<String> matchingKeys = redisTemplate.keys(p.split(",")[0]+"*");
-                for (String matchingKey : matchingKeys) {
-                    Map<Object, Object> chatRecord = redisTemplate.opsForHash().entries(matchingKey);
-                    String ipAddress = (String) chatRecord.get("ipAddress");
-                    redisTemplate.opsForSet().add("banned_ips", ipAddress);
-                }
-                return R.error("封禁成功");
             } catch (Exception e) {
                 e.printStackTrace();
             }
