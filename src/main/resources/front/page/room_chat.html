@@ -510,8 +510,13 @@
                 let imgEl = event.target;
                 let width = imgEl.offsetWidth;
                 let height = imgEl.offsetHeight;
-                imgEl.style.width = '100%';
-                imgEl.style.height = '100%';
+                if (imgEl.style.width === '100%') {
+                    imgEl.style.width = '50%';
+                    imgEl.style.height = '50%';
+                }else{
+                    imgEl.style.width = '100%';
+                    imgEl.style.height = '100%';
+                }
             }
         },
     });
