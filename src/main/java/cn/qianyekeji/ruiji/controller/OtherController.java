@@ -1,6 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
 import cn.hutool.core.lang.Dict;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -278,25 +279,37 @@ public class OtherController {
                         return R.error("您已经是管理员，无需进一步操作");
                     }
                 } else {
+                    //防止用户模拟其他邮箱，这时候拼接上生成的随机四位数，点击激活再次发送请求后我们把收到的拼接四位数和存储的四位数对比下
+                    String code = RandomUtil.randomNumbers(4);
+                    redisTemplate.opsForValue().set(k,code );
                     //数据库中的数据里没有同名邮箱
-//                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
-                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+//                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
                     redisTemplate.opsForSet().add("guanli", newValue);
                     return R.error("请登录该邮箱后完成管理员激活");
                 }
             }
         }
         //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活,然后发送邮件让他去激活
-//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
-        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+        //防止用户模拟其他邮箱，这时候拼接上生成的随机四位数，点击激活再次发送请求后我们把收到的拼接四位数和存储的四位数对比下
+        String code = RandomUtil.randomNumbers(4);
+        redisTemplate.opsForValue().set(k,code );
+//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
         redisTemplate.opsForSet().add("guanli", newValue);
         return R.error("请登录该邮箱后完成管理员激活");
     }
 
-    @GetMapping("/active/{k}")
-    public R<String> active(@PathVariable("k") String k, HttpServletResponse response) throws Exception {
+    @GetMapping("/active/{k}/{code}")
+    public R<String> active(@PathVariable("k") String k,@PathVariable("code") String code, HttpServletResponse response) throws Exception {
         System.out.println(k);
         Set<String> members = redisTemplate.opsForSet().members("guanli");
+        String s = redisTemplate.opsForValue().get(k);
+        if (!s.equals(code)){
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().write("请不要胡乱操作，谢谢ε=(´ο｀*)))唉");
+            return null;
+        }
         for (String value : members) {
             String[] parts = value.split("---"); // 按照---分隔符分割元素
             if (parts.length == 2 && parts[0].equals(k)) {
