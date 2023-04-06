@@ -79,8 +79,9 @@
         }
 
         #wc {
-           width: 49%;
+            width: 49%;
         }
+
         #nm {
             width: 46%;
         }
@@ -97,13 +98,12 @@
             width: 70%;
             height: 40px;
         }
-        .el-textarea__inner{
-            padding:0px 0px;
+
+        .el-textarea__inner {
+            padding: 0px 0px;
             padding-left: 10px;
             height: 40px;
         }
-
-
 
         .message-body img {
             max-width: 50%;
@@ -120,6 +120,7 @@
             float: left; /* 将用户头像框浮动到左侧 */
             margin-top: 5px; /* 稍微调整一下上边距，使其垂直居中 */
         }
+
         .message-content {
             overflow: hidden;
         }
@@ -134,8 +135,8 @@
         }
 
         /*.chat {*/
-            /*position: relative;*/
-            /*height: 100vh;*/
+        /*position: relative;*/
+        /*height: 100vh;*/
         /*}*/
 
         .spinner {
@@ -152,16 +153,21 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
+
         .hide {
             display: none;
         }
+
         [v-cloak] {
             display: none;
         }
-
 
         .drawer-wrapper.drawer-wrapper .el-drawer {
             width: 40% !important;
@@ -171,24 +177,29 @@
             background: whitesmoke;
             overflow-y: scroll; /* 启用垂直滚动 */
         }
-        .el-drawer div{
+
+        .el-drawer div {
             color: blue;
             padding-bottom: 15%;
         }
+
         .el-message-box {
             width: 300px;
         }
-        .a a{
+
+        .a a {
             display: block;
             text-align: center;
             font-size: 50%;
             padding-bottom: 3px;
         }
-        .aplayer .aplayer-lrc{
+
+        .aplayer .aplayer-lrc {
             display: none !important;
             padding-left: 999px !important;
         }
-        .upload-demo{
+
+        .upload-demo {
             float: right;
             padding-right: 20%;
             padding-top: 1%;
@@ -230,7 +241,7 @@
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
 
                     <img v-if="!message.body"
-                         :src="'/chat/download?name=' + message.url"/>
+                         :src="'/www/server/img2/' + message.url"/>
 
                     <svg @click="addLike(message.k,message.zan)" t="1646634642977" class="icon" viewBox="0 0 1024 1024"
                          version="1.1"
@@ -247,28 +258,28 @@
     </div>
 
     <form class="my-form" v-cloak>
-        <el-button type="primary" v-show="isShow" id="nm"  @click="address">查看道祖位置</el-button>
+        <el-button type="primary" v-show="isShow" id="nm" @click="address">查看道祖位置</el-button>
         <!--<el-button type="primary" v-show="isShow" id="wc" @click="tiXing">{{content}}</el-button>-->
 
-        <el-button type="primary" v-show="isShow" id="wc" @click="drawer=!drawer" >
+        <el-button type="primary" v-show="isShow" id="wc" @click="drawer=!drawer">
             更多功能
         </el-button>
         <div class="drawer-wrapper">
-        <el-drawer
-                title="我是标题"
-                :visible.sync="drawer"
-                :with-header="false"
-                direction="ltr"
-                :modal="false">
-            <div><a href="/front/page/about.html">网站简介</a></div>
-            <div @click="room">开/加入房间</div>
-            <div @click="changeName">改名</div>
-            <div @click="join">加入管理员</div>
-            <div @click="tiXing">提醒管理上线</div>
-            <div @click="banned">封禁某人</div>
-            <div><a href="/front/page/eth.html">echarts之ETH</a></div>
-            <div @click="music=!music">我喜欢的歌</div>
-        </el-drawer>
+            <el-drawer
+                    title="我是标题"
+                    :visible.sync="drawer"
+                    :with-header="false"
+                    direction="ltr"
+                    :modal="false">
+                <div><a href="/front/page/about.html">网站简介</a></div>
+                <div @click="room">开/加入房间</div>
+                <div @click="changeName">改名</div>
+                <div @click="join">加入管理员</div>
+                <div @click="tiXing">提醒管理上线</div>
+                <div @click="banned">封禁某人</div>
+                <div><a href="/front/page/eth.html">echarts之ETH</a></div>
+                <div @click="music=!music">我喜欢的歌</div>
+            </el-drawer>
         </div>
 
 
@@ -286,16 +297,16 @@
             <el-button type="primary" icon="el-icon-plus" v-show="isShow" @click="selectImage"></el-button>
 
             <!--<el-upload-->
-                    <!--class="upload-demo" action="/chat"-->
-                    <!--:before-upload="beforeUpload"-->
-                    <!--:show-file-list="false"-->
+            <!--class="upload-demo" action="/chat"-->
+            <!--:before-upload="beforeUpload"-->
+            <!--:show-file-list="false"-->
             <!--&gt;-->
-                <!--<el-button size="small" icon="el-icon-plus" v-show="isShow" type="primary"></el-button>-->
+            <!--<el-button size="small" icon="el-icon-plus" v-show="isShow" type="primary"></el-button>-->
             <!--</el-upload>-->
 
         </div>
         <div class="a">
-        <a href="https://beian.miit.gov.cn/">陕ICP备2022014746号-1</a>
+            <a href="https://beian.miit.gov.cn/">陕ICP备2022014746号-1</a>
         </div>
     </form>
     <meting-js
@@ -356,7 +367,7 @@
             // 获取 spinner 元素
             var spinner = document.querySelector('.wrapper');
             // 设置 2 秒后停止旋转动画
-            setTimeout(function() {
+            setTimeout(function () {
                 spinner.classList.add('hide');
             }, 1000);
 
@@ -533,7 +544,7 @@
                     //压缩前的文件对象
                     // console.log(file);
                     //压缩图片
-                    this.imgCompress(file,'image/webp',0.5).then(res=>{
+                    this.imgCompress(file, 'image/webp', 0.5).then(res => {
                         //压缩后的文件对象
                         // console.log(res.file);
                         // 将文件追加到FormData对象
@@ -587,24 +598,24 @@
             },
             async bigHeart() {
                 let uuid = localStorage.getItem('uuid');
-                $axios.post("/addressSee/" + this.add+ '/' +uuid)
+                $axios.post("/addressSee/" + this.add + '/' + uuid)
                     .then((res) => {
-                            this.person=res.data;
+                        this.person = res.data;
                     })
                     .catch(err => {
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     })
             },
-            drawer1(){
-                this.drawer=!this.drawer
+            drawer1() {
+                this.drawer = !this.drawer
             },
-            join(){
+            join() {
                 this.$prompt('请输入您的邮箱', '管理提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputPattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                     inputErrorMessage: '邮箱格式不正确，请重新输入',
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     $axios.post("/other/value/" + value)
                         .then((res) => {
                             this.$notify({type: 'warning', message: res.msg});
@@ -619,13 +630,13 @@
                     });
                 });
             },
-            room(){
+            room() {
                 this.$prompt('请输入4位随机数字为房间号', '开房提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputPattern: /^[0-9]{4}$/,
                     inputErrorMessage: '格式不正确，请重新输入',
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     this.$message({
                         type: 'success',
                         message: '开房成功'
@@ -638,11 +649,11 @@
                     });
                 });
             },
-            changeName(){
+            changeName() {
                 this.$prompt('请输入新名字', '改名提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     this.$message({
                         type: 'success',
                         message: '改名成功'
@@ -655,12 +666,12 @@
                     });
                 });
             },
-            banned(){
+            banned() {
                 this.$prompt('请复制时间标识进行封禁', '封禁提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                }).then(({ value }) => {
-                    $axios.post("/chat/banned/" +btoa(value))
+                }).then(({value}) => {
+                    $axios.post("/chat/banned/" + btoa(value))
                         .then((res) => {
                             this.$notify({type: 'warning', message: res.msg});
                         })
@@ -671,57 +682,56 @@
                     });
                 });
             },
-            imgCompress(imgFile,imgType,quality) {
-        if(!imgType){
-            imgType='image/webp';//默认输出webp格式的图片
-        }
-        return new Promise((resolve,reject)=>{
-            let src=URL.createObjectURL(imgFile);
-            let img=new Image();//创建一个img标签
-            img.src=src;
-            img.onload=function () {
-                try {
-                    URL.revokeObjectURL(src);//释放内存
-                    let width=this.width;
-                    let height=this.height;
-                    let imgCanvas=document.createElement('canvas');//创建canvas元素
-                    imgCanvas.width=width;
-                    imgCanvas.height=height;
-                    let ctx=imgCanvas.getContext('2d');//2d渲染
-                    ctx.drawImage(this,0,0,width,height);//将图片以原有尺寸绘制到canvas中
-                    //转换成base64并压缩，可以从0到1的区间内选择图片的质量。如果超出取值范围，将会使用默认值0.92。其他参数会被忽略
-                    if(imgType==='image/webp'||imgType==='image/jpeg'){
-                        imgCanvas.toBlob(function (b) {
-                            let compressUrl=URL.createObjectURL(b);//压缩后的文件url
-                            let fileName=imgFile.name.substring(0,imgFile.name.lastIndexOf('.'))+'.'+imgType.split('/')[1];//重构文件名
-                            // let file=this.blobToFile(b,fileName,imgType);//Blob实例转成File实例
-                            let file=new window.File([b], fileName, {type: imgType})
-                            resolve({
-                                url:compressUrl,
-                                file:file,
-                            });
-                            imgCanvas=null;//释放内存
-                        },imgType,quality);
-                    } else {
-                        imgCanvas.toBlob(function (b) {
-                            let compressUrl=URL.createObjectURL(b);
-                            let fileName=imgFile.name.substring(0,imgFile.name.lastIndexOf('.'))+'.'+imgType.split('/')[1];
-                            let file=this.blobToFile(b,fileName,imgType);
-                            resolve({
-                                url:compressUrl,
-                                file:file,
-                            },imgType);
-                            imgCanvas=null;//释放内存
-                        },imgType);
-                    }
-                }catch (e) {
-                    reject(e);
+            imgCompress(imgFile, imgType, quality) {
+                if (!imgType) {
+                    imgType = 'image/webp';//默认输出webp格式的图片
                 }
-            }
-        })
-    },
+                return new Promise((resolve, reject) => {
+                    let src = URL.createObjectURL(imgFile);
+                    let img = new Image();//创建一个img标签
+                    img.src = src;
+                    img.onload = function () {
+                        try {
+                            URL.revokeObjectURL(src);//释放内存
+                            let width = this.width;
+                            let height = this.height;
+                            let imgCanvas = document.createElement('canvas');//创建canvas元素
+                            imgCanvas.width = width;
+                            imgCanvas.height = height;
+                            let ctx = imgCanvas.getContext('2d');//2d渲染
+                            ctx.drawImage(this, 0, 0, width, height);//将图片以原有尺寸绘制到canvas中
+                            //转换成base64并压缩，可以从0到1的区间内选择图片的质量。如果超出取值范围，将会使用默认值0.92。其他参数会被忽略
+                            if (imgType === 'image/webp' || imgType === 'image/jpeg') {
+                                imgCanvas.toBlob(function (b) {
+                                    let compressUrl = URL.createObjectURL(b);//压缩后的文件url
+                                    let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];//重构文件名
+                                    // let file=this.blobToFile(b,fileName,imgType);//Blob实例转成File实例
+                                    let file = new window.File([b], fileName, {type: imgType})
+                                    resolve({
+                                        url: compressUrl,
+                                        file: file,
+                                    });
+                                    imgCanvas = null;//释放内存
+                                }, imgType, quality);
+                            } else {
+                                imgCanvas.toBlob(function (b) {
+                                    let compressUrl = URL.createObjectURL(b);
+                                    let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];
+                                    let file = this.blobToFile(b, fileName, imgType);
+                                    resolve({
+                                        url: compressUrl,
+                                        file: file,
+                                    }, imgType);
+                                    imgCanvas = null;//释放内存
+                                }, imgType);
+                            }
+                        } catch (e) {
+                            reject(e);
+                        }
+                    }
+                })
+            },
 
-            // 使用箭头函数
             blobToFile(blob, fileName, type) {
                 return new window.File([blob], fileName, {type: type});
             }
