@@ -162,7 +162,7 @@ public class OtherController {
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
-            redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+            redisTemplate.expire(key, 72, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
 
             return R.success(fileName);
 
@@ -184,7 +184,7 @@ public class OtherController {
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
-            redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+            redisTemplate.expire(key, 72, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
             return R.success("聊天记录已成功保存");
         }
     }
@@ -192,7 +192,7 @@ public class OtherController {
     @GetMapping
     public R<List<Chat>> list(String parameter) {
         LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMdd");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM");
         String time1 = currentDateTime.format(formatter);
 
         String s = parameter;

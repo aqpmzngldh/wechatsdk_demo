@@ -196,7 +196,7 @@
         <el-button type="primary" v-show="isShow" id="wc" @click="copy">分享链接给好友</el-button>
 
         <p ref="firstParagraph" v-show="isShow">房间已创建，开启隐私对话吧</p>
-        <p ref="secondParagraph" v-show="isShow">开房模式不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
+        <p ref="secondParagraph" v-show="isShow">开房模式不记录任何数据，聊天记录显示最近三天</p>
         <div class="chat-input">
             <el-input :disabled="isButtonDisabled"
                       type="textarea"
