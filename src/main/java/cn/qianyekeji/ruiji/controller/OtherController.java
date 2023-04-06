@@ -284,7 +284,7 @@ public class OtherController {
                     redisTemplate.opsForValue().set(k,code );
                     //数据库中的数据里没有同名邮箱
 //                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
-                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
+                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号(删除对话也是),封禁后该用户将永远无法说话", Collections.singletonList(""));
                     redisTemplate.opsForSet().add("guanli", newValue);
                     return R.error("请登录该邮箱后完成管理员激活");
                 }
@@ -295,7 +295,7 @@ public class OtherController {
         String code = RandomUtil.randomNumbers(4);
         redisTemplate.opsForValue().set(k,code );
 //        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
-        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
+        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号(删除对话也是),封禁后该用户将永远无法说话", Collections.singletonList(""));
         redisTemplate.opsForSet().add("guanli", newValue);
         return R.error("请登录该邮箱后完成管理员激活");
     }

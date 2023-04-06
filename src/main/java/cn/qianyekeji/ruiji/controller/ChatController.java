@@ -412,4 +412,33 @@ public class ChatController {
         }
         return R.error("无效操作");
     }
+
+    @PostMapping("/delete/{p}")
+    public R<String> delete(@PathVariable("p") String p) throws Exception {
+        System.out.println(p);
+        if (p!=null) {
+            try {
+                p = new String(Base64.getDecoder().decode(p));
+                System.out.println(p);
+                if (p == null || p.length() == 0 || p.split(",").length != 2) {
+                    return R.error("您没有资格操作");
+                }
+
+                Set<String> members = redisTemplate.opsForSet().members("guanli");
+                for (String member : members) {
+                    String[] parts = member.split("---"); // 按照---分隔符分割元素
+                    if ("1".equals(parts[1])&&p.split(",")[1].equals(parts[0])){
+                        Set<String> matchingKeys = redisTemplate.keys(p.split(",")[0]+"*");
+                        for (String matchingKey : matchingKeys) {
+                            redisTemplate.delete(matchingKey);
+                        }
+                        return R.error("删除成功");
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return R.error("无效操作");
+    }
 }
