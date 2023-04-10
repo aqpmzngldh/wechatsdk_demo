@@ -40,11 +40,13 @@
         </div>
       </div>
       <div class="divBody">
+        <!--左侧菜品的显示-->
         <div class="divType">
           <ul>
             <li v-for="(item,index) in categoryList" :key="index" @click="categoryClick(index,item.id,item.type)" :class="{active:activeType === index}">{{item.name}}</li>
           </ul>
         </div>
+        <!--右侧菜品/套餐的显示-->
         <div class="divMenu">
           <div>
             <div class="divItem" v-for="(item,index) in dishList" :key="index" @click="dishDetails(item)">
@@ -78,8 +80,9 @@
         <div class="divLayerLeft"></div>
         <div class="divLayerRight"></div>
       </div>
+        <!--购物车物品的显示-->
       <div class="divCart" v-if="categoryList.length > 0">
-          <div :class="{imgCartActive: cartData && cartData.length > 0, imgCart:!cartData || cartData.length<1}" @click="openCart"></div>
+          <div id="width" :class="{imgCartActive: cartData && cartData.length > 0, imgCart:!cartData || cartData.length<1}" @click="openCart"></div>
           <div :class="{divGoodsNum:1===1, moreGoods:cartData && cartData.length > 99}" v-if="cartData && cartData.length > 0">{{ goodsNum }}</div>
           <div class="divNum">
               <span>￥</span>
@@ -88,6 +91,7 @@
           <div class="divPrice"></div>
           <div :class="{btnSubmitActive: cartData && cartData.length > 0, btnSubmit:!cartData || cartData.length<1}" @click="toAddOrderPage">去结算</div>
         </div>
+        <!--这个页面直接点击选择规格的弹窗-->
         <van-dialog v-model="dialogFlavor.show" :show-confirm-button="false" class="dialogFlavor" ref="flavorDialog">
           <div class="dialogTitle">{{dialogFlavor.name}}</div>
           <div class="divContent">
@@ -108,6 +112,7 @@
             <img src="./images/close.png"/>
           </div>
         </van-dialog>
+        <!--购物车的弹窗-->
         <van-popup v-model="cartDialogShow" position="bottom" :style="{ height: '50%' }" class="dialogCart">
           <div class="divCartTitle">
             <div class="title">购物车</div>
@@ -140,7 +145,8 @@
               </div>
           </div>
         </van-popup>
-        <van-dialog v-model="detailsDialog.show" 
+        <!--点击某个菜品后的详情弹窗-->
+        <van-dialog v-model="detailsDialog.show"
                     :show-confirm-button="false" 
                     class="detailsDialog" 
                     ref="detailsDialog"
@@ -174,9 +180,10 @@
             <img src="./images/close.png"/>
           </div>
         </van-dialog>
-        <van-dialog v-model="setMealDialog.show" 
-                    :show-confirm-button="false" 
-                    class="setMealDetailsDialog" 
+        <!--点击某个套餐后的详情弹窗-->
+        <van-dialog v-model="setMealDialog.show"
+                    :show-confirm-button="false"
+                    class="setMealDetailsDialog"
                     ref="setMealDetailsDialogd"
                     v-if="setMealDialog.show"
                     >
@@ -192,7 +199,7 @@
                   <div class="divPrice">
                     <span>￥</span><span>{{item.price/100}}</span>
                   </div>
-                </div>                
+                </div>
                 <div class="content">{{item.description}}</div>
               </div>
             </div>
@@ -393,13 +400,14 @@
                 name:item.name,
                 image:item.image
               }
-              if(Array.isArray(item.flavors)){//表示是菜品
+              if(Array.isArray(item.flavors)){//表示是菜品，如菜品没有规格则flavors为空，但不影响它仍是个数组
                 params.dishId = item.id
               }else{//表示套餐 套餐没有口味
                 params.setmealId = item.id
               }
               const res = await addCartApi(params)
               if(res.code === 1){
+                  //这个循环的话是为了给右边显示的菜品再赋值
                 this.dishList.forEach(dish=>{
                   if(dish.id === item.id){
                     dish.number = res.data.number
@@ -419,6 +427,7 @@
                 let params = {
                   dishId:item.id,
                 }
+                //参数覆盖，如果菜品Array.isArray(item.flavors)肯定为true，否则为套餐
                 if(!Array.isArray(item.flavors)){
                   params = {
                     setmealId:item.id,
@@ -426,6 +435,7 @@
                 }
                 const res = await updateCartApi(params)
                 if(res.code === 1){
+                    // 循环给右侧的菜品/套餐赋number来显示样式
                 this.dishList.forEach(dish=>{
                   if(dish.id === item.id){
                     dish.number = (res.data.number === 0 ? undefined : res.data.number)
@@ -443,7 +453,7 @@
             //展开购物车
             openCart(){
               if(this.cartData.length > 0){
-                this.cartDialogShow = true
+                this.cartDialogShow = !this.cartDialogShow
               }
             },
             //购物车中增加商品数量
@@ -544,7 +554,7 @@
                   dishFlavor.push(item.dishFlavor)
                 }else{
                       flag = false
-                      Notify({ type: 'warning', message: '请选择'+ item.name });
+                    this.$notify({ type: 'warning', message: '请选择'+ item.name });
                 }
               })
               if(flag){
@@ -589,6 +599,11 @@
                 const res = await setMealDishDetailsApi(item.id)
                 if(res.code === 1){
                   this.setMealDialog.item = {...item,list:res.data}
+                  // this.setMealDialog.item = {...item,  list: [
+                  //         { name: '虚假菜品1', price: 10, copies: 1,description: '没有描述'},
+                  //         { name: '虚假菜品2', price: 15, copies: 1,description: '没有描述'},
+                  //         { name: '虚假菜品3', price: 12, copies: 1,description: '没有描述'},
+                  //     ]}
                   this.setMealDialog.show = true
                 }else{
                   this.$notify({ type:'warning', message:res.msg});

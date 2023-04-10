@@ -16,13 +16,19 @@
     .body{
       min-width: 1366px;
     }
+    .login-form{
+        width: 100% !important;
+    }
+    .login{
+        background: border-box !important;
+    }
   </style>
 </head> 
 
 <body>
   <div class="login" id="login-app">
     <div class="login-box">
-      <img src="../../images/login/login-l.png" alt="">
+      <!--<img src="../../images/login/login-l.png" alt="">-->
       <div class="login-form">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" >
           <div class="login-form-title">

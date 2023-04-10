@@ -40,6 +40,11 @@ public class SetmealDish implements Serializable {
     //排序
     private Integer sort;
 
+    //套餐中的某个菜品对应的图片----套餐点击时需要
+    private String image;
+    //套餐中的某个菜品对应的描述信息----套餐点击时需要
+    private String description;
+
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

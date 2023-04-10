@@ -1,5 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.qianyekeji.ruiji.entity.Dish;
+import cn.qianyekeji.ruiji.entity.SetmealDish;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import cn.qianyekeji.ruiji.common.R;
@@ -15,6 +17,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,6 +41,10 @@ public class SetmealController {
 
     @Autowired
     private SetmealDishService setmealDishService;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
 
     /**
      * 新增套餐
@@ -125,5 +133,18 @@ public class SetmealController {
         queryWrapper.orderByDesc(Setmeal::getUpdateTime);
 
         return R.success(setmealService.list(queryWrapper));
+    }
+
+
+    @GetMapping("/dish/{data}")
+    public R<List<SetmealDish>> dish(@PathVariable("data") String data) {
+        log.info("data:{}", data);
+        System.out.println(data+"-----------------");
+//        SELECT abc.name,abc.price,abc.copies,dish.image,dish.description FROM (SELECT * FROM setmeal_dish WHERE setmeal_id='1645087249462743042') abc,dish WHERE abc.dish_id=dish.id
+        String sql = "SELECT abc.name, abc.price, abc.copies, dish.image, dish.description " +
+                "FROM (SELECT * FROM setmeal_dish WHERE setmeal_id = ?) abc, dish " +
+                "WHERE abc.dish_id = dish.id";
+        List<SetmealDish> setmealDishList = jdbcTemplate.query(sql, new Object[]{data}, new BeanPropertyRowMapper<>(SetmealDish.class));
+        return R.success(setmealDishList);
     }
 }
