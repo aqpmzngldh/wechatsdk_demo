@@ -349,7 +349,7 @@ public class OtherController {
     @PostMapping("/ETH")
     public R<Double> eth() throws Exception {
 //        URL url = new URL( "https://data.mifengcha.com/api/v3/price?slug=ethereum&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE");
-        String URL = "https://data.mifengcha.com/api/v3/price?slug=ethereum&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE";
+        String URL = "https://data.mifengcha.com/api/v3/price?slug=ethereum&api_key=MNZFFJLNHDRFEM8C9QUDSHNGYXRHSOC05O5NVFFI";
         RestTemplate restTemplate = new RestTemplate();
         String forObject = restTemplate.getForObject(URL, String.class);
         Dict dict = Dict.create();
@@ -375,7 +375,7 @@ public class OtherController {
         Instant instant = localDate.atStartOfDay().atZone(ZoneId.of("UTC")).toInstant();
         long startMillis = instant.toEpochMilli();
 
-        String URL = "https://data.mifengcha.com/api/v3/price/history?slug=ethereum&interval=1d&start="+startMillis+"&end="+nowMillis+"&api_key=AWEIVXYYD8O4PWJL55UNTTA1ZZUEPDT1NRHPFKZE";
+        String URL = "https://data.mifengcha.com/api/v3/price/history?slug=ethereum&interval=1d&start="+startMillis+"&end="+nowMillis+"&api_key=MNZFFJLNHDRFEM8C9QUDSHNGYXRHSOC05O5NVFFI";
         RestTemplate restTemplate = new RestTemplate();
         String forObject = restTemplate.getForObject(URL, String.class);
         //因为蜜蜂提供数据的特殊，这里要拼接一下再取要不然报错

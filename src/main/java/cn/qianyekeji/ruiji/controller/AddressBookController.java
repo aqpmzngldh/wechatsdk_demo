@@ -35,6 +35,30 @@ public class AddressBookController {
     }
 
     /**
+     * 编辑
+     * @param addressBook
+     * @return
+     */
+    @PutMapping
+    public R<AddressBook> update(@RequestBody AddressBook addressBook) {
+        log.info("addressBook:{}", addressBook);
+        addressBookService.updateById(addressBook);
+        return R.success(addressBook);
+    }
+
+    /**
+     * 删除
+     * @param
+     * @return
+     */
+    @DeleteMapping
+    public R<AddressBook> delete(AddressBook addressBook) {
+        log.info("addressBook:{}", addressBook);
+        addressBookService.removeById(addressBook);
+        return R.success(addressBook);
+    }
+
+    /**
      * 设置默认地址
      */
     @PutMapping("default")

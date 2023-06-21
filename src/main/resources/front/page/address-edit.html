@@ -147,7 +147,7 @@
                             message: '确认要删除当前地址吗？',
                         })
                         .then( async () => {
-                            const res = await deleteAddressApi({ids:this.id })
+                            const res = await deleteAddressApi({id:this.id })
                             if(res.code === 1){
                                 window.requestAnimationFrame(()=>{
                                     window.location.replace('/front/page/address.html')

@@ -47,7 +47,7 @@ public class UserController {
 
             //调用阿里云提供的短信服务API完成发送短信
             //SMSUtils.sendMessage("瑞吉外卖","",phone,code);
-            SMS_TX_Utils.TX_Utils(1330048,phone,code);
+//            SMS_TX_Utils.TX_Utils(1330048,phone,code);
             //需要将生成的验证码保存到Session,因为存在session中的话有效期是30分钟，但是手机验证码有限期一般是5分钟，所以
 //            session.setAttribute(phone,code);
             //将生成的验证码缓存到Redis中，并且设置有效期为5分钟
