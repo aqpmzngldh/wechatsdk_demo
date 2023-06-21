@@ -194,7 +194,7 @@
                         const res = await addOrderApi(params)
                         if(res.code === 1){
                             window.requestAnimationFrame(()=>{
-                                window.location.replace('/front/page/pay-success.html')
+                                window.location.replace('/front/page/pay-wait.html')
                             })
                         }else{
                             this.$notify({ type:'warning', message:res.msg});
