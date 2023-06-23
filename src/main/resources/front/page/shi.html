@@ -1,43 +1,102 @@
-<style>
-    #myDiv {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100px;
-        height: 100px;
-        background-color: red;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <title>匿名群聊</title>
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
 
-</style>
-<div id="myDiv">拖动我</div>
+
+
+
+</head>
+<body>
+
+    <div id="login">
+            <div class="container">
+                <div class="messages">
+                    <template v-for="message,index in messages">
+                        <div class="left" v-if='message.role=="assistant"' :key="index">
+                            <img :src="'./../images/1.ico'">
+                            <div class="content">{{message.content}}</div>
+                        </div>
+                        <div class="left" :key="index" v-else>
+                            <img :src="'./../images/2.ico'">
+                            <div class="content">{{message.content}}</div>
+                        </div>
+                    </template>
+                </div>
+                <div class="operator">
+                    <input type="text" class="input" v-model="input">
+                    <div class="button" @click="send">发送</div>
+                </div>
+            </div>
+    </div>
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script src="./../api/login.js"></script>
+<script src="./../js/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+
+
+
+</body>
+
 <script>
-    var myDiv = document.getElementById('myDiv');
+    new Vue({
+        el: "#login",
+        data() {
+            return {
+                lock:true,
+                input:'',
+                messages:[
+                ]
+            };
+        },
+        created() {
+            let uuid = localStorage.getItem('uuid');
+            if (uuid == null) {
+                uuid = Math.random().toString(36).substring(2, 10);
+                localStorage.setItem('uuid', uuid);
+            }
+        },
+        methods:{
+            async send(){
+                let uuid = localStorage.getItem('uuid');
+                if(this.input!=null&&this.input!=''&&this.lock==true){
+                    this.lock=false;
+                    this.messages.push({role:"user",content:this.input});
 
-    var isDragging = false;
-    var mouseX = 0;
-    var mouseY = 0;
-    var startX = 0;
-    var startY = 0;
-
-    myDiv.addEventListener('mousedown', function(e) {
-        isDragging = true;
-        startX = myDiv.offsetLeft;
-        startY = myDiv.offsetTop;
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
-
-    document.addEventListener('mousemove', function(e) {
-        if (isDragging) {
-            var deltaX = e.clientX - mouseX;
-            var deltaY = e.clientY - mouseY;
-            myDiv.style.left = startX + deltaX + 'px';
-            myDiv.style.top = startY + deltaY + 'px';
+                    $axios.post("/chatgpt", { userId: uuid, message: this.input })
+                        .then((res) => {
+                            this.messages.push({role:'assistant',content:res});
+                            this.lock=true;
+                        });
+                    this.input='';
+                }
+            }
         }
     });
-
-    document.addEventListener('mouseup', function() {
-        isDragging = false;
-    });
-
 </script>
+</html>

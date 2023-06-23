@@ -69,7 +69,8 @@ public class LoginCheckFilter implements Filter {
                 "/privateChat/**",
                 "/addressSee/**",
                 "/other/**",
-                "/ceShi/**"
+                "/ceShi/**",
+                "/chatgpt/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"
