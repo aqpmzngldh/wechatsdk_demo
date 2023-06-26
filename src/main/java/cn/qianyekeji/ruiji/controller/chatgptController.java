@@ -27,7 +27,8 @@ import java.util.Map;
 @RequestMapping("/chatgpt")
 public class chatgptController {
     private final String OPENAI_API_KEY = "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";
-    private final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+//    private final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+    private final String OPENAI_API_URL = "https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions";
     private Map<String, List<String>> userSessions = new HashMap<>();
 
     @PostMapping
@@ -55,9 +56,10 @@ public class chatgptController {
 
         // 发送请求
         RestTemplate restTemplate = new RestTemplate();
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 33210)));
-        restTemplate.setRequestFactory(factory);
+//        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+//        factory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 33210)));
+//        factory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 7890)));
+//        restTemplate.setRequestFactory(factory);
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = restTemplate.postForEntity(OPENAI_API_URL,request, String.class);
