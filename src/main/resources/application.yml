@@ -27,18 +27,18 @@ spring:
 #  cache:
 #    redis:
 #      time-to-live: 1800000 #设置缓存数据的过期时间不写的话默认永久生效
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
 mybatis-plus:
   configuration:
 #    在数据库和实体类进行映射的时候，去掉数据库中的下划线或者字段中的下划线，按照驼峰命名法进行匹配
+    #不写这个也可以，尚硅谷环环支付里面就没写这个也能匹配
     map-underscore-to-camel-case: true
 #    想要打印sql配置这个
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: false
   #    结合实体类中的long类型的id，配置了后可以自动生成主键
+  #直接用自增id的话像环环直接在实体类定义这样就好
+  #//定义主键策略：跟随数据库的主键自增
+  #    @TableId(value = "id", type = IdType.AUTO)
   global-config:
     db-config:
       id-type: assign_id
@@ -73,4 +73,3 @@ mail:
 
 
 #除了这些配置文件还有dishcontroller中的http://路径要改一下
-#othercontroller里面邮箱的本地和外地
