@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>微信分享示例</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
+    <link rel="icon" href="./../images/favico.ico">
+    <!--不同屏幕尺寸根字体设置-->
+    <script src="./../js/base.js"></script>
+    <!--element-ui的样式-->
+    <link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>
+    <!--引入vant样式-->
+    <link rel="stylesheet" href="../styles/vant.min.css"/>
+    <!-- 引入样式  -->
+    <!--<link rel="stylesheet" href="../styles/index.css"/>-->
+    <!--本页面内容的样式-->
+    <link rel="stylesheet" href="./../styles/login.css"/>
+</head>
+<body>
+<div id="app">
+    <button @click="shareToFriend">分享给朋友</button>
+</div>
+
+<script src="http://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<script src="../../backend/plugins/vue/vue.js"></script>
+<!-- 引入组件库 -->
+<script src="../../backend/plugins/element-ui/index.js"></script>
+<!-- 引入vant样式 -->
+<script src="./../js/vant.min.js"></script>
+<!-- 引入axios -->
+<script src="../../backend/plugins/axios/axios.min.js"></script>
+<script src="./../js/request.js"></script>
+<script src="./../api/login.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        mounted() {
+            let getNonceStr=this.generateNonceStr(8);
+            const timestamp = Date.now().toString();
+            let signature;
+            $axios.post("/wx/signature/" + getNonceStr + '/' + timestamp)
+                .then((res) => {
+                    console.log(res)
+                    signature=res;
+                    // 初始化微信JS-SDK
+                    wx.config({
+                        debug: false,
+                        appId: 'wx61c514e5d83894bf',
+                        timestamp: timestamp,
+                        nonceStr: getNonceStr,
+                        signature: signature,
+                        jsApiList: ['chooseImage']
+                    });
+                })
+                .catch(err => {
+                    console.error(err); // 输出错误信息
+                    this.$notify({type: 'warning', message: '程序出错'});
+                });
+
+            // 在wx.ready中调用自定义方法
+            wx.ready(() => {
+                // this.configureWeChatShare();
+            });
+            wx.error(function(res){
+                // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+            alert(res)
+            });
+        },
+
+        methods:{
+
+            configureWeChatShare() {
+                wx.chooseImage({
+                    count: 1, // 默认9
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function (res) {
+                        var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                    }
+                });
+            },
+            shareToFriend() {
+                this.configureWeChatShare();
+            },
+
+            generateNonceStr(length) {
+                const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                let nonceStr = '';
+                for (let i = 0; i < length; i++) {
+                    nonceStr += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return nonceStr;
+            }
+        }
+    });
+</script>
+</body>
+</html>

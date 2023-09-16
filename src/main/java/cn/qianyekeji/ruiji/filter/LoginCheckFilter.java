@@ -64,13 +64,16 @@ public class LoginCheckFilter implements Filter {
                 "/sms/**",//免费短信接口的
                 "/sss/**",//短信压力测试的
                 "/chat/**",//短信压力测试的
-                "/MP_verify_03jsGPvZkHlHOejC.txt",
+                "/static/**",
                 "/e94e1abec6a39542e13386eaaa1bdb3d.txt",
                 "/privateChat/**",
                 "/addressSee/**",
                 "/other/**",
                 "/ceShi/**",
-                "/chatgpt/**"
+                "/chatgpt/**",
+                "/wx/**",
+                "/access_token/**",
+                "/MP_verify_03jsGPvZkHlHOejC.txt/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"
