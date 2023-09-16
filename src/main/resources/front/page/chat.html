@@ -271,15 +271,17 @@
                     :with-header="false"
                     direction="ltr"
                     :modal="false">
-                <div><a href="/front/page/about.html">网站简介</a></div>
+                <!--<div><a href="/front/page/about.html">网站简介</a></div>-->
                 <div @click="room">开/加入房间</div>
-                <div @click="changeName">改名</div>
+                <div @click="privateChat">私聊</div>
+                <div @click="changeName">随机改名</div>
                 <div @click="join">加入管理员</div>
                 <div @click="tiXing">提醒管理上线</div>
-                <div @click="delete1">删除消息</div>
-                <div @click="banned">封禁某人</div>
-                <div><a href="/front/page/eth.html">echarts之ETH</a></div>
-                <div @click="music=!music">我喜欢的歌</div>
+                <!--<div @click="delete1">删除消息</div>-->
+                <!--<div @click="banned">封禁某人</div>-->
+                <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
+                <!--<div @click="music=!music">我喜欢的歌</div>-->
+                <div @click="make">一键制作</div>
             </el-drawer>
         </div>
 
@@ -508,14 +510,14 @@
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '70%';
                 this.isShow = true
-                this.music = true
+                // this.music = true
             },
             hideParagraphs() {
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '100%';
                 this.isShow = false
-                this.music = false
+                // this.music = false
             },
             async tiXing() {
                 $axios.post("/other/tiXing")
@@ -598,9 +600,6 @@
                         this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
                     })
             },
-            drawer1() {
-                this.drawer = !this.drawer
-            },
             join() {
                 this.$prompt('请输入您的邮箱', '管理提示', {
                     confirmButtonText: '确定',
@@ -641,55 +640,81 @@
                     });
                 });
             },
+            privateChat() {
+                this.$alert('点击头像即可私聊', '私聊提示:', {
+                    confirmButtonText: '确定',
+                });
+            },
             changeName() {
-                this.$prompt('请输入新名字', '改名提示', {
+                // this.$prompt('请输入新名字', '改名提示', {
+                //     confirmButtonText: '确定',
+                //     cancelButtonText: '取消',
+                // }).then(({value}) => {
+                //     this.$message({
+                //         type: 'success',
+                //         message: '改名成功'
+                //     });
+                //     localStorage.setItem('myName', value);
+                // }).catch(() => {
+                //     this.$message({
+                //         type: 'info',
+                //         message: '取消输入'
+                //     });
+                // });
+
+                var adjectives = ['淘气的', '爱动的', '调皮的', '可爱的', '聪明的'];
+                var nouns = ['大熊', '哆嗦A梦', '小夫', '胖虎', '蝎子莱莱', '鲨鱼辣椒', '蜘蛛侦探', '蟑螂恶霸', '汤姆', '杰瑞'];
+                let name = adjectives[Math.floor(Math.random() * adjectives.length)] +
+                    nouns[Math.floor(Math.random() * nouns.length)];
+                // 存储到 local storage 中
+                localStorage.setItem('myName', name);
+                this.$alert(name, '随机改名:', {
                     confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                }).then(({value}) => {
-                    this.$message({
-                        type: 'success',
-                        message: '改名成功'
-                    });
-                    localStorage.setItem('myName', value);
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消输入'
-                    });
+                    callback: action => {
+
+                    }
                 });
             },
-            banned() {
-                this.$prompt('请复制时间标识进行封禁', '封禁提示', {
+            make() {
+                this.$alert('一键自定义属于自己的匿名群聊网站，开发中...', '一键制作:', {
                     confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                }).then(({value}) => {
-                    $axios.post("/chat/banned/" + btoa(value))
-                        .then((res) => {
-                            this.$notify({type: 'warning', message: res.msg});
-                        })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消输入'
-                    });
+                    callback: action => {
+
+                    }
                 });
             },
-            delete1() {
-                this.$prompt('请复制时间标识进行删除', '删除提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                }).then(({value}) => {
-                    $axios.post("/chat/delete/" + btoa(value))
-                        .then((res) => {
-                            this.$notify({type: 'warning', message: res.msg});
-                        })
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消输入'
-                    });
-                });
-            },
+            // banned() {
+            //     this.$prompt('请复制时间标识进行封禁', '封禁提示', {
+            //         confirmButtonText: '确定',
+            //         cancelButtonText: '取消',
+            //     }).then(({value}) => {
+            //         $axios.post("/chat/banned/" + btoa(value))
+            //             .then((res) => {
+            //                 this.$notify({type: 'warning', message: res.msg});
+            //             })
+            //     }).catch(() => {
+            //         this.$message({
+            //             type: 'info',
+            //             message: '取消输入'
+            //         });
+            //     });
+            // },
+            // delete1() {
+            //     this.$prompt('请复制时间标识进行删除', '删除提示', {
+            //         confirmButtonText: '确定',
+            //         cancelButtonText: '取消',
+            //     }).then(({value}) => {
+            //         $axios.post("/chat/delete/" + btoa(value))
+            //             .then((res) => {
+            //                 this.$notify({type: 'warning', message: res.msg});
+            //             })
+            //     }).catch(() => {
+            //         this.$message({
+            //             type: 'info',
+            //             message: '取消输入'
+            //         });
+            //     });
+            // },
             imgCompress(imgFile, imgType, quality) {
                 if (!imgType) {
                     imgType = 'image/webp';//默认输出webp格式的图片

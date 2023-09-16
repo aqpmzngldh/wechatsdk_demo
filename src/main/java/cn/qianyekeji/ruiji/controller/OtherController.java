@@ -262,43 +262,43 @@ public class OtherController {
     public R<String> dianzan(@PathVariable("k") String k) throws Exception {
         Set<String> members = redisTemplate.opsForSet().members("guanli");
         int guanli = members.size();
-        if (guanli > 5) {
-            return R.error("当前管理员已满，请明天后重试");
+        if (guanli>6){
+            return R.error("当前管理已满");
         }
-        String newValue = k + "---0";
-        if (guanli > 0) {
-            for (String value : members) {
-                String[] parts = value.split("---"); // 按照---分隔符分割元素
-                if (parts.length == 2 && parts[0].equals(k)) {
-                    //这时候有同名邮箱这时候进一步判断激活状态是成功1还是失败0
-                    if (parts[1].equals("0")) {
-                        //激活失败，返回前段让用户去激活
-                        return R.error("请登录该邮箱后完成管理员激活");
-                    } else {
-                        //已经是激活成功转态
-                        return R.error("您已经是管理员，无需进一步操作");
-                    }
-                } else {
-                    //防止用户模拟其他邮箱，这时候拼接上生成的随机四位数，点击激活再次发送请求后我们把收到的拼接四位数和存储的四位数对比下
-                    String code = RandomUtil.randomNumbers(4);
-                    redisTemplate.opsForValue().set(k,code );
-                    //数据库中的数据里没有同名邮箱
-//                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
-                    mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k+ "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号(删除对话也是),封禁后该用户将永远无法说话", Collections.singletonList(""));
-                    redisTemplate.opsForSet().add("guanli", newValue);
-                    return R.error("请登录该邮箱后完成管理员激活");
-                }
+
+        // 根据传递的参数k在数据库中查找同名邮箱
+        String existingValue = null;
+        for (String value : members) {
+            String[] parts = value.split("---");
+            if (parts.length == 2 && parts[0].equals(k)) {
+                existingValue = value;
+                break; // 找到匹配的邮箱就退出循环
             }
         }
-        //数据库一条数据都没有，这时候把该邮箱加入，加入后并提示让他去激活,然后发送邮件让他去激活
-        //防止用户模拟其他邮箱，这时候拼接上生成的随机四位数，点击激活再次发送请求后我们把收到的拼接四位数和存储的四位数对比下
-        String code = RandomUtil.randomNumbers(4);
-        redisTemplate.opsForValue().set(k,code );
-//        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=http://localhost:8089/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号", Collections.singletonList(""));
-        mailUtil.send("",k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/"+code + ">【匿名群聊】-点击激活管理员</a>"+"想要封禁某人加英文逗号加你激活的邮箱号(删除对话也是),封禁后该用户将永远无法说话", Collections.singletonList(""));
-        redisTemplate.opsForSet().add("guanli", newValue);
-        return R.error("请登录该邮箱后完成管理员激活");
+
+        if (existingValue != null) {
+            String[] parts = existingValue.split("---");
+            if (parts[1].equals("0")) {
+                // 激活失败，返回前端让用户去激活
+                return R.error("请登录该邮箱后完成管理员激活");
+            } else {
+                // 已经是激活成功状态
+                return R.error("您已经是管理员，无需进一步操作");
+            }
+        } else {
+            // 数据库中的数据里没有同名邮箱，创建一个新的并发送激活邮件
+            String code = RandomUtil.randomNumbers(4);
+            redisTemplate.opsForValue().set(k, code);
+            mailUtil.send("", k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/" + code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
+
+            // 将新邮箱加入数据库
+            String newValue = k + "---0";
+            redisTemplate.opsForSet().add("guanli", newValue);
+
+            return R.error("请登录该邮箱后完成管理员激活");
+        }
     }
+
 
     @GetMapping("/active/{k}/{code}")
     public R<String> active(@PathVariable("k") String k,@PathVariable("code") String code, HttpServletResponse response) throws Exception {
