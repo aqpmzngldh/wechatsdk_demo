@@ -193,7 +193,7 @@ public class CeShiController {
         // 解析XML数据包
         Map<String, String> message = parseXmlData(xmlData);
         System.out.println(message);
-
+111
         String str = "";
         Message message1 = new Message();
         //已经获取到用户发送的消息，接下来我们构建xml回复
