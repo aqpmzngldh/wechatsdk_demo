@@ -199,16 +199,18 @@ public class CeShiController {
         //已经获取到用户发送的消息，接下来我们构建xml回复
         if ("text".equals(message.get("MsgType"))) {
             //不直接回复了，有些用户5秒内问的问题响应不了，我们直接回复，然后调用客服接口发消息
+            //在用户发送消息后立即展示正在输入中
+            String fromUserName = message.get("FromUserName");
+            String access_token = ceShiService.access_token();
+            String url3="https://api.weixin.qq.com/cgi-bin/message/custom/typing?access_token="+access_token;
+            HashMap<String, Object> hashMap3 = new HashMap<>();
+            hashMap3.put("touser",fromUserName);
+            hashMap3.put("command","Typing");
 
-            //这里不能直接回复了，我们调用chatgpt对话接口传递openid和对话内容即可
-//            String chat = chatGptService.chat(message.get("FromUserName"), message.get("Content"));
+            String jsonString111 = JSONUtil.toJsonStr(hashMap3);
+            HttpUtil.createPost(url3).body(jsonString111, "application/json").execute();
 
-//            message1.setContent("请稍等...");
-//            message1.setCreateTime(System.currentTimeMillis());
-//            message1.setFromUserName(message.get("ToUserName"));
-//            message1.setMsgType("text");
-//            message1.setToUserName(message.get("FromUserName"));
-//            str = Message.objectToXml(message1);
+
             response.setContentType("text/html;charset=utf-8");
             PrintWriter writer = response.getWriter();
             // 将XML数据写入响应
@@ -216,10 +218,10 @@ public class CeShiController {
             // 关闭PrintWriter
             writer.close();
 
-            String fromUserName = message.get("FromUserName");
+//            String fromUserName = message.get("FromUserName");
             String chat = chatGptService.chat(fromUserName, message.get("Content"));
-            String access_token = ceShiService.access_token();
-            System.out.println(access_token);
+//            String access_token = ceShiService.access_token();
+//            System.out.println(access_token);
             String url="https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="+access_token;
             HashMap<String, Object> hashMap = new HashMap<>();
             hashMap.put("touser",fromUserName);
@@ -272,7 +274,11 @@ public class CeShiController {
             //获取存储的次数
             String num = redisTemplate.opsForValue().get(wx + s);
             //响应给用户提示第几次关注公众号
-            message1.setContent("感谢你第" + num + "次关注公众号，该公众号已交AI智能管理，可以回答你的基本问题");
+            String ss = redisTemplate.opsForValue().get("wxfs");
+            Integer integer = Integer.valueOf(ss)+1;
+            redisTemplate.opsForValue().set("wxfs", integer+"");
+
+            message1.setContent("感谢你成为公众号第"+integer+"位粉丝，这是你第" + num + "次关注该公众号，该公众号已交AI智能管理，可以回答你的基本问题,加入管理员可获得更多权限");
             message1.setCreateTime(System.currentTimeMillis());
             message1.setFromUserName(message.get("ToUserName"));
             message1.setMsgType("text");
@@ -286,6 +292,11 @@ public class CeShiController {
                     mailUtil.send("", parts[0], "【关注公众号提醒】", guanzhu, Collections.singletonList(""));
                 }
             }
+        }else if ("unsubscribe".equals(message.get("Event"))) {
+            String ss = redisTemplate.opsForValue().get("wxfs");
+            int integer = Integer.valueOf(ss)-1;
+            redisTemplate.opsForValue().set("wxfs", integer+"");
+
         } else if ("LOCATION".equals(message.get("Event"))) {
             String Longitude = message.get("Longitude");
             String Latitude = message.get("Latitude");
