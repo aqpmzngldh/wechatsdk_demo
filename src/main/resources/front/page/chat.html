@@ -281,7 +281,6 @@
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
                 <!--<div @click="music=!music">我喜欢的歌</div>-->
-                <div @click="make">一键制作</div>
             </el-drawer>
         </div>
 
@@ -669,14 +668,6 @@
                 // 存储到 local storage 中
                 localStorage.setItem('myName', name);
                 this.$alert(name, '随机改名:', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-
-                    }
-                });
-            },
-            make() {
-                this.$alert('一键自定义属于自己的匿名群聊网站，开发中...', '一键制作:', {
                     confirmButtonText: '确定',
                     callback: action => {
 
