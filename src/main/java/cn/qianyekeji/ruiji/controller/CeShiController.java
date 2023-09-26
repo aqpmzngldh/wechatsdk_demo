@@ -561,10 +561,10 @@ public class CeShiController {
     }
 
     @RequestMapping("/redirect_uri")
-    public void redirect_uri(String CODE,String STATE){
-        System.out.println("-------------------");
-        System.out.println(CODE+"-------"+STATE);
-        System.out.println("-------------------");
+    public String redirect_uri(String code,String state){
+        String openid = ceShiService.getOpenid(code);
+        System.out.println(openid);
+        return openid;
     }
 
 }

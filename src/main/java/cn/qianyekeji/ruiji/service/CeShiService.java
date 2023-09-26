@@ -6,4 +6,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface CeShiService extends IService<ceshi> {
     String access_token();
+    String getOpenid(String code);
 }

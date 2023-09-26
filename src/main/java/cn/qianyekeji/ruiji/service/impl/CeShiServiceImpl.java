@@ -67,4 +67,26 @@ public class CeShiServiceImpl extends ServiceImpl<CeShiMapper, ceshi> implements
         }
 
     }
+
+    @Override
+    public String getOpenid(String code) {
+        try {
+            String url="https://api.weixin.qq.com/sns/oauth2/access_token?appid="+APP_ID+"&secret="+APP_SECRET+"&code="+code+"&grant_type=authorization_code";
+            // 发送GET请求
+            HttpResponse response = HttpUtil.createGet(url).execute();
+
+            if (response.isOk()) {
+                String responseBody = response.body();
+                Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                String openid = (String) map.get("openid");
+                return openid;
+            } else {
+                // 处理错误
+                System.err.println("Failed.............." + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
