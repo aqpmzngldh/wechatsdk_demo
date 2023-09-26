@@ -277,6 +277,7 @@
                 <div @click="changeName">随机改名</div>
                 <div @click="join">加入管理员</div>
                 <div @click="tiXing">提醒管理上线</div>
+                <div @click="make">一键制作</div>
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
@@ -525,6 +526,23 @@ this.ccc="你好，世界";
                     .then((res) => {
                         this.$notify({type: 'success', message: '已提醒，管理员火速赶来中...'});
                     })
+            },
+            make(){
+                this.$prompt('请输入自定义的菜单和标题用+分割', '制作提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(({value}) => {
+                    this.$message({
+                        type: 'success',
+                        message: '制作成功，五分钟后重新进入该页面即可查看'
+                    });
+                    $axios.post("/wx/make?value="+value)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '取消输入'
+                    });
+                });
             },
             selectImage() {
                 const input = document.createElement('input');

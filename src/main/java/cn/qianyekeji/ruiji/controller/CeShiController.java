@@ -17,6 +17,7 @@ import cn.qianyekeji.ruiji.service.ChatGptService;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import cn.qianyekeji.ruiji.utils.MailUtil;
+import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -580,28 +581,22 @@ public class CeShiController {
     //现在计划菜单键直接设置成url地址，然后wx会回调到设置的redirect_uri，也就是上面那个方法上
     //在那个方法里我们可以获取到用户的openid，然后存储进threadlocal中，哪里想用取出就行，最后
     //通过重定向返回到界面上（为什么用重定向，转发不太行可能我方式不对）
-//    @RequestMapping("/make")
-//    public void make(String name,String title){
-//        try {
-//            //通过网页授权形式获取用户的openid
-////            String url="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APP_ID+"&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
-//            String url="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx61c514e5d83894bf&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect";
-//            // 发送GET请求
-//            HttpResponse response = HttpUtil.createGet(url).execute();
-//
-//            if (response.isOk()) {
-//                String responseBody = response.body();
-//                System.out.println("--------------");
-//                System.out.println(responseBody);
-//                System.out.println("--------------");
-//            } else {
-//                // 处理错误
-//                System.err.println("Failed.............." + response.getStatus());
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
+    @RequestMapping("/make")
+    @ResponseBody
+    public void make(String value){
+        String openid = BaseContext.getOpenid();
+        // 校验value不为空
+        if(StringUtils.isEmpty(value)) {
+            throw new IllegalArgumentException("value不能为空");
+        }
+        String[] vals = value.split("_");
+        // 如果分割后不等于2部分,抛出异常
+        if(vals.length != 2) {
+            throw new IllegalArgumentException("value中必须包含一个_进行分割");
+        }
+        String part1 = vals[0];
+        String part2 = vals[1];
+        System.out.println(openid+","+part1+","+part2);
+    }
 
 }
