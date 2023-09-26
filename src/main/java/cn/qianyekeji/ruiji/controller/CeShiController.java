@@ -38,6 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -63,7 +64,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-@RestController
+
+@Controller
 @RequestMapping("/wx")
 @Slf4j
 public class CeShiController {
@@ -460,7 +462,8 @@ public class CeShiController {
             HashMap<String, Object> subButton1 = new HashMap<>();
             subButton1.put("type", "view");
             subButton1.put("name", "匿名群聊");
-            subButton1.put("url", "https://www.qianyekeji.cn/");
+//            subButton1.put("url", "https://www.qianyekeji.cn/");
+            subButton1.put("url", "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APP_ID+"&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
             subButtons.add(subButton1);
 
             HashMap<String, Object> button3 = new HashMap<>();
@@ -564,7 +567,38 @@ public class CeShiController {
     public String redirect_uri(String code,String state){
         String openid = ceShiService.getOpenid(code);
         System.out.println(openid);
-        return openid;
+        BaseContext.setOpenid(openid);
+//        return "/chat";
+        return "redirect:/front/page/chat.html";
+    }
+
+    //本来打算一键制作传递name和title通过底下的make方法随时获取用户的openid，但是这种后端发送
+    // 请求的方式不行，直接返回在微信内打来
+    //现在计划菜单键直接设置成url地址，然后wx会回调到设置的redirect_uri，也就是上面那个方法上
+    //在那个方法里我们可以获取到用户的openid，然后存储进threadlocal中，哪里想用取出就行，最后
+    //通过重定向返回到界面上（为什么用重定向，转发不太行可能我方式不对）
+    @RequestMapping("/make")
+    public void make(String name,String title){
+        try {
+            //通过网页授权形式获取用户的openid
+//            String url="https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APP_ID+"&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123#wechat_redirect";
+            String url="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx61c514e5d83894bf&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123&connect_redirect=1#wechat_redirect";
+            // 发送GET请求
+            HttpResponse response = HttpUtil.createGet(url).execute();
+
+            if (response.isOk()) {
+                String responseBody = response.body();
+                System.out.println("--------------");
+                System.out.println(responseBody);
+                System.out.println("--------------");
+            } else {
+                // 处理错误
+                System.err.println("Failed.............." + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

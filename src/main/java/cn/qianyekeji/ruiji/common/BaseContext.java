@@ -5,6 +5,7 @@ package cn.qianyekeji.ruiji.common;
  */
 public class BaseContext {
     private static ThreadLocal<Long> threadLocal = new ThreadLocal<>();
+    private static ThreadLocal<String> openid = new ThreadLocal<>();
 
     /**
      * 设置值
@@ -20,5 +21,22 @@ public class BaseContext {
      */
     public static Long getCurrentId(){
         return threadLocal.get();
+    }
+
+
+    /**
+     * 设置值
+     * @param id
+     */
+    public static void setOpenid(String id){
+        openid.set(id);
+    }
+
+    /**
+     * 获取值
+     * @return
+     */
+    public static String getOpenid(){
+        return openid.get();
     }
 }
