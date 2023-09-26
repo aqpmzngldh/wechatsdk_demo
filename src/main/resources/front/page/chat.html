@@ -6,7 +6,7 @@
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-    <title>匿名群聊</title>
+    <!--<title>{{ccc}}</title>-->
     <link rel="icon" href="./../images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./../js/base.js"></script>
@@ -211,8 +211,8 @@
 <body>
 
 
-<div class="chat" id="login">
-
+<div class="chat" id="login" v-cloak>
+    <title>{{ccc}}</title>
     <div class="wrapper">
         <div class="spinner"></div>
     </div>
@@ -361,10 +361,12 @@
                 isButtonDisabled: false,
                 person: '0',
                 add: '',
-                music: false
+                music: false,
+                ccc: ''
             };
         },
         mounted() {
+this.ccc="你好，世界";
 
             // 获取 spinner 元素
             var spinner = document.querySelector('.wrapper');

@@ -560,4 +560,11 @@ public class CeShiController {
         }
     }
 
+    @RequestMapping("/redirect_uri")
+    public void redirect_uri(String CODE,String STATE){
+        System.out.println("-------------------");
+        System.out.println(CODE+"-------"+STATE);
+        System.out.println("-------------------");
+    }
+
 }
