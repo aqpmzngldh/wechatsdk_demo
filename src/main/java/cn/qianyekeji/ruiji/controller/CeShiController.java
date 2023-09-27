@@ -6,6 +6,7 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.BaseContext;
+import cn.qianyekeji.ruiji.common.CustomException;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Message;
@@ -568,10 +569,12 @@ public class CeShiController {
     }
 
     @RequestMapping("/redirect_uri")
-    public String redirect_uri(String code,String state){
+    public String redirect_uri(String code,String state,HttpServletRequest request){
         String openid = ceShiService.getOpenid(code);
         System.out.println(openid);
-        BaseContext.setOpenid(openid);
+//        BaseContext.setOpenid(openid);本来计划存储进threadlocal但是不行，以为是两个请求
+//        更适合在过滤器的那种场景下
+        request.getSession().setAttribute("openid",openid);
 //        return "/chat";
         return "redirect:/front/page/chat.html";
     }
@@ -583,8 +586,12 @@ public class CeShiController {
     //通过重定向返回到界面上（为什么用重定向，转发不太行可能我方式不对）
     @RequestMapping("/make")
     @ResponseBody
-    public void make(String value){
-        String openid = BaseContext.getOpenid();
+    public void make(String value,HttpServletRequest request){
+//        String openid = BaseContext.getOpenid();
+        String openid = (String)request.getSession().getAttribute("openid");
+        if (openid==null){
+            throw new CustomException("跳转界面了");
+        }
         // 校验value不为空
         if(StringUtils.isEmpty(value)) {
             throw new IllegalArgumentException("value不能为空");
