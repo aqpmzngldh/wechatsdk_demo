@@ -588,10 +588,12 @@ public class CeShiController {
     @ResponseBody
     public R make(String value,HttpServletRequest request){
 //        String openid = BaseContext.getOpenid();
-        String openid = (String)request.getSession().getAttribute("openid");
+//        String openid = (String)request.getSession().getAttribute("openid");
+        String openid = "ofqpF6vyC8VSSKftWwDfwFi237IY";
         if (openid==null){
             //在全局异常处理类中对其进行界面跳转处理
-            throw new CustomException("跳转界面了");
+//            throw new CustomException("跳转界面了");
+            return R.error("请在微信内打开...");
         }
         // 校验value不为空
         if(StringUtils.isEmpty(value)) {
@@ -607,6 +609,114 @@ public class CeShiController {
         String part1 = vals[0];
         String part2 = vals[1];
         System.out.println(openid+","+part1+","+part2);
+        redisTemplate.opsForHash().put("wx_gxhcd",openid,part2);
+
+        String access_token = ceShiService.access_token();
+        String url="https://api.weixin.qq.com/cgi-bin/tags/create?access_token="+access_token;
+        HashMap<String, Object> hashMap = new HashMap<>();
+        HashMap<String, Object> hashMap1 = new HashMap<>();
+        hashMap1.put("name",openid);
+        hashMap.put("tag",hashMap1);
+        String jsonString = JSONUtil.toJsonStr(hashMap);
+        HttpResponse execute = HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+        if (execute.isOk()) {
+            String responseBody = execute.body();
+            Map<String, Object> map1 = JSONUtil.parseObj(responseBody);
+            Object tag = map1.get("tag");
+            JSONObject entries = JSONUtil.parseObj(tag);
+            Object id = entries.get("id");
+            System.out.println("当前创建的新标签的ID是"+id);
+
+
+            String url2="https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token="+access_token;
+            HashMap<String, Object> hashMap2 = new HashMap<>();
+            //这时候就不能继续new这个map了，因为map传递的时候不是数组形式
+            List<String> openidList = new ArrayList<>();
+            openidList.add(openid);
+            hashMap2.put("tagid",id);
+            hashMap2.put("openid_list",openidList);
+
+            String jsonString2 = JSONUtil.toJsonStr(hashMap2);
+            HttpResponse execute2 = HttpUtil.createPost(url2).body(jsonString2, "application/json").execute();
+            if (execute.isOk()) {
+                String responseBody2 = execute2.body();
+                Map<String, Object> map2 = JSONUtil.parseObj(responseBody2);
+                Boolean result = "ok".equals(map2.get("errmsg"));
+                if (result){
+                    System.out.println("给用户打标签成功");
+                    //这时候打标签成功后创建个性化菜单
+
+                    String url3 = "https://api.weixin.qq.com/cgi-bin/menu/addconditional?access_token=" + access_token;
+                    HashMap<String, Object> map = new HashMap<>();
+                    ArrayList<HashMap<String, Object>> buttons = new ArrayList<>();
+
+                    HashMap<String, Object> button1 = new HashMap<>();
+                    button1.put("type", "click");
+                    button1.put("name", "美团领券");
+                    button1.put("key", "meituanlingquan");
+
+                    HashMap<String, Object> button2 = new HashMap<>();
+                    button2.put("name", "开发服务");
+                    ArrayList<HashMap<String, Object>> subButtons = new ArrayList<>();
+                    HashMap<String, Object> subButton1 = new HashMap<>();
+                    subButton1.put("type", "view");
+                    subButton1.put("name", "匿名群聊");
+//            subButton1.put("url", "https://www.qianyekeji.cn/");
+                    subButton1.put("url", "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APP_ID+"&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
+                    subButtons.add(subButton1);
+
+                    HashMap<String, Object> button3 = new HashMap<>();
+                    button3.put("name", "AI");
+                    ArrayList<HashMap<String, Object>> subButtons3 = new ArrayList<>();
+                    HashMap<String, Object> subButton3 = new HashMap<>();
+                    subButton3.put("type", "view");
+                    subButton3.put("name", "chatgpt");
+                    subButton3.put("url", "https://chat.openai.com/");
+                    HashMap<String, Object> subButton4 = new HashMap<>();
+                    subButton4.put("type", "view");
+                    subButton4.put("name", "claude");
+                    subButton4.put("url", "https://claude.ai/");
+                    subButtons3.add(subButton3);
+                    subButtons3.add(subButton4);
+
+
+                    button2.put("sub_button", subButtons);
+                    button3.put("sub_button", subButtons3);
+
+                    buttons.add(button1);
+                    buttons.add(button3);
+                    buttons.add(button2);
+
+                    map.put("button", buttons);
+                    HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+                    objectObjectHashMap.put("tag_id",id);
+                    map.put("matchrule", objectObjectHashMap);
+                    String jsonString4 = JSONUtil.toJsonStr(map);
+                    // 发送POST请求
+                    HttpResponse response4 = HttpUtil.createPost(url3).body(jsonString4, "application/json").execute();
+
+                    if (response4.isOk()) {
+                        System.out.println("创建自定义菜单成功");
+                    } else {
+                        // 处理错误
+                        System.err.println("创建自定义菜单出错。。。");
+                    }
+
+                }
+            } else {
+                // 处理错误
+                System.out.println("给用户打标签出错。。。");
+            }
+
+        } else {
+            // 处理错误
+            System.out.println("创建标签出错。。。");
+        }
+
+
+
+
+
         return R.error("制作成功，五分钟后重新进入该页面即可查看");
 
     }

@@ -43,23 +43,24 @@ public class GlobalExceptionHandler {
      * 异常处理方法
      * @return
      */
-//    @ResponseBody
-//    @ExceptionHandler(CustomException.class)
-//    public R<String> exceptionHandler(CustomException ex){
-//        log.error(ex.getMessage());
-//
-//        return R.error(ex.getMessage());
-//    }
-
-
+    @ResponseBody
     @ExceptionHandler(CustomException.class)
-    public String exceptionHandler(CustomException ex){
+    public R<String> exceptionHandler(CustomException ex){
         log.error(ex.getMessage());
-        if (ex.getMessage().equals("跳转界面了")){
-            return "redirect:/front/page/3.html";
-        }
-        return null;
+
+        return R.error(ex.getMessage());
     }
+
+
+//    @ExceptionHandler(CustomException.class)
+//    public String exceptionHandler(CustomException ex){
+//        log.error(ex.getMessage());
+//        if (ex.getMessage().equals("跳转界面了")){
+////            @ControllerAdvice默认是处理返回JSON的异常,所以全局异常处理不能页面跳转
+//            return "redirect:/front/page/3.html";
+//        }
+//        return null;
+//    }
 
     @ResponseBody
     @ExceptionHandler(IllegalArgumentException.class)
