@@ -729,7 +729,10 @@ public class CeShiController {
 //        String openid = "ofqpF6vyC8VSSKftWwDfwFi237IY";
         if (openid!=null){
             String value = (String)hashOperations.get("wx_gxhcd", openid);
-            return R.error(value);
+            if (value!=null){
+                return R.error(value);
+            }
+            return R.error("0");
         }
         return R.error("0");
     }
