@@ -660,7 +660,7 @@ public class CeShiController {
                     ArrayList<HashMap<String, Object>> subButtons = new ArrayList<>();
                     HashMap<String, Object> subButton1 = new HashMap<>();
                     subButton1.put("type", "view");
-                    subButton1.put("name", "匿名群聊");
+                    subButton1.put("name", part1);
 //            subButton1.put("url", "https://www.qianyekeji.cn/");
                     subButton1.put("url", "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+APP_ID+"&redirect_uri=https%3A%2F%2Fqianyekeji.cn/wx/redirect_uri&response_type=code&scope=snsapi_base&state=123#wechat_redirect");
                     subButtons.add(subButton1);
