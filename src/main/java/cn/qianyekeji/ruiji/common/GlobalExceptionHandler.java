@@ -43,13 +43,24 @@ public class GlobalExceptionHandler {
      * 异常处理方法
      * @return
      */
+//    @ResponseBody
+//    @ExceptionHandler(CustomException.class)
+//    public R<String> exceptionHandler(CustomException ex){
+//        log.error(ex.getMessage());
+//
+//        return R.error(ex.getMessage());
+//    }
+
     @ResponseBody
     @ExceptionHandler(CustomException.class)
-    public R<String> exceptionHandler(CustomException ex){
+    public String exceptionHandler(CustomException ex){
         log.error(ex.getMessage());
-
-        return R.error(ex.getMessage());
+        if (ex.getMessage().equals("跳转界面了")){
+            return "redirect:/front/page/3.html";
+        }
+        return null;
     }
+
     @ResponseBody
     @ExceptionHandler(IllegalArgumentException.class)
     public R<String> exceptionHandler(IllegalArgumentException ex){

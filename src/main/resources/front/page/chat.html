@@ -528,15 +528,14 @@ this.ccc="你好，世界";
                     })
             },
             make(){
-                this.$prompt('请输入自定义的菜单和标题用+分割', '制作提示', {
+                this.$prompt('请输入自定义的菜单和标题用_分割', '制作提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
                 }).then(({value}) => {
-                    this.$message({
-                        type: 'success',
-                        message: '制作成功，五分钟后重新进入该页面即可查看'
-                    });
                     $axios.post("/wx/make?value="+value)
+                        .then((res) => {
+                            this.$notify({type: 'success', message: res.msg});
+                        })
                 }).catch(() => {
                     this.$message({
                         type: 'info',

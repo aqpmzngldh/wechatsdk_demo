@@ -586,24 +586,29 @@ public class CeShiController {
     //通过重定向返回到界面上（为什么用重定向，转发不太行可能我方式不对）
     @RequestMapping("/make")
     @ResponseBody
-    public void make(String value,HttpServletRequest request){
+    public R make(String value,HttpServletRequest request){
 //        String openid = BaseContext.getOpenid();
         String openid = (String)request.getSession().getAttribute("openid");
         if (openid==null){
+            //在全局异常处理类中对其进行界面跳转处理
             throw new CustomException("跳转界面了");
         }
         // 校验value不为空
         if(StringUtils.isEmpty(value)) {
-            throw new IllegalArgumentException("value不能为空");
+//            throw new IllegalArgumentException("value不能为空");
+            return R.error("value不能为空");
         }
         String[] vals = value.split("_");
         // 如果分割后不等于2部分,抛出异常
         if(vals.length != 2) {
-            throw new IllegalArgumentException("value中必须包含一个_进行分割");
+//            throw new IllegalArgumentException("value中必须包含一个_进行分割");
+            return R.error("请用一个_进行分割");
         }
         String part1 = vals[0];
         String part2 = vals[1];
         System.out.println(openid+","+part1+","+part2);
+        return R.error("制作成功，五分钟后重新进入该页面即可查看");
+
     }
 
 }
