@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 //        return R.error(ex.getMessage());
 //    }
 
-    @ResponseBody
+
     @ExceptionHandler(CustomException.class)
     public String exceptionHandler(CustomException ex){
         log.error(ex.getMessage());
