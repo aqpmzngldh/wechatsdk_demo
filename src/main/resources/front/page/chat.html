@@ -546,7 +546,7 @@
             makeTitle(){
                 $axios.post("/wx/title")
                         .then((res) => {
-                            if (res.msg===0) {
+                            if (res.msg==0) {
                                 this.title_name="你好，世界"
                             }else{
                                 this.title_name=res.msg
