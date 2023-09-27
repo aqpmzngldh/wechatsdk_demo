@@ -212,7 +212,7 @@
 
 
 <div class="chat" id="login" v-cloak>
-    <title>{{ccc}}</title>
+    <title>{{title_name}}</title>
     <div class="wrapper">
         <div class="spinner"></div>
     </div>
@@ -224,7 +224,7 @@
             effect="dark">
     </el-alert>
 
-    <div class="chat-history" v-cloak>
+    <div class="chat-history">
         <div class="chat-bubble" v-for="message in messages" :key="message.id">
             <div class="avatar" @click="open(message.uuid)">
                 <!--<img :src="'https://img-blog.csdnimg.cn/1a2248e02c7a467da3833c3f73214f24.jpeg'" alt="Avatar">-->
@@ -312,15 +312,15 @@
             <a href="https://beian.miit.gov.cn/">陕ICP备2022014746号-1</a>
         </div>
     </form>
-    <meting-js
-            v-show="music"
-            server="netease"
-            type="playlist"
-            fixed="true"
-            autoplay="false"
-            volume="0.6"
-            id="8276475427">
-    </meting-js>
+    <!--<meting-js-->
+            <!--v-show="music"-->
+            <!--server="netease"-->
+            <!--type="playlist"-->
+            <!--fixed="true"-->
+            <!--autoplay="false"-->
+            <!--volume="0.6"-->
+            <!--id="8276475427">-->
+    <!--</meting-js>-->
 </div>
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
@@ -363,11 +363,11 @@
                 person: '0',
                 add: '',
                 music: false,
-                ccc: ''
+                title_name: ''
             };
         },
         mounted() {
-this.ccc="你好，世界";
+            this.makeTitle();
 
             // 获取 spinner 元素
             var spinner = document.querySelector('.wrapper');
@@ -542,6 +542,16 @@ this.ccc="你好，世界";
                         message: '取消输入'
                     });
                 });
+            },
+            makeTitle(){
+                $axios.post("/wx/title")
+                        .then((res) => {
+                            if (res.msg===0) {
+                                this.title_name="你好，世界"
+                            }else{
+                                this.title_name=res.msg
+                            }
+                        })
             },
             selectImage() {
                 const input = document.createElement('input');

@@ -588,8 +588,8 @@ public class CeShiController {
     @ResponseBody
     public R make(String value,HttpServletRequest request){
 //        String openid = BaseContext.getOpenid();
-//        String openid = (String)request.getSession().getAttribute("openid");
-        String openid = "ofqpF6vyC8VSSKftWwDfwFi237IY";
+        String openid = (String)request.getSession().getAttribute("openid");
+//        String openid = "ofqpF6vyC8VSSKftWwDfwFi237IY";
         if (openid==null){
             //在全局异常处理类中对其进行界面跳转处理
 //            throw new CustomException("跳转界面了");
@@ -719,6 +719,19 @@ public class CeShiController {
 
         return R.error("制作成功，五分钟后重新进入该页面即可查看");
 
+    }
+
+    @ResponseBody
+    @RequestMapping("/title")
+    public R makeTitle(HttpServletRequest request){
+        HashOperations hashOperations = redisTemplate.opsForHash();
+                String openid = (String)request.getSession().getAttribute("openid");
+//        String openid = "ofqpF6vyC8VSSKftWwDfwFi237IY";
+        if (openid!=null){
+            String value = (String)hashOperations.get("wx_gxhcd", openid);
+            return R.error(value);
+        }
+        return R.error("0");
     }
 
 }
