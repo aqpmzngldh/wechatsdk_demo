@@ -21,10 +21,10 @@
 </head>
 <body>
 <div id="app">
-    <button @click="shareToFriend">分享给朋友</button>
+    <h1>123</h1>
 </div>
 
-<script src="http://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+<script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
 
 <!-- 开发环境版本，包含了有帮助的命令行警告 -->
 <script src="../../backend/plugins/vue/vue.js"></script>
@@ -62,31 +62,10 @@
                     this.$notify({type: 'warning', message: '程序出错'});
                 });
 
-            // 在wx.ready中调用自定义方法
-            wx.ready(() => {
-                // this.configureWeChatShare();
-            });
-            wx.error(function(res){
-                // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-            alert(res)
-            });
+
         },
 
         methods:{
-
-            configureWeChatShare() {
-                wx.chooseImage({
-                    count: 1, // 默认9
-                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
-                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
-                    success: function (res) {
-                        var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
-                    }
-                });
-            },
-            shareToFriend() {
-                this.configureWeChatShare();
-            },
 
             generateNonceStr(length) {
                 const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

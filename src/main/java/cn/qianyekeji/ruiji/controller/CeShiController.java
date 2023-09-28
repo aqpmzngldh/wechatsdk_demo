@@ -513,6 +513,7 @@ public class CeShiController {
     }
 
     @PostMapping("/signature/{getNonceStr}/{timestamp}")
+    @ResponseBody
     public String getSignature(@PathVariable("getNonceStr") String getNonceStr, @PathVariable("timestamp") String timestamp){
         //生成签名需要jsapi_ticket，我们先获取jsapi_ticket
         //获取签名之前要先获取access_token
@@ -527,7 +528,7 @@ public class CeShiController {
                 String responseBody = response.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String ticket = (String) map.get("ticket");
-                String uri="http://qianyekeji.cn:8089/front/page/wx.html";
+                String uri="https://qianyekeji.cn/front/page/wx.html";
                 String signature = generateSignature(ticket, getNonceStr, timestamp, uri);
                 System.out.println("生成的签名：" + signature);
                 return signature;
