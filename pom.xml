@@ -170,6 +170,22 @@
             <version>3.14</version>
         </dependency>
 
+        <!--微信支付SDK-->
+        <dependency>
+            <groupId>com.github.wechatpay-apiv3</groupId>
+            <artifactId>wechatpay-apache-httpclient</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+
+        <!-- 自定义springboot配置文件无法点击前缀跳转
+         1.先把对应的配置文件加入spring管理（不会加入的话看自己记录的微信支付的md文档）
+         2.加底下这个坐标-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
 
     </dependencies>
 <build>
