@@ -73,7 +73,8 @@ public class LoginCheckFilter implements Filter {
                 "/chatgpt/**",
                 "/wx/**",
                 "/access_token/**",
-                "/MP_verify_03jsGPvZkHlHOejC.txt/**"
+                "/MP_verify_03jsGPvZkHlHOejC.txt/**",
+                "/api/wx-pay/**"
 //                ,
 //                "/category/list",
 //                "/shoppingCart/list"

@@ -1,5 +1,6 @@
 package cn.qianyekeji.ruiji.service.impl;
 
+import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.config.WxPayConfig;
 
 import cn.qianyekeji.ruiji.enums.wxpay.WxApiType;
@@ -11,6 +12,7 @@ import cn.qianyekeji.ruiji.utils.OrderNoUtils;
 
 import com.google.gson.Gson;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
+import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -23,9 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
+import java.security.PrivateKey;
+import java.security.Signature;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,7 +57,7 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public String jsapiPay(Long productId) throws Exception {
+    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId) throws Exception {
 
 //2.调用统一下单API
         // 这部分代码的话通过文档中心-指引文档-基础支付-native支付-开发指引中获得
@@ -100,7 +106,26 @@ public class WxPayServiceImpl implements WxPayService {
                 throw new IOException("request failed");
             }
 
-            return bodyAsString;
+
+            // 构建签名字符串
+            String text = "appid=wx61c514e5d83894bf\\n"+
+                    timestamp+"\\n"+
+                    getNonceStr+"\\n"+
+                    "prepay_id="+bodyAsString;
+
+            // 读取商户私钥文件
+            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(wxPayConfig.getPrivateKeyPath()));
+
+            // 生成签名
+            Signature signature = Signature.getInstance("SHA256withRSA");
+            signature.initSign(privateKey);
+            signature.update(text.getBytes(StandardCharsets.UTF_8));
+            byte[] signed = signature.sign();
+
+            // base64编码
+            String paySign = Base64.getEncoder().encodeToString(signed);
+
+            return R.success("").add("bodyAsString",bodyAsString).add("paySign",paySign);
 
         } finally {
             response.close();
