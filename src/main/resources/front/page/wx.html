@@ -73,15 +73,17 @@
                 const timestamp = Date.now().toString();
                 $axios.post("/api/wx-pay/jsapi/" + getNonceStr+"/"+timestamp+"/"+1)
                     .then((res) => {
-                        alert(res.data);
-                        console.log(res.data);
+                        // alert(JSON.stringify(res));
+                        console.log(res.map);
+                        console.log(res.map.bodyAsString);
+                        console.log(res.map.paySign);
                         WeixinJSBridge.invoke('getBrandWCPayRequest', {
                             "appId": "wx61c514e5d83894bf",     //公众号ID，由商户传入
                             "timeStamp": timestamp,     //时间戳，自1970年以来的秒数
                             "nonceStr": getNonceStr,      //随机串
-                            "package": "prepay_id="+res.data.get("bodyAsString"),
+                            "package": "prepay_id="+res.map.bodyAsString,
                             "signType": "RSA",     //微信签名方式：
-                            "paySign": res.data.get("paySign") //微信签名
+                            "paySign": res.map.paySign //微信签名
                         })
                     })
                     .catch(err => {

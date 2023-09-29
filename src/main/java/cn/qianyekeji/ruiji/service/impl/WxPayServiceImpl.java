@@ -1,5 +1,6 @@
 package cn.qianyekeji.ruiji.service.impl;
 
+import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.config.WxPayConfig;
 
@@ -96,9 +97,10 @@ public class WxPayServiceImpl implements WxPayService {
 //3.对响应做出处理，提取需要的数据code_url（二维码链接）
         try {
             String bodyAsString = EntityUtils.toString(response.getEntity());//响应体
+            Object prepay_id = JSONUtil.parseObj(bodyAsString).get("prepay_id");
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 200) { //处理成功
-                log.info("成功,响应体 = " + bodyAsString);
+                log.info("成功,响应体 = " + prepay_id);
             } else if (statusCode == 204) { //处理成功，无返回Body
                 log.info("成功");
             } else {
@@ -111,7 +113,7 @@ public class WxPayServiceImpl implements WxPayService {
             String text = "appid=wx61c514e5d83894bf\\n"+
                     timestamp+"\\n"+
                     getNonceStr+"\\n"+
-                    "prepay_id="+bodyAsString;
+                    "prepay_id="+prepay_id;
 
             // 读取商户私钥文件
             PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(wxPayConfig.getPrivateKeyPath()));
@@ -125,7 +127,7 @@ public class WxPayServiceImpl implements WxPayService {
             // base64编码
             String paySign = Base64.getEncoder().encodeToString(signed);
 
-            return R.success("").add("bodyAsString",bodyAsString).add("paySign",paySign);
+            return R.success("").add("bodyAsString",prepay_id).add("paySign",paySign);
 
         } finally {
             response.close();

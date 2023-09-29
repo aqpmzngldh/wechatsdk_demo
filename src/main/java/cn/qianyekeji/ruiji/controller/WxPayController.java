@@ -33,7 +33,7 @@ public class WxPayController {
 
         //返回支付二维码连接和订单号
         R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId);
-
+        log.info("prepay_id={}",prepay_id);
         return prepay_id;
     }
 
