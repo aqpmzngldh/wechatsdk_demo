@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
@@ -56,8 +57,11 @@ public class WxPayConfig {
     public PrivateKey getPrivateKey(String filename){
 
         try {
-            return PemUtil.loadPrivateKey(new FileInputStream(filename));
-        } catch (FileNotFoundException e) {
+//            return PemUtil.loadPrivateKey(new FileInputStream(filename));
+            ClassLoader classLoader = getClass().getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream(filename);
+            return PemUtil.loadPrivateKey(inputStream);
+        } catch (Exception e) {
             throw new RuntimeException("私钥文件不存在", e);
         }
     }
