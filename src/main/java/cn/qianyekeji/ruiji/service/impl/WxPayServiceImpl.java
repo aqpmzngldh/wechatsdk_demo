@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
@@ -116,7 +117,10 @@ public class WxPayServiceImpl implements WxPayService {
                     "prepay_id="+prepay_id;
 
             // 读取商户私钥文件
-            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(wxPayConfig.getPrivateKeyPath()));
+//            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(wxPayConfig.getPrivateKeyPath()));
+            ClassLoader classLoader = getClass().getClassLoader();
+            InputStream inputStream = classLoader.getResourceAsStream(wxPayConfig.getPrivateKeyPath());
+            PrivateKey privateKey = PemUtil.loadPrivateKey(inputStream);
 
             // 生成签名
             Signature signature = Signature.getInstance("SHA256withRSA");
