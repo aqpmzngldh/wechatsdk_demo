@@ -82,7 +82,7 @@
                             "timeStamp": timestamp,     //时间戳，自1970年以来的秒数
                             "nonceStr": getNonceStr,      //随机串
                             "package": "prepay_id="+res.map.bodyAsString,
-                            "signType": "RSA",     //微信签名方式：
+                            "signType": "RSA-SHA256",     //微信签名方式：
                             "paySign": res.map.paySign //微信签名
                         })
                     })
