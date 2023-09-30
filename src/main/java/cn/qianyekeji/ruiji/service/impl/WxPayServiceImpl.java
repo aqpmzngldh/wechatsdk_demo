@@ -109,12 +109,15 @@ public class WxPayServiceImpl implements WxPayService {
                 throw new IOException("request failed");
             }
 
-
+            System.out.println(timestamp+"---"+getNonceStr);
             // 构建签名字符串
-            String text = "appid=wx61c514e5d83894bf\\n"+
-                    timestamp+"\\n"+
-                    getNonceStr+"\\n"+
-                    "prepay_id="+prepay_id;
+            String text = "appid=wx61c514e5d83894bf\n"+
+                    timestamp+"\n"+
+                    getNonceStr+"\n"+
+                    "prepay_id="+prepay_id + "\n";
+            long timestamp1 = System.currentTimeMillis();//时间戳
+
+            System.out.println(timestamp1+"=====");
 
             // 读取商户私钥文件
 //            PrivateKey privateKey = PemUtil.loadPrivateKey(new FileInputStream(wxPayConfig.getPrivateKeyPath()));
@@ -125,7 +128,7 @@ public class WxPayServiceImpl implements WxPayService {
             // 生成签名
             Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initSign(privateKey);
-            signature.update(text.getBytes(StandardCharsets.UTF_8));
+            signature.update(text.getBytes("utf-8"));
             byte[] signed = signature.sign();
 
             // base64编码
