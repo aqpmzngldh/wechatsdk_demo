@@ -24,6 +24,7 @@
     <h1>123</h1>
     <button @click="location">按钮通过jssdk获取位置</button>
     <button @click="pay">测试微信支付</button>
+    <button @click="pdf">测试图片转pdf</button>
 </div>
 
 <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
@@ -56,7 +57,7 @@
                         timestamp: timestamp,
                         nonceStr: getNonceStr,
                         signature: signature,
-                        jsApiList: ['getLocation']
+                        jsApiList: ['getLocation','chooseImage','uploadImage']
                     });
                 })
                 .catch(err => {
@@ -90,6 +91,28 @@
                         console.error(err); // 输出错误信息
                         this.$notify({type: 'warning', message: '程序出错'});
                     });
+            },
+            pdf(){
+                wx.chooseImage({
+                    count: 1, // 默认9
+                    sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                    sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+                    success: function (res) {
+                        var localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+                    if(localIds.length>1){
+                        alert(localIds.length);
+                    }
+                        wx.uploadImage({
+                            localId: localIds, // 需要上传的图片的本地ID，由chooseImage接口获得
+                            isShowProgressTips: 1, // 默认为1，显示进度提示
+                            success: function (res) {
+                                var serverId = res.serverId; // 返回图片的服务器端ID
+
+alert(serverId)
+                            }
+                        });
+                    }
+                });
             },
             location(){
                 wx.getLocation({
