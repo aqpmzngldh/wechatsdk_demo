@@ -1,6 +1,9 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.qianyekeji.ruiji.common.R;
+import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.WxPayService;
 import com.google.gson.Gson;
 import com.itextpdf.text.Document;
@@ -32,7 +35,7 @@ public class WxPayController {
     private WxPayService wxPayService;
 
     @Resource
-    private Verifier verifier;
+    private CeShiService ceShiService;
 
 
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
@@ -99,72 +102,8 @@ public class WxPayController {
 
 
     //pdf通过浏览器直接下载
-    @RequestMapping("/pdf")
-    public void downloadPDF(HttpServletResponse response) throws IOException, DocumentException {
-        // 生成一个唯一的文件名，以避免文件名冲突
-        String fileName = UUID.randomUUID().toString() + ".pdf";
-
-        // 设置响应头，告诉浏览器这是一个PDF文件
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-        // 获取响应的输出流
-        ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
-
-        // 创建Document对象
-        Document document = new Document(PageSize.A4);
-
-        // 创建PdfWriter对象，指定生成的PDF的输出流
-        PdfWriter writer = PdfWriter.getInstance(document, pdfOutputStream);
-
-        // 打开document
-        document.open();
-
-        // 读取图像文件为字节数组
-        byte[] imageBytes = readImageBytes("image.jpg"); // 自定义方法读取图像文件为字节数组
-
-        // 将图像字节数组转换为Image对象
-        Image image = Image.getInstance(imageBytes);
-        // 设置图像尺寸适应页面大小
-        image.scaleToFit(document.getPageSize().getWidth(), document.getPageSize().getHeight());
-
-        // 将图片添加到PDF文档
-        document.add(image);
-
-        // 关闭document
-        document.close();
-
-        // 将生成的PDF写入响应的输出流
-        response.getOutputStream().write(pdfOutputStream.toByteArray());
-
-        // 刷新输出流
-        response.getOutputStream().flush();
-    }
-
-    // 自定义方法，将图像文件读取为字节数组
-    private byte[] readImageBytes(String imagePath) throws IOException {
-        // 使用Spring的ClassPathResource获取资源文件的输入流
-        ClassPathResource resource = new ClassPathResource(imagePath);
-        InputStream inputStream = resource.getInputStream();
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-        while ((bytesRead = inputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
-        }
-        return outputStream.toByteArray();
-    }
-
-
-    //pdf通过浏览器直接下载,图片通过形参传递
-//    public void downloadPDF(HttpServletResponse response, MultipartFile imageFile) throws IOException, DocumentException {
-//        if (imageFile == null || imageFile.isEmpty()) {
-//            // 处理无上传文件的情况
-//            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            return;
-//        }
-//
+//    @RequestMapping("/pdf")
+//    public void downloadPDF(HttpServletResponse response) throws IOException, DocumentException {
 //        // 生成一个唯一的文件名，以避免文件名冲突
 //        String fileName = UUID.randomUUID().toString() + ".pdf";
 //
@@ -184,8 +123,8 @@ public class WxPayController {
 //        // 打开document
 //        document.open();
 //
-//        // 从上传的MultipartFile中获取图像字节数组
-//        byte[] imageBytes = imageFile.getBytes();
+//        // 读取图像文件为字节数组
+//        byte[] imageBytes = readImageBytes("image.jpg"); // 自定义方法读取图像文件为字节数组
 //
 //        // 将图像字节数组转换为Image对象
 //        Image image = Image.getInstance(imageBytes);
@@ -204,4 +143,72 @@ public class WxPayController {
 //        // 刷新输出流
 //        response.getOutputStream().flush();
 //    }
+//
+//    // 自定义方法，将图像文件读取为字节数组
+//    private byte[] readImageBytes(String imagePath) throws IOException {
+//        // 使用Spring的ClassPathResource获取资源文件的输入流
+//        ClassPathResource resource = new ClassPathResource(imagePath);
+//        InputStream inputStream = resource.getInputStream();
+//
+//        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//        byte[] buffer = new byte[1024];
+//        int bytesRead;
+//        while ((bytesRead = inputStream.read(buffer)) != -1) {
+//            outputStream.write(buffer, 0, bytesRead);
+//        }
+//        return outputStream.toByteArray();
+//    }
+
+
+    //pdf通过浏览器直接下载,图片通过形参传递
+    @RequestMapping("/pdf/{serverId}")
+    public void downloadPDF(HttpServletResponse response, @PathVariable String serverId) throws IOException, DocumentException {
+
+        String accessToken = ceShiService.access_token();
+        // 构建微信接口请求URL
+        String url = "https://api.weixin.qq.com/cgi-bin/media/get";
+        url += "?access_token=" + accessToken;
+        url += "&media_id=" + serverId;
+
+        // 生成一个唯一的文件名，以避免文件名冲突
+        String fileName = UUID.randomUUID().toString() + ".pdf";
+
+        // 设置响应头，告诉浏览器这是一个PDF文件
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+        // 获取响应的输出流
+        ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+
+        // 创建Document对象
+        Document document = new Document(PageSize.A4);
+
+        // 创建PdfWriter对象，指定生成的PDF的输出流
+        PdfWriter writer = PdfWriter.getInstance(document, pdfOutputStream);
+
+        // 打开document
+        document.open();
+
+        // 从上传的MultipartFile中获取图像字节数组
+//        byte[] imageBytes = imageFile.getBytes();
+        HttpResponse response1 = HttpUtil.createGet(url).execute();
+        byte[] imageBytes = response1.body().getBytes();
+
+        // 将图像字节数组转换为Image对象
+        Image image = Image.getInstance(imageBytes);
+        // 设置图像尺寸适应页面大小
+        image.scaleToFit(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+
+        // 将图片添加到PDF文档
+        document.add(image);
+
+        // 关闭document
+        document.close();
+
+        // 将生成的PDF写入响应的输出流
+        response.getOutputStream().write(pdfOutputStream.toByteArray());
+
+        // 刷新输出流
+        response.getOutputStream().flush();
+    }
 }
