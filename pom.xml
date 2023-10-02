@@ -186,19 +186,6 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-            <version>5.5.13.1</version>
-        </dependency>
-
-        <!-- iText 依赖 Java 1.8+,需要引入 javapoet -->
-        <dependency>
-            <groupId>com.squareup</groupId>
-            <artifactId>javapoet</artifactId>
-            <version>1.11.1</version>
-        </dependency>
-
     </dependencies>
 <build>
     <plugins>
