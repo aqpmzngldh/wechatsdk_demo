@@ -265,7 +265,7 @@ public class OtherController {
     }
 
     @PostMapping("/value/{k}")
-    public R<String> dianzan(@PathVariable("k") String k) throws Exception {
+    public R<String> dianzan(@PathVariable("k") String k,HttpServletRequest request) throws Exception {
         Set<String> members = redisTemplate.opsForSet().members("guanli");
         int guanli = members.size();
         if (guanli>6){
@@ -294,7 +294,9 @@ public class OtherController {
         } else {
             // 数据库中的数据里没有同名邮箱，创建一个新的并发送激活邮件
             String code = RandomUtil.randomNumbers(4);
-            redisTemplate.opsForValue().set(k, code);
+            String openid = "_"+request.getSession().getAttribute("openid");
+            redisTemplate.opsForValue().set(k, code+openid);
+            code+=openid;
             mailUtil.send("", k, "【匿名群聊提醒】", "<a href=https://qianyekeji.cn/other/active/" + k + "/" + code + ">【匿名群聊】-点击激活管理员</a>", Collections.singletonList(""));
 
             // 将新邮箱加入数据库
@@ -311,7 +313,13 @@ public class OtherController {
         System.out.println(k);
         Set<String> members = redisTemplate.opsForSet().members("guanli");
         String s = redisTemplate.opsForValue().get(k);
-        if (!s.equals(code)){
+
+        String[] parts1 = s.split("_");
+
+        s = parts1[0];
+        String openid = parts1[1];
+        System.out.println(s+"-------"+openid);
+        if (!s.equals(code.split("_")[0])){
             response.setContentType("text/html;charset=UTF-8");
             response.getWriter().write("请不要胡乱操作，谢谢ε=(´ο｀*)))唉");
             return null;
@@ -330,7 +338,8 @@ public class OtherController {
                     response.getWriter().write("激活成功，请<a href='https://qianyekeji.cn/front/page/chat.html'>登录</a>");
 
                     String s1 = ceShiService.access_token();
-                    Object openid = request.getSession().getAttribute("openid");
+                    System.out.println(openid+"-----------------");
+                    System.out.println(s1+"---------------------");
                     if (openid==null){
                         return null;
                     }
@@ -354,8 +363,10 @@ public class OtherController {
                     time4.put("value", currentDate);
                     hashMap1.put("time4", time4);
                     hashMap.put("data",hashMap1);
-                    HttpResponse execute = HttpUtil.createPost(url).execute();
 
+                    String jsonString111 = JSONUtil.toJsonStr(hashMap);
+                    HttpUtil.createPost(url).body(jsonString111, "application/json").execute();
+//                    HttpResponse execute = HttpUtil.createPost(url).execute();
                     return null;
                 } else {
                     //已经是激活成功转态,页面回写已激活
