@@ -2,12 +2,15 @@ package cn.qianyekeji.ruiji.controller;
 
 import cn.hutool.core.lang.Dict;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
+import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import cn.qianyekeji.ruiji.utils.MailUtil;
@@ -27,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,6 +55,8 @@ public class OtherController {
     private SmsService smsService;
     @Autowired
     private MailUtil mailUtil;
+    @Autowired
+    private CeShiService ceShiService;
 
     @PostMapping
     public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, String parameter, String parameter1, HttpServletRequest request, String address, String uuid, String name, String time, String body) throws Exception {
@@ -301,7 +307,7 @@ public class OtherController {
 
 
     @GetMapping("/active/{k}/{code}")
-    public R<String> active(@PathVariable("k") String k,@PathVariable("code") String code, HttpServletResponse response) throws Exception {
+    public R<String> active(@PathVariable("k") String k,@PathVariable("code") String code,HttpServletRequest request, HttpServletResponse response) throws Exception {
         System.out.println(k);
         Set<String> members = redisTemplate.opsForSet().members("guanli");
         String s = redisTemplate.opsForValue().get(k);
@@ -322,6 +328,34 @@ public class OtherController {
                     response.setContentType("text/html;charset=UTF-8");
 //                    response.getWriter().write("激活成功，请<a href='http://localhost:8089/front/page/chat.html'>登录</a>");
                     response.getWriter().write("激活成功，请<a href='https://qianyekeji.cn/front/page/chat.html'>登录</a>");
+
+                    String s1 = ceShiService.access_token();
+                    Object openid = request.getSession().getAttribute("openid");
+                    if (openid==null){
+                        return null;
+                    }
+                    String url ="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+s1;
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("touser",openid);
+                    hashMap.put("template_id","2QEHcTlHp7CH7JTc-h604QdsbyaMoUaJ5dPYVUiVaRI");
+                    HashMap<String, Object> hashMap1 = new HashMap<>();
+                    HashMap<String, Object> thing2 = new HashMap<>();
+                    thing2.put("value", "管理员添加成功");
+                    hashMap1.put("thing2", thing2);
+
+                    HashMap<String, Object> thing3 = new HashMap<>();
+                    thing3.put("value", "没有模板随便找一个");
+                    hashMap1.put("thing3", thing3);
+
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                    String currentDate = sdf.format(date);
+                    HashMap<String, Object> time4 = new HashMap<>();
+                    time4.put("value", currentDate);
+                    hashMap1.put("time4", time4);
+                    hashMap.put("data",hashMap1);
+                    HttpResponse execute = HttpUtil.createPost(url).execute();
+
                     return null;
                 } else {
                     //已经是激活成功转态,页面回写已激活
