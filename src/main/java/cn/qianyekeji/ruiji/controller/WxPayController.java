@@ -1,6 +1,5 @@
 package cn.qianyekeji.ruiji.controller;
 
-import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.service.CeShiService;
@@ -13,7 +12,14 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -162,53 +168,44 @@ public class WxPayController {
 
     //pdf通过浏览器直接下载,图片通过形参传递
     @RequestMapping("/pdf/{serverId}")
-    public void downloadPDF(HttpServletResponse response, @PathVariable String serverId) throws IOException, DocumentException {
+    public void downloadPDF(@PathVariable String serverId) throws IOException {
 
         String accessToken = ceShiService.access_token();
+
         // 构建微信接口请求URL
         String url = "https://api.weixin.qq.com/cgi-bin/media/get";
+
+        // 拼接参数
         url += "?access_token=" + accessToken;
         url += "&media_id=" + serverId;
 
-        // 生成一个唯一的文件名，以避免文件名冲突
-        String fileName = UUID.randomUUID().toString() + ".pdf";
+        // 获取用户目录
+        String userDir = System.getProperty("user.home");
 
-        // 设置响应头，告诉浏览器这是一个PDF文件
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        // 拼接完整的输出路径
+        String outputPath = userDir + "/downloaded_image.jpg";
 
-        // 获取响应的输出流
-        ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
+        HttpClient httpClient = HttpClients.createDefault();
 
-        // 创建Document对象
-        Document document = new Document(PageSize.A4);
+        HttpGet httpGet = new HttpGet(url);
 
-        // 创建PdfWriter对象，指定生成的PDF的输出流
-        PdfWriter writer = PdfWriter.getInstance(document, pdfOutputStream);
+        HttpResponse response = httpClient.execute(httpGet);
 
-        // 打开document
-        document.open();
+        HttpEntity entity = response.getEntity();
 
-        // 从上传的MultipartFile中获取图像字节数组
-//        byte[] imageBytes = imageFile.getBytes();
-        HttpResponse response1 = HttpUtil.createGet(url).execute();
-        byte[] imageBytes = response1.body().getBytes();
+        if (entity != null) {
 
-        // 将图像字节数组转换为Image对象
-        Image image = Image.getInstance(imageBytes);
-        // 设置图像尺寸适应页面大小
-        image.scaleToFit(document.getPageSize().getWidth(), document.getPageSize().getHeight());
+            // 获取图片字节数组
+            byte[] imageBytes = EntityUtils.toByteArray(entity);
 
-        // 将图片添加到PDF文档
-        document.add(image);
+            // 写入文件
+            FileOutputStream fos = new FileOutputStream(outputPath);
+            fos.write(imageBytes);
+            fos.close();
 
-        // 关闭document
-        document.close();
+        }
 
-        // 将生成的PDF写入响应的输出流
-        response.getOutputStream().write(pdfOutputStream.toByteArray());
+        System.out.println("图片已保存到用户目录下");
 
-        // 刷新输出流
-        response.getOutputStream().flush();
     }
 }
