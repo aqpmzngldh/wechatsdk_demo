@@ -1,5 +1,6 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.qianyekeji.ruiji.service.CeShiService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import cn.qianyekeji.ruiji.common.BaseContext;
 import cn.qianyekeji.ruiji.common.R;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,17 +31,18 @@ public class ShoppingCartController {
      * @return
      */
     @PostMapping("/add")
-    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart){
+    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart, HttpServletRequest request){
         log.info("购物车数据:{}",shoppingCart);
 
         //设置用户id，指定当前是哪个用户的购物车数据
-        Long currentId = BaseContext.getCurrentId();
-        shoppingCart.setUserId(currentId);
+//        Long currentId = BaseContext.getCurrentId();
+        String openid = (String) request.getSession().getAttribute("openid");
+        shoppingCart.setUserId(openid);
 
         Long dishId = shoppingCart.getDishId();
 
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,currentId);
+        queryWrapper.eq(ShoppingCart::getUserId,openid);
 
         if(dishId != null){
             //添加到购物车的是菜品
@@ -61,10 +64,15 @@ public class ShoppingCartController {
             shoppingCartService.updateById(cartServiceOne);
         }else{
             //如果不存在，则添加到购物车，数量默认就是一
-            shoppingCart.setNumber(1);
-            shoppingCart.setCreateTime(LocalDateTime.now());
-            shoppingCartService.save(shoppingCart);
-            cartServiceOne = shoppingCart;
+            try {
+                shoppingCart.setNumber(1);
+                shoppingCart.setCreateTime(LocalDateTime.now());
+                shoppingCartService.save(shoppingCart);
+                cartServiceOne = shoppingCart;
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("又是在这出错了");
+            }
         }
 
         return R.success(cartServiceOne);
@@ -72,11 +80,13 @@ public class ShoppingCartController {
 
 
     @PostMapping("/sub")
-    public R<ShoppingCart> delete(@RequestBody ShoppingCart shoppingCart){
+    public R<ShoppingCart> delete(@RequestBody ShoppingCart shoppingCart,HttpServletRequest request){
         log.info("购物车数据:{}",shoppingCart);
 
         //设置用户id，指定当前是哪个用户的购物车数据
-        Long currentId = BaseContext.getCurrentId();
+//        Long currentId = BaseContext.getCurrentId();
+//        shoppingCart.setUserId(currentId);
+        String currentId = (String) request.getSession().getAttribute("openid");
         shoppingCart.setUserId(currentId);
 
         Long dishId = shoppingCart.getDishId();
