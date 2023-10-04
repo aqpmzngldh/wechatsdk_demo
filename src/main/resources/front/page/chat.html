@@ -182,6 +182,9 @@
             color: blue;
             padding-bottom: 15%;
         }
+        #pay{
+            padding-top: 15%;
+        }
 
         .el-message-box {
             width: 300px;
@@ -280,7 +283,7 @@
                 <div @click="tiXing">提醒管理上线</div>
                 <div @click="make">一键制作</div>
                 <a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>
-                <div @click="pay">打赏0.01</div>
+                <div id="pay" @click="pay">打赏0.01</div>
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
