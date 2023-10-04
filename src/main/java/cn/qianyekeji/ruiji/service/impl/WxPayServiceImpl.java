@@ -111,7 +111,7 @@ public class WxPayServiceImpl implements WxPayService {
 
             System.out.println(timestamp+"---"+getNonceStr);
             // 构建签名字符串
-            String text = "appid=wx61c514e5d83894bf\n"+
+            String text = "wx61c514e5d83894bf\n"+
                     timestamp+"\n"+
                     getNonceStr+"\n"+
                     "prepay_id="+prepay_id + "\n";

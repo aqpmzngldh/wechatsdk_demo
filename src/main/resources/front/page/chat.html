@@ -280,6 +280,7 @@
                 <div @click="tiXing">提醒管理上线</div>
                 <div @click="make">一键制作</div>
                 <a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>
+                <div @click="pay">打赏0.01</div>
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
@@ -447,7 +448,30 @@
             // document.getElementById("myElement").href="#myElement"
             window.onscroll = function () {
                 console.log(window.scrollY);
-            }
+            };
+
+            let getNonceStr=this.generateNonceStr(8);
+            const timestamp = Date.now().toString();
+            let signature;
+            $axios.post("/wx/signature/" + getNonceStr + '/' + timestamp)
+                .then((res) => {
+                    console.log(res)
+                    signature=res;
+                    // 初始化微信JS-SDK
+                    wx.config({
+                        debug: true,
+                        appId: 'wx61c514e5d83894bf',
+                        timestamp: timestamp,
+                        nonceStr: getNonceStr,
+                        signature: signature,
+                        jsApiList: ['getLocation','chooseImage','uploadImage']
+                    });
+                })
+                .catch(err => {
+                    console.error(err); // 输出错误信息
+                    this.$notify({type: 'warning', message: '程序出错'});
+                });
+
         },
         watch: {
             messages(value) {
@@ -555,6 +579,31 @@
                             }
                         })
             },
+
+            pay(){
+                let getNonceStr=this.generateNonceStr(8);
+                const timestamp = Date.now().toString();
+                $axios.post("/api/wx-pay/jsapi/" + getNonceStr+"/"+timestamp+"/"+1)
+                    .then((res) => {
+                        // alert(JSON.stringify(res));
+                        console.log(res.map);
+                        console.log(res.map.bodyAsString);
+                        console.log(res.map.paySign);
+                        WeixinJSBridge.invoke('getBrandWCPayRequest', {
+                            "appId": "wx61c514e5d83894bf",     //公众号ID，由商户传入
+                            "timeStamp": timestamp,     //时间戳，自1970年以来的秒数
+                            "nonceStr": getNonceStr,      //随机串
+                            "package": "prepay_id="+res.map.bodyAsString,
+                            "signType": "RSA-SHA256",     //微信签名方式：
+                            "paySign": res.map.paySign //微信签名
+                        })
+                    })
+                    .catch(err => {
+                        console.error(err); // 输出错误信息
+                        this.$notify({type: 'warning', message: '程序出错'});
+                    });
+            },
+
             selectImage() {
                 const input = document.createElement('input');
                 input.type = 'file';
