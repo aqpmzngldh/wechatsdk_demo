@@ -126,11 +126,12 @@ public class ShoppingCartController {
      * @return
      */
     @GetMapping("/list")
-    public R<List<ShoppingCart>> list(){
+    public R<List<ShoppingCart>> list(HttpServletRequest request){
         log.info("查看购物车...");
 
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+//        queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+        queryWrapper.eq(ShoppingCart::getUserId,request.getSession().getAttribute("openid"));
         queryWrapper.orderByAsc(ShoppingCart::getCreateTime);
 
         List<ShoppingCart> list = shoppingCartService.list(queryWrapper);
@@ -143,11 +144,12 @@ public class ShoppingCartController {
      * @return
      */
     @DeleteMapping("/clean")
-    public R<String> clean(){
+    public R<String> clean(HttpServletRequest request){
         //SQL:delete from shopping_cart where user_id = ?
 
         LambdaQueryWrapper<ShoppingCart> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+//        queryWrapper.eq(ShoppingCart::getUserId,BaseContext.getCurrentId());
+        queryWrapper.eq(ShoppingCart::getUserId,request.getSession().getAttribute("openid"));
 
         shoppingCartService.remove(queryWrapper);
 

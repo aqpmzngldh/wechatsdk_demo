@@ -313,7 +313,7 @@
                       signature=res;
                       // 初始化微信JS-SDK
                       wx.config({
-                          debug: true,
+                          debug: false,
                           appId: 'wx61c514e5d83894bf',
                           timestamp: timestamp,
                           nonceStr: getNonceStr,
@@ -649,9 +649,13 @@
                   return nonceStr;
               },
               pay(){
+                  let price = 0;
+                  this.cartData.forEach(item=>{
+                      price += (item.number * item.amount)
+                  });
                   let getNonceStr=this.generateNonceStr(8);
                   const timestamp = Date.now().toString();
-                  $axios.post("/api/wx-pay/jsapi/" + getNonceStr+"/"+timestamp+"/"+100)
+                  $axios.post("/api/wx-pay/jsapi/" + getNonceStr+"/"+timestamp+"/"+price*100)
                       .then((res) => {
                           // alert(JSON.stringify(res));
                           console.log(res.map);
