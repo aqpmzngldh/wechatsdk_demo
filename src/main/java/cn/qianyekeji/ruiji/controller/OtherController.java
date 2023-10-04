@@ -388,36 +388,37 @@ public class OtherController {
 
                 Set<String> members1 = redisTemplate.opsForSet().members(parts[0]);
                 for (String value1 : members1) {
-                    String[] parts1 = value1.split("---"); // 按照---分隔符分割元素
-                    //获取管理员的openid
-                    String open_id = parts1[1];
-                    //给管理员发送模板消息提醒有人发消息了
-                    String s1 = ceShiService.access_token();
-                    String url ="https://api.weixin.qq.com/cgi-bin/message/template/send?access_token="+s1;
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("touser",open_id);
-                    hashMap.put("template_id","2QEHcTlHp7CH7JTc-h604QdsbyaMoUaJ5dPYVUiVaRI");
-                    HashMap<String, Object> hashMap1 = new HashMap<>();
-                    HashMap<String, Object> thing2 = new HashMap<>();
-                    thing2.put("value", "管理员-有人找你聊天啦");
-                    hashMap1.put("thing2", thing2);
+                    String[] parts1 = value1.split("_"); // 按照---分隔符分割元素
+                    if (parts.length == 2) {
+                        //获取管理员的openid
+                        String open_id = parts1[1];
+                        //给管理员发送模板消息提醒有人发消息了
+                        String s1 = ceShiService.access_token();
+                        String url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=" + s1;
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put("touser", open_id);
+                        hashMap.put("template_id", "2QEHcTlHp7CH7JTc-h604QdsbyaMoUaJ5dPYVUiVaRI");
+                        HashMap<String, Object> hashMap1 = new HashMap<>();
+                        HashMap<String, Object> thing2 = new HashMap<>();
+                        thing2.put("value", "管理员-有人找你聊天啦");
+                        hashMap1.put("thing2", thing2);
 
-                    HashMap<String, Object> thing3 = new HashMap<>();
-                    thing3.put("value", "没有模板随便找一个");
-                    hashMap1.put("thing3", thing3);
+                        HashMap<String, Object> thing3 = new HashMap<>();
+                        thing3.put("value", "没有模板随便找一个");
+                        hashMap1.put("thing3", thing3);
 
-                    Date date = new Date();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
-                    String currentDate = sdf.format(date);
-                    HashMap<String, Object> time4 = new HashMap<>();
-                    time4.put("value", currentDate);
-                    hashMap1.put("time4", time4);
-                    hashMap.put("data",hashMap1);
+                        Date date = new Date();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+                        String currentDate = sdf.format(date);
+                        HashMap<String, Object> time4 = new HashMap<>();
+                        time4.put("value", currentDate);
+                        hashMap1.put("time4", time4);
+                        hashMap.put("data", hashMap1);
 
-                    String jsonString111 = JSONUtil.toJsonStr(hashMap);
-                    HttpUtil.createPost(url).body(jsonString111, "application/json").execute();
+                        String jsonString111 = JSONUtil.toJsonStr(hashMap);
+                        HttpUtil.createPost(url).body(jsonString111, "application/json").execute();
+                    }
                 }
-
             }
         }
         return null;
