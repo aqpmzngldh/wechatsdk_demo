@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">
-    <title>菩提阁</title>
+    <title>黑马-菩提阁</title>
     <link rel="icon" href="images/favico.ico">
     <!--不同屏幕尺寸根字体设置-->
     <script src="./js/base.js"></script>
@@ -18,10 +18,15 @@
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="styles/main.css" />
   </head>
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+  </style>
   <body>
-    <div id="main" class="app">
+    <div id="main" class="app" v-cloak>
       <div class="divHead">
-        <img src="./images/user.png" @click="toUserPage"/>
+        <!--<img src="./images/user.png" @click="toUserPage"/>-->
       </div>
       <div class="divTitle">
         <div class="divStatic">
@@ -29,14 +34,14 @@
           <div class="divDesc">
             <div class="divName">菩提阁餐厅</div>
             <div class="divSend">
-                <span><img src="./images/time.png"/> 距离1.5km</span>
-                <span><img src="./images/money.png"/> 配送费6元</span>
-                <span><img src="./images/location.png"/> 预计时长12min</span>
+                <!--<span><img src="./images/time.png"/> 距离1.5km</span>-->
+                <!--<span><img src="./images/money.png"/> 配送费6元</span>-->
+                <!--<span><img src="./images/location.png"/> 预计时长12min</span>-->
             </div>
           </div>
         </div>
         <div class="divDesc">
-          简介: 菩提阁中餐厅是菩提阁点餐的独立的品牌，定位“大众 化的美食外送餐饮”，旨为顾客打造专业美食。
+          简介: 0基础，学it，月薪过万，就来黑马程序员。黑马程序员，成就it黑马。
         </div>
       </div>
       <div class="divBody">
@@ -89,7 +94,8 @@
               <span>{{goodsPrice}}</span>
           </div>
           <div class="divPrice"></div>
-          <div :class="{btnSubmitActive: cartData && cartData.length > 0, btnSubmit:!cartData || cartData.length<1}" @click="toAddOrderPage">去结算</div>
+          <!--<div :class="{btnSubmitActive: cartData && cartData.length > 0, btnSubmit:!cartData || cartData.length<1}" @click="toAddOrderPage">去结算</div>-->
+          <div :class="{btnSubmitActive: cartData && cartData.length > 0, btnSubmit:!cartData || cartData.length<1}" @click="pay">去支付</div>
         </div>
         <!--这个页面直接点击选择规格的弹窗-->
         <van-dialog v-model="dialogFlavor.show" :show-confirm-button="false" class="dialogFlavor" ref="flavorDialog">
@@ -234,6 +240,7 @@
         <script src="./js/request.js"></script>
         <script src="./js/common.js"></script>
         <script src="./api/main.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
   </body>
   <script>
       new Vue({
@@ -297,6 +304,27 @@
             },
           },
           mounted(){
+              let getNonceStr=this.generateNonceStr(8);
+              const timestamp = Date.now().toString();
+              let signature;
+              $axios.post("/wx/signature/" + getNonceStr + '/' + timestamp)
+                  .then((res) => {
+                      console.log(res)
+                      signature=res;
+                      // 初始化微信JS-SDK
+                      wx.config({
+                          debug: true,
+                          appId: 'wx61c514e5d83894bf',
+                          timestamp: timestamp,
+                          nonceStr: getNonceStr,
+                          signature: signature,
+                          jsApiList: ['getLocation','chooseImage','uploadImage']
+                      });
+                  })
+                  .catch(err => {
+                      console.error(err); // 输出错误信息
+                      this.$notify({type: 'warning', message: '程序出错'});
+                  });
             this.initData()
           },
           methods:{
@@ -576,11 +604,12 @@
             },
             //跳转到去结算界面
             toAddOrderPage(){
-              if(this.cartData.length > 0){
-                window.requestAnimationFrame(()=>{
-                  window.location.href ='/front/page/add-order.html'
-                })
-              }
+              // if(this.cartData.length > 0){
+              //   window.requestAnimationFrame(()=>{
+              //     window.location.href ='/front/page/add-order.html'
+              //   })
+              // }
+
             },
             toUserPage(){
               window.requestAnimationFrame(()=>{
@@ -610,8 +639,38 @@
                 }
               }
 
-            }
-
+            },
+              generateNonceStr(length) {
+                  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+                  let nonceStr = '';
+                  for (let i = 0; i < length; i++) {
+                      nonceStr += chars[Math.floor(Math.random() * chars.length)];
+                  }
+                  return nonceStr;
+              },
+              pay(){
+                  let getNonceStr=this.generateNonceStr(8);
+                  const timestamp = Date.now().toString();
+                  $axios.post("/api/wx-pay/jsapi/" + getNonceStr+"/"+timestamp+"/"+100)
+                      .then((res) => {
+                          // alert(JSON.stringify(res));
+                          console.log(res.map);
+                          console.log(res.map.bodyAsString);
+                          console.log(res.map.paySign);
+                          WeixinJSBridge.invoke('getBrandWCPayRequest', {
+                              "appId": "wx61c514e5d83894bf",     //公众号ID，由商户传入
+                              "timeStamp": timestamp,     //时间戳，自1970年以来的秒数
+                              "nonceStr": getNonceStr,      //随机串
+                              "package": "prepay_id="+res.map.bodyAsString,
+                              "signType": "RSA-SHA256",     //微信签名方式：
+                              "paySign": res.map.paySign //微信签名
+                          })
+                      })
+                      .catch(err => {
+                          console.error(err); // 输出错误信息
+                          this.$notify({type: 'warning', message: '程序出错'});
+                      });
+              }
           }
       })
   </script>

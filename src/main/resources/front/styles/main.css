@@ -6,7 +6,7 @@
 }
 
 #main .divHead {
-  background: url(../images/mainBg.png);
+  /*background: url(../images/mainBg.png);*/
   background-repeat: no-repeat;
   height: 152rem;
   background-size: contain;

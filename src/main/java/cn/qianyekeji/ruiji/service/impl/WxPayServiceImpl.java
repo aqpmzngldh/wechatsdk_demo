@@ -74,7 +74,7 @@ public class WxPayServiceImpl implements WxPayService {
         paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.NATIVE_NOTIFY.getType()));
         //订单金额里有两个变量，所以再建一个map
         HashMap map = new HashMap<>();
-        map.put("total",1 );
+        map.put("total",productId);
         map.put("currency","CNY");
         HashMap map1 = new HashMap<>();
         map1.put("openid", "ofqpF6vyC8VSSKftWwDfwFi237IY");
