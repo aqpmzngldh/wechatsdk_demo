@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -386,10 +387,10 @@ public class OtherController {
             if (parts.length == 2 && parts[1].equals("1")) {
                 mailUtil.send("",parts[0],"【匿名群聊提醒】","有人来找你聊天了", Collections.singletonList(""));
 
-                Set<String> members1 = redisTemplate.opsForSet().members(parts[0]);
-                for (String value1 : members1) {
-                    String[] parts1 = value1.split("_"); // 按照---分隔符分割元素
-                    if (parts.length == 2) {
+//                Set<String> members1 = redisTemplate.opsForSet().members(parts[0]);
+                String value1 = redisTemplate.opsForValue().get(parts[0]);
+
+                String[] parts1 = value1.split("_"); // 按照---分隔符分割元素
                         //获取管理员的openid
                         String open_id = parts1[1];
                         //给管理员发送模板消息提醒有人发消息了
@@ -417,8 +418,8 @@ public class OtherController {
 
                         String jsonString111 = JSONUtil.toJsonStr(hashMap);
                         HttpUtil.createPost(url).body(jsonString111, "application/json").execute();
-                    }
-                }
+
+
             }
         }
         return null;
