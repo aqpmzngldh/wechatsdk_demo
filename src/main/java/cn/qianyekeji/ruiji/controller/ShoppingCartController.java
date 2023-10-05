@@ -73,7 +73,7 @@ public class ShoppingCartController {
             } catch (Exception e) {
 //                e.printStackTrace();
 //                System.out.println("又是在这出错了");
-                throw new SQLException("请在微信内打开");
+                throw new SQLException("请关注千小夜公众号后在微信内打开");
             }
         }
 
