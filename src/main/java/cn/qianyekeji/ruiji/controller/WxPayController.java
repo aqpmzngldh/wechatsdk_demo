@@ -4,6 +4,8 @@ import cn.hutool.http.HttpUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.WxPayService;
+import cn.qianyekeji.ruiji.utils.HttpUtils;
+import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
 import com.google.gson.Gson;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +44,9 @@ public class WxPayController {
     @Resource
     private CeShiService ceShiService;
 
+    @Resource
+    private Verifier verifier;
+
 
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
     public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId) throws Exception {
@@ -53,6 +58,68 @@ public class WxPayController {
         log.info("prepay_id={}",prepay_id);
         return prepay_id;
     }
+
+    /**
+     * 支付通知
+     * 微信支付通过支付通知接口将用户支付成功消息通知给商户
+     * 通知是微信主动给我们发的，我们也要进行验签，之前的签名和验签都封装在了httpclient调用excute中去了
+     * 在这里我们把逻辑从之前的源码中拿出来，创建WechatPay2ValidatorForRequest并改写
+     * 验签都差不多，只不过一个是响应的验签，这个是请求的验签
+     */
+    @PostMapping("/jsapi/notify")
+    public String nativeNotify(HttpServletRequest request, HttpServletResponse response){
+
+        Gson gson = new Gson();
+        Map<String, String> map = new HashMap<>();//应答对象
+
+        try {
+
+            //处理通知参数
+            String body = HttpUtils.readData(request);
+            Map<String, Object> bodyMap = gson.fromJson(body, HashMap.class);
+            String requestId = (String)bodyMap.get("id");
+            log.info("支付通知的id ===> {}", requestId);
+            //log.info("支付通知的完整数据 ===> {}", body);
+            //int a = 9 / 0;
+
+            //签名的验证
+            WechatPay2ValidatorForRequest wechatPay2ValidatorForRequest
+                    = new WechatPay2ValidatorForRequest(verifier, requestId, body);
+            if(!wechatPay2ValidatorForRequest.validate(request)){
+
+                log.error("通知验签失败");
+                //失败应答
+                response.setStatus(500);
+                map.put("code", "ERROR");
+                map.put("message", "通知验签失败");
+                return gson.toJson(map);
+            }
+            log.info("通知验签成功");
+
+            //验签成功了，确定是自己人了，接下来我们再从微信请求体里获取数据来处理订单
+            wxPayService.processOrder(bodyMap,request);
+
+            //应答超时
+            //模拟接收微信端的重复通知
+//            TimeUnit.SECONDS.sleep(5);
+
+            //成功应答
+            response.setStatus(200);
+            map.put("code", "SUCCESS");
+            map.put("message", "成功");
+            return gson.toJson(map);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //失败应答
+            response.setStatus(500);
+            map.put("code", "ERROR");
+            map.put("message", "失败");
+            return gson.toJson(map);
+        }
+
+    }
+
 
     @RequestMapping("/download")
     public void download(HttpServletRequest request, HttpServletResponse response) throws Exception{

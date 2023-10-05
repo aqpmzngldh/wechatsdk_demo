@@ -1,17 +1,25 @@
 package cn.qianyekeji.ruiji.service.impl;
 
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.qianyekeji.ruiji.common.CustomException;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.config.WxPayConfig;
 
+import cn.qianyekeji.ruiji.entity.Dish;
+import cn.qianyekeji.ruiji.entity.ShoppingCart;
 import cn.qianyekeji.ruiji.enums.wxpay.WxApiType;
 import cn.qianyekeji.ruiji.enums.wxpay.WxNotifyType;
 
+import cn.qianyekeji.ruiji.service.DishService;
+import cn.qianyekeji.ruiji.service.ShoppingCartService;
 import cn.qianyekeji.ruiji.service.WxPayService;
 
 import cn.qianyekeji.ruiji.utils.OrderNoUtils;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
 import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +44,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -46,6 +56,10 @@ public class WxPayServiceImpl implements WxPayService {
     private WxPayConfig wxPayConfig;
     @Resource
     private CloseableHttpClient wxPayClient;
+    @Resource
+    private ShoppingCartService shoppingCartService;
+    @Resource
+    private DishService dishService;
 
     @Resource
     private CloseableHttpClient wxPayNoSignClient; //无需应答签名
@@ -69,9 +83,10 @@ public class WxPayServiceImpl implements WxPayService {
         Map paramsMap = new HashMap();
         paramsMap.put("appid",wxPayConfig.getAppid());
         paramsMap.put("mchid",wxPayConfig.getMchId());
-        paramsMap.put("description","测试");
+        paramsMap.put("description","疑难解答");
         paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
-        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.NATIVE_NOTIFY.getType()));
+//        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.NATIVE_NOTIFY.getType()));
+        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY.getType()));
         //订单金额里有两个变量，所以再建一个map
         HashMap map = new HashMap<>();
         map.put("total",productId);
@@ -139,5 +154,88 @@ public class WxPayServiceImpl implements WxPayService {
         } finally {
             response.close();
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void processOrder(Map<String, Object> bodyMap, HttpServletRequest request) throws Exception {
+        log.info("处理订单");
+
+        //解密报文
+        String plainText = decryptFromResource(bodyMap);
+
+        //将明文转换成map,方便取出订单号来更改订单状态
+        Gson gson = new Gson();
+        HashMap plainTextMap = gson.fromJson(plainText, HashMap.class);
+        String orderNo = (String)plainTextMap.get("out_trade_no");
+        System.out.println("------------------");
+        System.out.println(plainTextMap);
+        System.out.println("------------------");
+        System.out.println(orderNo);
+        System.out.println(request.getSession().getAttribute("openid"));
+        System.out.println("++++++++++++++++");
+        String trade_state_desc = (String)plainTextMap.get("trade_state_desc");
+        if ("支付成功".equals(trade_state_desc)){
+            //支付成功的话这时候我们把销量加1
+            //再把就是这个人的购物车清空
+            //第二个就是说清空购物车后前端支付界面的话因为没有刷新，所以所以界面还是原界面，想办法告诉前端给category清空
+            Object payer = plainTextMap.get("payer");
+            JSONObject entries = JSONUtil.parseObj(payer);
+            Object openid = entries.get("openid");
+            System.out.println("-------------------");
+            System.out.println(openid);
+            System.out.println("-------------------");
+            //获取了openid后再进行清空这三个操作
+            LambdaQueryWrapper<ShoppingCart> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(ShoppingCart::getUserId,openid);
+            List<ShoppingCart> list = shoppingCartService.list(wrapper);
+            for (ShoppingCart cart : list) {
+                Long dishId = cart.getDishId();
+                Integer number = cart.getNumber();
+                LambdaQueryWrapper<Dish> wrapper1 = new LambdaQueryWrapper<>();
+                wrapper1.eq(Dish::getId,dishId);
+                Dish dish = dishService.getOne(wrapper1);
+                number += dish.getSaleNum();
+                // 设置回Dish对象
+                dish.setSaleNum(number);
+
+                // 更新Dish数据
+                dishService.updateById(dish);
+            }
+
+            //清空购物车数据
+            shoppingCartService.remove(wrapper);
+        }
+
+    }
+
+
+    /**
+     * 对称解密
+     * @param bodyMap
+     * @return
+     */
+    private String decryptFromResource(Map<String, Object> bodyMap) throws GeneralSecurityException {
+
+        log.info("密文解密");
+
+        //通知数据
+        Map<String, String> resourceMap = (Map) bodyMap.get("resource");
+        //数据密文
+        String ciphertext = resourceMap.get("ciphertext");
+        //随机串
+        String nonce = resourceMap.get("nonce");
+        //附加数据
+        String associatedData = resourceMap.get("associated_data");
+
+        log.info("密文 ===> {}", ciphertext);
+        AesUtil aesUtil = new AesUtil(wxPayConfig.getApiV3Key().getBytes(StandardCharsets.UTF_8));
+        String plainText = aesUtil.decryptToString(associatedData.getBytes(StandardCharsets.UTF_8),
+                nonce.getBytes(StandardCharsets.UTF_8),
+                ciphertext);
+
+        log.info("明文 ===> {}", plainText);
+
+        return plainText;
     }
 }

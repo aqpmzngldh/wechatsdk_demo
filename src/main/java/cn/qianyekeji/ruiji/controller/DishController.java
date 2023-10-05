@@ -200,14 +200,16 @@ public class DishController {
         //动态构造key
 //        String key = "dish_" + dish.getCategoryId() + "_" + dish.getStatus();//dish_1397844391040167938_1
 //        这里不设置死的话在添加套餐功能中的添加菜品中传递的dish.getStatus()是null
-        String key = "dish_" + dish.getCategoryId() + "_" + 1;//dish_1397844391040167938_1
-        //先从redis中获取缓存数据
-        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
 
-        if(dishDtoList != null){
-            //如果存在，直接返回，无需查询数据库
-            return R.success(dishDtoList);
-        }
+        //这里不能存redis了，因为我要动态刷新页面数据
+//        String key = "dish_" + dish.getCategoryId() + "_" + 1;//dish_1397844391040167938_1
+        //先从redis中获取缓存数据
+//        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get(key);
+//
+//        if(dishDtoList != null){
+//            //如果存在，直接返回，无需查询数据库
+//            return R.success(dishDtoList);
+//        }
 
         //构造查询条件
         LambdaQueryWrapper<Dish> queryWrapper = new LambdaQueryWrapper<>();
@@ -247,7 +249,7 @@ public class DishController {
         //如果不存在，需要查询数据库，将查询到的菜品数据缓存到Redis
 //        redisTemplate.opsForValue().set(key,dishDtoList,1440, TimeUnit.MINUTES);
 //        这里应该给他设置成永久存储我觉得好一些，因为如果设置了过期时间，这样子的话过期了用户再访问，速度又会慢很多
-        redisTemplate.opsForValue().set(key,dishDtoList);
+//        redisTemplate.opsForValue().set(key,dishDtoList);
 
 
         return R.success(dishDtoList);
