@@ -627,7 +627,8 @@ public class CeShiController {
             JSONObject entries = JSONUtil.parseObj(tag);
             Object id = entries.get("id");
             System.out.println("当前创建的新标签的ID是"+id);
-
+            //TODO 如果id=null，说明用户已经不是第一次创建个性化菜单了，这时候我们获取公众号已创建的标签，然后循环匹配openid
+            //TODO 当openid等于name的时候，取其对应的id,这里先不改了，就这样吧，以后改
 
             String url2="https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token="+access_token;
             HashMap<String, Object> hashMap2 = new HashMap<>();
