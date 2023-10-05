@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ShoppingCartController {
      * @return
      */
     @PostMapping("/add")
-    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart, HttpServletRequest request){
+    public R<ShoppingCart> add(@RequestBody ShoppingCart shoppingCart, HttpServletRequest request)throws Exception{
         log.info("购物车数据:{}",shoppingCart);
 
         //设置用户id，指定当前是哪个用户的购物车数据
@@ -70,8 +71,9 @@ public class ShoppingCartController {
                 shoppingCartService.save(shoppingCart);
                 cartServiceOne = shoppingCart;
             } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("又是在这出错了");
+//                e.printStackTrace();
+//                System.out.println("又是在这出错了");
+                throw new SQLException("请在微信内打开");
             }
         }
 

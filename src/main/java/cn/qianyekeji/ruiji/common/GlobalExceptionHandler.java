@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 
 /**
@@ -65,6 +66,14 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(IllegalArgumentException.class)
     public R<String> exceptionHandler(IllegalArgumentException ex){
+        log.error(ex.getMessage());
+
+        return R.error(ex.getMessage());
+    }
+
+    @ResponseBody
+    @ExceptionHandler(SQLException.class)
+    public R<String> sqlException(SQLException ex){
         log.error(ex.getMessage());
 
         return R.error(ex.getMessage());
