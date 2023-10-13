@@ -69,7 +69,8 @@ mail:
       enable : true
   enable: true
   account: ls@qianyekeji.cn
-  password: 123.oooooO
+  password: aMLWC9AvZfH4GmAk
+#  password: 123.oooooO
 
 
 #除了这些配置文件还有dishcontroller中的http://路径要改一下
