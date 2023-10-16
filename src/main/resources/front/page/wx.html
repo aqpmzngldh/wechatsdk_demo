@@ -24,7 +24,9 @@
     <h1>123</h1>
     <button @click="location">按钮通过jssdk获取位置</button>
     <button @click="pay">测试微信支付</button>
-    <button @click="pdf">测试图片转pdf</button>
+    <button @click="anb">开始录音</button>
+    <button @click="ann">停止录音</button>
+    <button @click="anm">播放录音</button>
 </div>
 
 <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
@@ -57,7 +59,7 @@
                         timestamp: timestamp,
                         nonceStr: getNonceStr,
                         signature: signature,
-                        jsApiList: ['getLocation','chooseImage','uploadImage']
+                        jsApiList: ['getLocation','chooseImage','uploadImage','startRecord','stopRecord','playVoice']
                     });
                 })
                 .catch(err => {
@@ -139,6 +141,23 @@
                     nonceStr += chars[Math.floor(Math.random() * chars.length)];
                 }
                 return nonceStr;
+            },
+            anb(){
+                wx.startRecord();
+            },
+            ann(){
+                wx.stopRecord({
+                    success: function (res) {
+                        var localId = res.localId;
+                        alert(localId)
+                        localStorage.setItem('localId', localId);
+                    }
+                });
+            },
+            anm(){
+                wx.playVoice({
+                    localId: localStorage.getItem('localId') // 需要播放的音频的本地ID，由stopRecord接口获得
+                });
             }
         }
     });
