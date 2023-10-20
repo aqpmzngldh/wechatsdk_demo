@@ -557,7 +557,9 @@
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '70%';
-                this.isShow = true
+                setTimeout(() => {
+                    this.isShow = true;
+                }, 500);
                 // this.music = true
             },
             hideParagraphs() {
