@@ -867,14 +867,14 @@
             },
             anb(){
                 let url = window.location.href;
-                alert(url)
+                // alert(url)
                 wx.startRecord();
             },
             ann(){
                 wx.stopRecord({
                     success: function (res) {
                         var localId = res.localId;
-                        alert(localId)
+                        // alert(localId)
                         localStorage.setItem('localId', localId);
                     }
                 });
