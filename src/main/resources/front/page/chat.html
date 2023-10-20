@@ -185,7 +185,9 @@
         #pay{
             padding-top: 15%;
         }
-
+        #pay1{
+            padding-top: 15%;
+        }
         .el-message-box {
             width: 300px;
         }
@@ -244,10 +246,16 @@
                     <!--{{ message.body }}-->
                     <span v-if="message.body">{{message.name}}:{{ message.body }}</span>
 
-                    <img v-if="!message.body"
-                         :src="'/chat/download?name=' + message.url"/>
+                    <!-- 不存在body,但存在voice,渲染voice -->
+                    <!--<span v-else-if="message.voice">{{message.voice}}</span>-->
+                    <span v-else-if="message.voice">
+                        <el-button type="primary" icon="el-icon-phone"  @click="playVoice(message.voice)"></el-button>
+                    </span>
 
-                    <svg @click="addLike(message.k,message.zan)" t="1646634642977" class="icon" viewBox="0 0 1024 1024"
+                    <!-- 既不存在body也不存在voice,则渲染图片 -->
+                    <img v-else :src="'/chat/download?name='+message.url"/>
+
+                    <svg v-if="!message.voice" @click="addLike(message.k,message.zan)" t="1646634642977" class="icon" viewBox="0 0 1024 1024"
                          version="1.1"
                          xmlns="http://www.w3.org/2000/svg" p-id="2187" width="14" height="14">
                         <path d="M160 944c0 8.8-7.2 16-16 16h-32c-26.5 0-48-21.5-48-48V528c0-26.5 21.5-48 48-48h32c8.8 0 16 7.2 16 16v448zM96 416c-53 0-96 43-96 96v416c0 53 43 96 96 96h96c17.7 0 32-14.3 32-32V448c0-17.7-14.3-32-32-32H96zM505.6 64c16.2 0 26.4 8.7 31 13.9 4.6 5.2 12.1 16.3 10.3 32.4l-23.5 203.4c-4.9 42.2 8.6 84.6 36.8 116.4 28.3 31.7 68.9 49.9 111.4 49.9h271.2c6.6 0 10.8 3.3 13.2 6.1s5 7.5 4 14l-48 303.4c-6.9 43.6-29.1 83.4-62.7 112C815.8 944.2 773 960 728.9 960h-317c-33.1 0-59.9-26.8-59.9-59.9v-455c0-6.1 1.7-12 5-17.1 69.5-109 106.4-234.2 107-364h41.6z m0-64h-44.9C427.2 0 400 27.2 400 60.7c0 127.1-39.1 251.2-112 355.3v484.1c0 68.4 55.5 123.9 123.9 123.9h317c122.7 0 227.2-89.3 246.3-210.5l47.9-303.4c7.8-49.4-30.4-94.1-80.4-94.1H671.6c-50.9 0-90.5-44.4-84.6-95l23.5-203.4C617.7 55 568.7 0 505.6 0z"
@@ -285,6 +293,10 @@
                 <a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>
                 <div id="pay" @click="pay">打赏0.01</div>
                 <a href="https://qianyekeji.cn/front/index.html">疑难解答</a>
+                <div id="pay1" @click="anb">开始录音</div>
+                <div @click="ann">停止录音</div>
+                <div @click="anm">播放录音</div>
+                <div @click="nnn">发送录音</div>
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
@@ -296,6 +308,7 @@
         <p ref="firstParagraph" v-show="isShow">在线人数<span style="color: black">{{person}}</span>人,写下你想对我,想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
+            <!--<el-button type="primary" icon="el-icon-phone" v-show="isShow" @click="voice"></el-button>-->
             <el-input :disabled="isButtonDisabled"
                       type="textarea"
                       v-model="inputText"
@@ -458,7 +471,7 @@
             let getNonceStr=this.generateNonceStr(8);
             const timestamp = Date.now().toString();
             let signature;
-            $axios.post("/wx/signature/" + getNonceStr + '/' + timestamp)
+            $axios.post("/wx/signature1/" + getNonceStr + '/' + timestamp)
                 .then((res) => {
                     console.log(res)
                     signature=res;
@@ -469,14 +482,15 @@
                         timestamp: timestamp,
                         nonceStr: getNonceStr,
                         signature: signature,
-                        jsApiList: ['getLocation','chooseImage','uploadImage']
+                        jsApiList: ['getLocation','chooseImage','uploadImage','startRecord','stopRecord','playVoice']
                     });
                 })
                 .catch(err => {
                     console.error(err); // 输出错误信息
                     this.$notify({type: 'warning', message: '程序出错'});
                 });
-
+            // let url = window.location.href;
+            // alert(url)
         },
         watch: {
             messages(value) {
@@ -687,9 +701,9 @@
                     .then((res) => {
                         this.person = res.data;
                     })
-                    .catch(err => {
-                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                    })
+                    // .catch(err => {
+                    //     this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+                    // })
             },
             join() {
                 this.$prompt('请输入您的邮箱', '管理提示', {
@@ -850,6 +864,50 @@
 
             blobToFile(blob, fileName, type) {
                 return new window.File([blob], fileName, {type: type});
+            },
+            anb(){
+                let url = window.location.href;
+                alert(url)
+                wx.startRecord();
+            },
+            ann(){
+                wx.stopRecord({
+                    success: function (res) {
+                        var localId = res.localId;
+                        alert(localId)
+                        localStorage.setItem('localId', localId);
+                    }
+                });
+            },
+            anm(){
+                wx.playVoice({
+                    localId: localStorage.getItem('localId') // 需要播放的音频的本地ID，由stopRecord接口获得
+                });
+            },
+            nnn(){
+                let name = localStorage.getItem('myName');
+                let voiceid = localStorage.getItem('localId');
+                let uuid = localStorage.getItem('uuid');
+                const message = {
+                    name: name,
+                    address: this.add,
+                    uuid: uuid,
+                    time: new Date().toLocaleString(),
+                    body: this.inputText,
+                    voiceid: voiceid
+                };
+                this.messages.push(message);
+                chatName(message);
+                this.inputText = '';
+                this.rows = 1;
+                // location.reload()
+                this.initData()
+                this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+            },
+            playVoice(voice){
+                wx.playVoice({
+                    localId: voice
+                });
             }
 
 

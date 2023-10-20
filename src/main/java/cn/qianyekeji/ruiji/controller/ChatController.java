@@ -56,7 +56,7 @@ public class ChatController {
     private SmsService smsService;
 
     @PostMapping
-    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, HttpServletRequest request, String address,String uuid, String name, String time, String body) throws Exception {
+    public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, HttpServletRequest request, String address,String uuid, String name, String time, String body,String voiceid) throws Exception {
 
 
         String prefix = name.substring(0, 3); // 截取前三个字符
@@ -162,9 +162,14 @@ public class ChatController {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
-
-        if (multipartFile != null) {
+        System.out.println("----------------------");
+        System.out.println(multipartFile);
+        System.out.println(voiceid);
+        System.out.println("----------------------");
+         if (multipartFile != null) {
+            System.out.println("---------");
+            System.out.println(multipartFile);
+            System.out.println("---------");
             //file是一个临时文件，需要转存到指定位置，否则本次请求完成后临时文件会删除
             log.info(multipartFile.toString());
             //原始文件名
@@ -237,6 +242,7 @@ public class ChatController {
             chatRecord.put("uuid", uuid);
             chatRecord.put("zan", "1");
             chatRecord.put("touXiang", touxiang);
+             chatRecord.put("voice", voiceid);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
             chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
             redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
@@ -292,7 +298,8 @@ public class ChatController {
                 String number = (String) chatRecord.get("number");
                 String touXiang = (String) chatRecord.get("touXiang");
                 String uuid = (String) chatRecord.get("uuid");
-                Chat chat = new Chat(time, body, url, name, k, number,touXiang,uuid);
+                String voice = (String) chatRecord.get("voice");
+                Chat chat = new Chat(time, body, url, name, k, number,touXiang,uuid,voice);
                 chats.add(chat);
             }
 

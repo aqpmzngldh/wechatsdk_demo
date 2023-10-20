@@ -529,6 +529,38 @@ public class CeShiController {
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String ticket = (String) map.get("ticket");
                 String uri="https://qianyekeji.cn/front/page/wx.html";
+//                String uri="https://qianyekeji.cn/front/page/chat.html";
+                String signature = generateSignature(ticket, getNonceStr, timestamp, uri);
+                System.out.println("生成的签名：" + signature);
+                return signature;
+            } else {
+                // 处理错误
+                System.err.println("Failed.............." + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+    @PostMapping("/signature1/{getNonceStr}/{timestamp}")
+    @ResponseBody
+    public String getSignature1(@PathVariable("getNonceStr") String getNonceStr, @PathVariable("timestamp") String timestamp){
+        //生成签名需要jsapi_ticket，我们先获取jsapi_ticket
+        //获取签名之前要先获取access_token
+        String s = ceShiService.access_token();
+        try {
+            // 构建获取Access Token的URL
+            String url="https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+s+"&type=jsapi";
+            // 发送GET请求
+            HttpResponse response = HttpUtil.createGet(url).execute();
+
+            if (response.isOk()) {
+                String responseBody = response.body();
+                Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                String ticket = (String) map.get("ticket");
+//                String uri="https://qianyekeji.cn/front/page/wx.html";
+                String uri="https://qianyekeji.cn/front/page/chat.html";
                 String signature = generateSignature(ticket, getNonceStr, timestamp, uri);
                 System.out.println("生成的签名：" + signature);
                 return signature;

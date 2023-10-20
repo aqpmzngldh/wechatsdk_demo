@@ -221,7 +221,8 @@ public class OtherController {
             String number = (String) chatRecord.get("number");
             String touXiang = (String) chatRecord.get("touXiang");
             String uuid = (String) chatRecord.get("uuid");
-            Chat chat = new Chat(time, body, url, name, k, number, touXiang, uuid);
+            String voice = (String) chatRecord.get("voice");
+            Chat chat = new Chat(time, body, url, name, k, number, touXiang, uuid,voice);
             chats.add(chat);
         }
 
