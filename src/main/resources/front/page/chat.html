@@ -249,7 +249,8 @@
                     <!-- 不存在body,但存在voice,渲染voice -->
                     <!--<span v-else-if="message.voice">{{message.voice}}</span>-->
                     <span v-else-if="message.voice">
-                        <el-button type="primary" icon="el-icon-phone"  @click="playVoice(message.voice)"></el-button>
+                        <!--<el-button type="primary" icon="el-icon-phone"  @click="playVoice(message.voice)"></el-button>-->
+                    <img src="../images/luyin.png" @click="playVoice(message.voice)">
                     </span>
 
                     <!-- 既不存在body也不存在voice,则渲染图片 -->
