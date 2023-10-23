@@ -478,7 +478,7 @@
                     signature=res;
                     // 初始化微信JS-SDK
                     wx.config({
-                        debug: false,
+                        debug: true,
                         appId: 'wx61c514e5d83894bf',
                         timestamp: timestamp,
                         nonceStr: getNonceStr,
@@ -890,6 +890,13 @@
             nnn(){
                 let name = localStorage.getItem('myName');
                 let voiceid = localStorage.getItem('localId');
+                if (voiceid===""){
+                    this.$message({
+                        type: 'info',
+                        message: '请先录音后再发送'
+                    });
+                    return;
+                }
                 let uuid = localStorage.getItem('uuid');
                 const message = {
                     name: name,
@@ -906,8 +913,10 @@
                 // location.reload()
                 this.initData()
                 this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                localStorage.setItem('localId', "");
             },
             playVoice(voice){
+                alert(voice)
                 wx.playVoice({
                     localId: voice
                 });
