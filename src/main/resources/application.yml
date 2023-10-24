@@ -48,9 +48,9 @@ ruiji:
 #  图片云服务器存储位置
   path: /www/server/img/
 #  聊天图片存储路径
-  path2: D:\img2\
+#  path2: D:\img2\
 #  聊天图片云存储路径
-#  path2: /www/server/img2/
+  path2: /www/server/img2/
 
   #  面试测试excel路径
 #  path3: D:\img2\ceshi.xlsx

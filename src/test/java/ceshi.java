@@ -3,6 +3,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.service.CeShiService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import it.sauronsoftware.jave.AudioUtils;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -14,6 +15,7 @@ import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -165,6 +167,13 @@ public class ceshi {
         String s="1,2";
         int length = s.split(",").length;
         System.out.println(length);
+    }
+
+    @Test
+    void  pppp(){
+        File source = new File("C:\\Users\\qianye\\Downloads\\wuhqWBgCZ-i8TFGehZor1-e_aUgjttrsZu3qsCHsFC1EoAac0gwfbq7kZ9k2YaO5.amr");
+        File target = new File("C:\\Users\\qianye\\Downloads\\1.mp3");
+        AudioUtils.amrToMp3(source, target);
     }
 
 }

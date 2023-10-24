@@ -14,6 +14,7 @@ import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import it.sauronsoftware.jave.AudioUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
@@ -348,18 +349,39 @@ public class ChatController {
     }
 
     @GetMapping("/audio")
-    public void audio(String name, HttpServletResponse response) {
+    public void audio(String name, HttpServletResponse response)throws Exception {
         //name就是媒体id，然后token也有了，发送get请求下载文件
-//        String s = ceShiService.access_token();
-//        // 构建URL
-//        String url="https://api.weixin.qq.com/cgi-bin/media/get?access_token="+s+"&media_id="+name+"";
-//        // 发送GET请求
-//        HttpResponse execute = HttpUtil.createGet(url).execute();
+        String s = ceShiService.access_token();
+        // 构建URL
+        String url="https://api.weixin.qq.com/cgi-bin/media/get?access_token="+s+"&media_id="+name+"";
+        // 发送GET请求
+        HttpResponse execute = HttpUtil.createGet(url).execute();
+        InputStream inputStream = execute.bodyStream();
+        // 创建本地文件输出流
+        String outFile = "/www/server/img2/" + name + ".amr";
+        OutputStream outputStream1 = new FileOutputStream(outFile);
+
+        // 从输入流读取并写入输出流
+        byte[] buffer = new byte[1024];
+        int len1;
+        while((len1=inputStream.read(buffer))!=-1){
+            outputStream1.write(buffer,0,len1);
+        }
+
+        // 关闭流
+        outputStream1.close();
+        inputStream.close();
 
         System.out.println(name+"---------------=============-----------");
+
+        File source = new File("/www/server/img2/"+name+".amr");
+//        File target = new File("/www/server/img2/"+1+".mp3");
+        File target = new File("/www/server/img2/"+name+".mp3");
+        AudioUtils.amrToMp3(source, target);
+
         try {
             //输入流，通过输入流读取文件内容
-            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
+            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name+".mp3"));
 
             //输出流，通过输出流将文件写回浏览器
             ServletOutputStream outputStream = response.getOutputStream();

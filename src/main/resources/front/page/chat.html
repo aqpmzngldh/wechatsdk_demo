@@ -251,7 +251,7 @@
                     <span v-else-if="message.voice">
                         <!--<el-button type="primary" icon="el-icon-phone"  @click="playVoice(message.voice)"></el-button>-->
                     <!--<img src="../images/luyin.png" @click="playVoice(message.voice)">-->
-                        <!--这时候不这样渲染了，看gpt然后明天改-->
+                        <!--这时候不这样渲染了-->
                         <!--<button @click="playAudio">播放音频</button>-->
                         <!--<img src="../images/luyin.png" @click="playAudio">-->
 
@@ -488,7 +488,7 @@
                     signature=res;
                     // 初始化微信JS-SDK
                     wx.config({
-                        debug: true,
+                        debug: false,
                         appId: 'wx61c514e5d83894bf',
                         timestamp: timestamp,
                         nonceStr: getNonceStr,
@@ -977,13 +977,13 @@
                     localId: voice
                 });
             },
-            playAudio() {
-                // 从后台或其他来源获取音频文件路径，例如通过API请求
-                // 这里演示直接将路径分配给 data 中的 audioSrc
-                this.audioSrc = "../images/11.mp3"; // 替换为实际的路径
-                const audioPlayer = document.getElementById('audioPlayer');
-                audioPlayer.play();
-            }
+            // playAudio() {
+            //     // 从后台或其他来源获取音频文件路径，例如通过API请求
+            //     // 这里演示直接将路径分配给 data 中的 audioSrc
+            //     this.audioSrc = "../images/11.mp3"; // 替换为实际的路径
+            //     const audioPlayer = document.getElementById('audioPlayer');
+            //     audioPlayer.play();
+            // }
 
         },
     });
