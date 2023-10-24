@@ -1,6 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -9,6 +10,7 @@ import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.AddressBook;
 import cn.qianyekeji.ruiji.entity.Chat;
 import cn.qianyekeji.ruiji.entity.Sms;
+import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.SmsService;
 import cn.qianyekeji.ruiji.utils.GiteeUploader;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -54,6 +56,8 @@ public class ChatController {
     private GiteeUploader giteeUploader;
     @Autowired
     private SmsService smsService;
+    @Autowired
+    private CeShiService ceShiService;
 
     @PostMapping
     public R<String> save(@RequestParam(value = "file", required = false) MultipartFile multipartFile, HttpServletRequest request, String address,String uuid, String name, String time, String body,String voiceid) throws Exception {
@@ -326,6 +330,41 @@ public class ChatController {
             ServletOutputStream outputStream = response.getOutputStream();
 
             response.setContentType("image/jpeg");
+
+            int len = 0;
+            byte[] bytes = new byte[1024];
+            while ((len = fileInputStream.read(bytes)) != -1) {
+                outputStream.write(bytes, 0, len);
+                outputStream.flush();
+            }
+
+            //关闭资源
+            outputStream.close();
+            fileInputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @GetMapping("/audio")
+    public void audio(String name, HttpServletResponse response) {
+        //name就是媒体id，然后token也有了，发送get请求下载文件
+//        String s = ceShiService.access_token();
+//        // 构建URL
+//        String url="https://api.weixin.qq.com/cgi-bin/media/get?access_token="+s+"&media_id="+name+"";
+//        // 发送GET请求
+//        HttpResponse execute = HttpUtil.createGet(url).execute();
+
+        System.out.println(name+"---------------=============-----------");
+        try {
+            //输入流，通过输入流读取文件内容
+            FileInputStream fileInputStream = new FileInputStream(new File(basePath + name));
+
+            //输出流，通过输出流将文件写回浏览器
+            ServletOutputStream outputStream = response.getOutputStream();
+
+            response.setContentType("audio/mpeg");
 
             int len = 0;
             byte[] bytes = new byte[1024];

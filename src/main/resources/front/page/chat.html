@@ -253,10 +253,11 @@
                     <!--<img src="../images/luyin.png" @click="playVoice(message.voice)">-->
                         <!--这时候不这样渲染了，看gpt然后明天改-->
                         <!--<button @click="playAudio">播放音频</button>-->
-                        <img src="../images/luyin.png" @click="playAudio">
+                        <!--<img src="../images/luyin.png" @click="playAudio">-->
 
     <audio id="audioPlayer" controls>
-        <source :src="audioSrc" type="audio/mpeg">
+        <!--<source :src="audioSrc" type="audio/mpeg">-->
+        <source :src="'/chat/audio?name='+message.voice" type="audio/mpeg">
         您的浏览器不支持音频标签。
     </audio>
                     </span>
