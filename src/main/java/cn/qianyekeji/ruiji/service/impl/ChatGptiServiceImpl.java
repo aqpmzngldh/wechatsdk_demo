@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest> implements ChatGptService {
 //    private final String OPENAI_API_KEY = "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";
-    private final String OPENAI_API_KEY = "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";
+    private final String OPENAI_API_KEY = "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";
     private final String OPENAI_API_URL = "https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions";
     private Map<String, List<String>> userSessions = new HashMap<>();
 

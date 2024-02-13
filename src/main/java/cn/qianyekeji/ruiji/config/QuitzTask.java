@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -78,6 +79,38 @@ public class QuitzTask {
         chatRecord.put("uuid", "abcdefgh");
         chatRecord.put("number", "0");
         chatRecord.put("address", "108.94615__34.33264");
+        chatRecord.put("url", "");
+        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
+        chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳
+        redisTemplate.opsForHash().putAll(key, chatRecord); // 将聊天记录存储到 Redis 中
+        redisTemplate.expire(key, 24, TimeUnit.HOURS); // 设置键的过期时间为 24 小时
+
+
+    }
+
+    @Scheduled(cron = "0 22 9 * * ?")
+    public void executeTask1() {
+
+        // 执行要定时执行的任务
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String time = currentDateTime.format(formatter);
+        String key = time +(int)(Math.random() * 90 + 10); // 生成唯一键
+        String touxiang="./../images/1.ico";
+        Map<String, String> chatRecord = new HashMap<>();
+
+        String[] arr = {"有人吗", "你好", "这是做什么的", "666", "这挺好玩"};
+        Random random = new Random();
+        int index = random.nextInt(arr.length);
+        String randomElement = arr[index];
+
+        chatRecord.put("body", randomElement);
+        chatRecord.put("name", "聪明的汤姆");
+        chatRecord.put("touXiang", touxiang);
+        chatRecord.put("zan", "1");
+        chatRecord.put("uuid", "abcdefg");
+        chatRecord.put("number", "0");
+        chatRecord.put("address", "109.60054205623__35.177045407445");
         chatRecord.put("url", "");
         long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
         chatRecord.put("timestamp", Long.toString(timestamp)); // 存储时间戳

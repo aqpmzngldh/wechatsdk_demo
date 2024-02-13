@@ -218,6 +218,9 @@ public class ChatController {
             chatRecord.put("address", address);
             chatRecord.put("ipAddress", ipAddress);
             chatRecord.put("zan", "1");
+             String openid = (String) request.getSession().getAttribute("openid");
+             System.out.println(openid+"_"+"-----------------");
+             chatRecord.put("opid", openid);
             chatRecord.put("uuid", uuid);
             chatRecord.put("touXiang", touxiang);
             long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
@@ -244,6 +247,9 @@ public class ChatController {
             chatRecord.put("number", "0");
             chatRecord.put("address", address);
             chatRecord.put("ipAddress", ipAddress);
+             String openid = (String) request.getSession().getAttribute("openid");
+             System.out.println(openid+"_"+"-----------------");
+             chatRecord.put("opid", openid);
             chatRecord.put("uuid", uuid);
             chatRecord.put("zan", "1");
             chatRecord.put("touXiang", touxiang);
