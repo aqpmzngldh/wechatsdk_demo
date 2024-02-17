@@ -76,6 +76,16 @@ public class jiaxiao {
             String timeScoreStr111 = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()) + "_" + score;
             String s = openid1 + "," + timeScoreStr111;
             redisTemplate.opsForHash().put("xcx_1", openid, s);
+
+            //能进这里说明不止一条，是多条，我们设置一下，让他最多存储十条
+            String value = (String)redisTemplate.opsForHash().get("xcx_1", openid);
+            String[] items = value.split(",");
+            int length = items.length;
+            if(length > 10) {
+                // 进行删除最早的数据
+                value = value.substring(value.indexOf(",") + 1); // 删除第一个","及其前数据
+                redisTemplate.opsForHash().put("xcx_1", openid, value);
+            }
         } else {
             String timeScoreStr11 = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()) + "_" + score;
             redisTemplate.opsForHash().put("xcx_1", openid, timeScoreStr11);
