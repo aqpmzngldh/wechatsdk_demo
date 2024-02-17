@@ -1,5 +1,10 @@
+package cn.qianyekeji.ruiji;
+
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.qianyekeji.ruiji.common.R;
+import cn.qianyekeji.ruiji.entity.JiaXiao;
 import cn.qianyekeji.ruiji.service.CeShiService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -12,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.BufferedReader;
@@ -20,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -28,13 +35,18 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author liangshuai
  * @date 2023/3/5
  */
+
+@SpringBootTest
 public class ceshi {
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
     @Test
     public void abc() {
         String str1 = "1234";
@@ -176,4 +188,46 @@ public class ceshi {
         AudioUtils.amrToMp3(source, target);
     }
 
+    @Test
+//    R<List<JiaXiao>> opop(){
+    void opop(){
+
+        //从session中取出来的小程序的openid（小程序登录的时候放进去的）
+        String openid="openid4";
+        //传递到后端的分数
+        String scroe="99";
+
+        //把这次提交的分数进行保存到redis
+        Boolean openid11 = redisTemplate.opsForHash().hasKey("xcx_1", openid);
+        if (openid11){
+            Object openid1 = redisTemplate.opsForHash().get("xcx_1", openid);
+            String timeScoreStr111 = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()) + "_" + scroe;
+            String s = openid1 + ","+timeScoreStr111;
+            redisTemplate.opsForHash().put("xcx_1", openid, s);
+        }else{
+            String timeScoreStr11 = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date()) + "_" + scroe;
+            redisTemplate.opsForHash().put("xcx_1", openid, timeScoreStr11);
+        }
+        //对最近10次成绩进行取出
+        String openid1111 = (String)redisTemplate.opsForHash().get("xcx_1", openid);
+//        2024-02-17 11:01_99分,2024-02-17 11:01_99分
+//        对openid111先进行，分割
+//        分割后再进行下划线_分割
+//        创建实体类对象，返回
+        String[] pairs = openid1111.split(",");
+        ArrayList<JiaXiao> jiaXiaos = new ArrayList<>();
+        for (String pair : pairs) {
+            String[] parts = pair.split("_");
+            String time = parts[0];
+            String score = parts[1];
+            System.out.println("时间: " + time + ", 分数: " + score);
+            JiaXiao jiaXiao = new JiaXiao();
+            jiaXiao.setTime(time);
+            jiaXiao.setScore(score);
+            jiaXiaos.add(jiaXiao);
+        }
+        System.out.println(jiaXiaos+"000");
+//        return R.success(jiaXiaos);
+//        return null;
+    }
 }
