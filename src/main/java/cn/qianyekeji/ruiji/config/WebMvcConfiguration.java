@@ -29,6 +29,13 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         // 静态资源映射
         registry.addResourceHandler("/img2/**")     // 映射路径, 其中的img可以随便改
                 .addResourceLocations("file:/www/server/img2/");  // 服务器中存放图片的路径
+
+        registry.addResourceHandler("/niuniu/**")
+                .addResourceLocations("file:/www/server/img2/niuniu/");
+        registry.addResourceHandler("/ba/**")
+                .addResourceLocations("file:/www/server/img2/ba/");
+        registry.addResourceHandler("/ma/**")
+                .addResourceLocations("file:/www/server/img2/ma/");
     }
 
     /**
