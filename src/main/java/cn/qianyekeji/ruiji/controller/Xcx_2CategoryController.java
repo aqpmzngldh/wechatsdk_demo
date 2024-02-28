@@ -97,4 +97,22 @@ public class Xcx_2CategoryController {
         }
         return "https://qianyekeji.cn/img2/"+originalFilename;
     }
+
+    @GetMapping("/getCategoryAll")
+    public R<List<Xcx_2Category>> getCategoryAll() {
+        List<Xcx_2Category> list = xcx_2CategoryService.list();
+        System.out.println(list);
+        return R.success(list);
+    }
+//    @PostMapping("/addGoods")
+////    public String addGoods(String goods_title,@RequestBody String[] goods_banner,String goods_cover,String video_url) {
+//    public String addGoods(String obj) {
+////        System.out.println(goods_title);
+////        System.out.println(goods_banner);
+////        System.out.println(goods_cover);
+////        System.out.println(video_url);
+//
+//        System.out.println(obj);
+//        return "333";
+//    }
 }
