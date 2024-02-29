@@ -13,6 +13,10 @@ spring:
       username: root
 #      password:
       password: MXMPbrxyc4t7sBje
+#      小程序2中上传的视频大小最大为10MB
+  servlet:
+    multipart:
+      max-file-size: 10MB
   redis:
 #    redis本地主机ip
 #    host: 127.0.0.1
