@@ -1,9 +1,11 @@
 package cn.qianyekeji.ruiji.controller;
 
 import cn.qianyekeji.ruiji.common.R;
+import cn.qianyekeji.ruiji.entity.Xcx_2Banner;
 import cn.qianyekeji.ruiji.entity.Xcx_2Category;
 import cn.qianyekeji.ruiji.entity.Xcx_2Goods;
 import cn.qianyekeji.ruiji.entity.Xcx_2SkuData;
+import cn.qianyekeji.ruiji.service.Xcx_2BannerService;
 import cn.qianyekeji.ruiji.service.Xcx_2CategoryService;
 import cn.qianyekeji.ruiji.service.Xcx_2GoodsService;
 import cn.qianyekeji.ruiji.service.Xcx_2SkuDataService;
@@ -31,6 +33,8 @@ public class Xcx_2CategoryController {
     private Xcx_2GoodsService xcx_2GoodsService;
     @Autowired
     private Xcx_2SkuDataService xcx_2SkuDataService;
+    @Autowired
+    private Xcx_2BannerService xcx_2BannerService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -222,11 +226,16 @@ public class Xcx_2CategoryController {
     @GetMapping("/selectGoods")
     public R<Page> selectGoods(int page, int pageSize,Xcx_2Goods xcx_2Goods){
         String category = xcx_2Goods.getCategory();
+        System.out.println("------"+category+"------");
         //分页构造器
         Page<Xcx_2Goods> pageInfo = new Page<>(page,pageSize);
+        if (category!=null){
         LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Xcx_2Goods::getCategory,category);
         xcx_2GoodsService.page(pageInfo,wrapper);
+        }else{
+        xcx_2GoodsService.page(pageInfo);
+        }
         return R.success(pageInfo);
     }
 
@@ -300,4 +309,10 @@ public class Xcx_2CategoryController {
         return null;
     }
 
+    @GetMapping("/selectBannerAll")
+    public R<List<Xcx_2Banner>> selectBannerAll(){
+        List<Xcx_2Banner> list = xcx_2BannerService.list();
+        System.out.println(list);
+        return R.success(list);
+    }
 }
