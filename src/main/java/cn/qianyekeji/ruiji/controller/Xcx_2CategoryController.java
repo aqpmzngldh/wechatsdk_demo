@@ -79,6 +79,39 @@ public class Xcx_2CategoryController {
         return R.success("分类信息删除成功");
     }
 
+    @PostMapping("/category/deleteCategoryQuantity")
+    public void deleteCategoryQuantity(String category){
+        System.out.println(category);
+        //根据传递过来的category数据，我们需要让分类表里面的quantity-1，然后商品表里面的是否上架变成false
+//        1.1分类表里面的quantity-1
+        Xcx_2Category sort_name = xcx_2CategoryService.getOne(new QueryWrapper<Xcx_2Category>().eq("sort_name", category));
+        System.out.println(sort_name);
+        // 如果找到了记录
+        if (category != null) {
+            // 修改 quantity 字段的值
+            int newQuantity = Integer.parseInt(sort_name.getQuantity()) - 1;
+            sort_name.setQuantity(String.valueOf(newQuantity));
+            // 构建更新条件
+            UpdateWrapper<Xcx_2Category> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("sort_name", sort_name.getSortName());
+            // 根据条件更新
+            xcx_2CategoryService.update(sort_name, updateWrapper);
+        }
+//        1.2商品表里面的是否上架shelves字段变成false
+        List<Xcx_2Goods> list = xcx_2GoodsService.list(new QueryWrapper<Xcx_2Goods>().eq("category", category));
+        if (category != null) {
+            for (int i = 0; i < list.size(); i++) {
+                // 修改 shelves 字段的值
+                list.get(i).setShelves("false");
+                // 构建更新条件
+                UpdateWrapper<Xcx_2Goods> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("category", category);
+                // 根据条件更新
+                xcx_2GoodsService.update(list.get(i), updateWrapper);
+            }
+        }
+    }
+
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
         String sss="F:\\www\\server\\img2\\";
@@ -173,15 +206,28 @@ public class Xcx_2CategoryController {
         return String.valueOf(insertedId);
     }
 
-    @PostMapping("/selectGoods")
-    public R<List<Xcx_2Goods>> selectGoods(Xcx_2Goods xcx_2Goods){
+    //直接查询当前分类下的所有商品有一点效率不高，这段注释了，用分页查询来做
+//    @PostMapping("/selectGoods")
+//    public R<List<Xcx_2Goods>> selectGoods(Xcx_2Goods xcx_2Goods){
+//        String category = xcx_2Goods.getCategory();
+//        System.out.println(category);
+//        LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
+//        wrapper.eq(Xcx_2Goods::getCategory,category);
+//        List<Xcx_2Goods> list = xcx_2GoodsService.list(wrapper);
+//        System.out.println(list);
+//        return R.success(list);
+//    }
+
+
+    @GetMapping("/selectGoods")
+    public R<Page> selectGoods(int page, int pageSize,Xcx_2Goods xcx_2Goods){
         String category = xcx_2Goods.getCategory();
-        System.out.println(category);
+        //分页构造器
+        Page<Xcx_2Goods> pageInfo = new Page<>(page,pageSize);
         LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Xcx_2Goods::getCategory,category);
-        List<Xcx_2Goods> list = xcx_2GoodsService.list(wrapper);
-        System.out.println(list);
-        return R.success(list);
+        xcx_2GoodsService.page(pageInfo,wrapper);
+        return R.success(pageInfo);
     }
 
     /**
