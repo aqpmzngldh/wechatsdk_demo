@@ -3,8 +3,10 @@ package cn.qianyekeji.ruiji.controller;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.Xcx_2Category;
 import cn.qianyekeji.ruiji.entity.Xcx_2Goods;
+import cn.qianyekeji.ruiji.entity.Xcx_2SkuData;
 import cn.qianyekeji.ruiji.service.Xcx_2CategoryService;
 import cn.qianyekeji.ruiji.service.Xcx_2GoodsService;
+import cn.qianyekeji.ruiji.service.Xcx_2SkuDataService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -18,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/xcx_2")
@@ -28,6 +29,9 @@ public class Xcx_2CategoryController {
     private Xcx_2CategoryService xcx_2CategoryService;
     @Autowired
     private Xcx_2GoodsService xcx_2GoodsService;
+    @Autowired
+    private Xcx_2SkuDataService xcx_2SkuDataService;
+
     @Value("${ruiji.path2}")
     private String basePath;
 
@@ -110,20 +114,27 @@ public class Xcx_2CategoryController {
         System.out.println(list);
         return R.success(list);
     }
+    @GetMapping("/getCategoryOther")
+    public R<List<Xcx_2Category>> getCategoryOther() {
+        LambdaQueryWrapper<Xcx_2Category> wrapper = new LambdaQueryWrapper<>();
+        wrapper.gt(Xcx_2Category::getQuantity,0);
+        List<Xcx_2Category> list = xcx_2CategoryService.list(wrapper);
+        return R.success(list);
+    }
     @PostMapping("/addGoods")
     public String addGoods(Xcx_2Goods xcx_2Goods){
         System.out.println(xcx_2Goods);
 
         Xcx_2Goods xcx_2Goods1 = new Xcx_2Goods();
-        xcx_2Goods1.setGoods_title(xcx_2Goods.getGoods_title());
-        xcx_2Goods1.setGoods_banner(xcx_2Goods.getGoods_banner());
-        xcx_2Goods1.setGoods_cover(xcx_2Goods.getGoods_cover());
-        xcx_2Goods1.setVideo_url(xcx_2Goods.getVideo_url());
+        xcx_2Goods1.setGoodsTitle(xcx_2Goods.getGoodsTitle());
+        xcx_2Goods1.setGoodsBanner(xcx_2Goods.getGoodsBanner());
+        xcx_2Goods1.setGoodsCover(xcx_2Goods.getGoodsCover());
+        xcx_2Goods1.setVideoUrl(xcx_2Goods.getVideoUrl());
         xcx_2Goods1.setCategory(xcx_2Goods.getCategory());
-        xcx_2Goods1.setGoods_price(xcx_2Goods.getGoods_price());
+        xcx_2Goods1.setGoodsPrice(xcx_2Goods.getGoodsPrice());
         xcx_2Goods1.setStock(xcx_2Goods.getStock());
         xcx_2Goods1.setSku(xcx_2Goods.getSku());
-        xcx_2Goods1.setGoods_details(xcx_2Goods.getGoods_details());
+        xcx_2Goods1.setGoodsDetails(xcx_2Goods.getGoodsDetails());
         xcx_2Goods1.setSold(xcx_2Goods.getSold());
         xcx_2Goods1.setShelves(xcx_2Goods.getShelves());
         xcx_2Goods1.setSeckill(xcx_2Goods.getSeckill());
@@ -160,6 +171,87 @@ public class Xcx_2CategoryController {
         }
 
         return String.valueOf(insertedId);
+    }
+
+    @PostMapping("/selectGoods")
+    public R<List<Xcx_2Goods>> selectGoods(Xcx_2Goods xcx_2Goods){
+        String category = xcx_2Goods.getCategory();
+        System.out.println(category);
+        LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Xcx_2Goods::getCategory,category);
+        List<Xcx_2Goods> list = xcx_2GoodsService.list(wrapper);
+        System.out.println(list);
+        return R.success(list);
+    }
+
+    /**
+     * 存储商品的规格信息
+     * @param sku
+     * @param sku_id
+     * @return
+     */
+    @PostMapping("/addSkudata")
+    public String addSkudata(String sku,String sku_id){
+        System.out.println(sku_id);
+        System.out.println(sku);
+        System.out.println(sku.length());
+        System.out.println(sku==null);
+        if (sku.length()==2) {
+            System.out.println("进来了1");
+            return "";
+        }
+        System.out.println("没进来");
+
+//        JSONArray jsonArray = JSONUtil.parseArray(sku);
+//        // 遍历 JSON 数组
+//        for (Object obj : jsonArray) {
+//             将每个 JSON 对象转换为 Map
+//            Map map = JSONUtil.parseObj(obj);
+//            System.out.println("map: " + map);
+//
+//            String image = (String)map.get("image");
+//            System.out.println("image="+image);
+//            BigDecimal price = (BigDecimal)map.get("price");
+//            System.out.println("price="+price);
+//            String stock = String.valueOf(map.get("stock"));
+//            System.out.println("stock="+stock);
+//            String title = String.valueOf(map.get("title"));
+//            System.out.println("title="+title);
+//            Object att_data = map.get("att_data");
+//            System.out.println(att_data);
+
+//            Xcx_2SkuData xcx_2SkuData = new Xcx_2SkuData();
+//            xcx_2SkuData.setId(Integer.parseInt(sku_id));
+//            xcx_2SkuData.setPrice(price);
+//            xcx_2SkuData.setStock(stock);
+//            xcx_2SkuData.setTitle(title);
+//            xcx_2SkuData.setImage(image);
+//            xcx_2SkuDataService.save(xcx_2SkuData);
+
+            // 获取 att_data
+//            JSONArray attDataArray = (JSONArray) map.get("att_data");
+//            for (Object attDataObj : attDataArray) {
+////                JSONObject attDataJson = (JSONObject) attDataObj;
+//                Map attDataJson = JSONUtil.parseObj(attDataObj);
+////                String attName = attDataJson.getStr("att_name");
+//                String attName = (String) attDataJson.get("att_name");
+////                String attVal = attDataJson.getStr("att_val");
+//                String attVal = (String) attDataJson.get("att_val");
+//                System.out.println(attName+"----"+attVal);
+//
+//                Xcx_2SkuDataAttdata xcx_2SkuDataAttdata = new Xcx_2SkuDataAttdata();
+//                xcx_2SkuDataAttdata.setAtt_name(attName);
+//                xcx_2SkuDataAttdata.setAtt_val(attVal);
+//                xcx_2SkuDataAttdataService.save(xcx_2SkuDataAttdata);
+//            }
+//        }
+
+        //上面那部分到时候用户端取数据的时候参考，这会我直接把整个存进去
+        Xcx_2SkuData xcx_2SkuData = new Xcx_2SkuData();
+        xcx_2SkuData.setId(Integer.parseInt(sku_id));
+        xcx_2SkuData.setSku(sku);
+        xcx_2SkuDataService.save(xcx_2SkuData);
+        return null;
     }
 
 }

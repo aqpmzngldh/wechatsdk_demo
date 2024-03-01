@@ -1,6 +1,7 @@
 package cn.qianyekeji.ruiji.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -28,18 +29,19 @@ public class Xcx_2Goods implements Serializable {
      * 		shelves:'商品上架与否 true or false',
      * 		seckill:'该商品是否参与秒杀 true or false'
      */
-    @TableId(value = "user_id", type = IdType.AUTO) // 设置主键生成策略为数据库自动生成
+    @TableId(type = IdType.AUTO) // 设置主键生成策略为数据库自动生成
     private Long id;
 //    private Long id;
-    private String goods_title;
-    private String goods_banner;
-    private String goods_cover;
-    private String video_url;
+//    private String goods_title;
+    private String goodsTitle;
+    private String goodsBanner;
+    private String goodsCover;
+    private String videoUrl;
     private String category;
-    private String goods_price;
+    private String goodsPrice;
     private String stock;
     private String sku;
-    private String goods_details;
+    private String goodsDetails;
     private String sold;
     private String shelves;
     private String seckill;
