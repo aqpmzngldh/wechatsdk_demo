@@ -227,14 +227,19 @@ public class Xcx_2CategoryController {
     public R<Page> selectGoods(int page, int pageSize,Xcx_2Goods xcx_2Goods){
         String category = xcx_2Goods.getCategory();
         System.out.println("------"+category+"------");
+
         //分页构造器
         Page<Xcx_2Goods> pageInfo = new Page<>(page,pageSize);
         if (category!=null){
+            System.out.println("不等于null");
         LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Xcx_2Goods::getCategory,category);
         xcx_2GoodsService.page(pageInfo,wrapper);
         }else{
-        xcx_2GoodsService.page(pageInfo);
+            System.out.println("等于null");
+            QueryWrapper<Xcx_2Goods> wrapper = new QueryWrapper<>();
+            wrapper.eq("shelves","true");
+        xcx_2GoodsService.page(pageInfo,wrapper);
         }
         return R.success(pageInfo);
     }
