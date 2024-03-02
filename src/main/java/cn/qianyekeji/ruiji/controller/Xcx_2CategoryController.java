@@ -1,14 +1,8 @@
 package cn.qianyekeji.ruiji.controller;
 
 import cn.qianyekeji.ruiji.common.R;
-import cn.qianyekeji.ruiji.entity.Xcx_2Banner;
-import cn.qianyekeji.ruiji.entity.Xcx_2Category;
-import cn.qianyekeji.ruiji.entity.Xcx_2Goods;
-import cn.qianyekeji.ruiji.entity.Xcx_2SkuData;
-import cn.qianyekeji.ruiji.service.Xcx_2BannerService;
-import cn.qianyekeji.ruiji.service.Xcx_2CategoryService;
-import cn.qianyekeji.ruiji.service.Xcx_2GoodsService;
-import cn.qianyekeji.ruiji.service.Xcx_2SkuDataService;
+import cn.qianyekeji.ruiji.entity.*;
+import cn.qianyekeji.ruiji.service.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -35,6 +29,8 @@ public class Xcx_2CategoryController {
     private Xcx_2SkuDataService xcx_2SkuDataService;
     @Autowired
     private Xcx_2BannerService xcx_2BannerService;
+    @Autowired
+    private Xcx_2SeckillService xcx_2SeckillService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -336,5 +332,37 @@ public class Xcx_2CategoryController {
     public void deleteBanner(String id){
         // 删除数据
         xcx_2BannerService.removeById(id);
+    }
+
+    @GetMapping("/selectSeckillAll")
+    public R<List<Xcx_2Seckill>> selectSeckillAll(){
+        List<Xcx_2Seckill> list = xcx_2SeckillService.list();
+        System.out.println(list);
+        return R.success(list);
+    }
+
+    @PostMapping("/saveSeckill")
+    public void saveSeckill(int id,String obj){
+        System.out.println(id);
+        System.out.println(obj);
+        //秒杀数据存入秒杀数据库表中
+        Xcx_2Seckill xcx_2Seckill = new Xcx_2Seckill();
+        xcx_2Seckill.setId(id);
+        xcx_2Seckill.setSeckillData(obj);
+        xcx_2SeckillService.save(xcx_2Seckill);
+        //去商品表里面给这个秒杀关联的商品的秒杀属性改成true
+//        select * from 表名 where id=方法传入的id set seckill=true
+        Xcx_2Goods id1 = xcx_2GoodsService.getOne(new QueryWrapper<Xcx_2Goods>().eq("id", id));
+        id1.setSeckill("true");
+        // 构建更新条件
+        UpdateWrapper<Xcx_2Goods> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        // 根据条件更新
+        xcx_2GoodsService.update(id1, updateWrapper);
+    }
+    @GetMapping("/deleteSeckill")
+    public void deleteSeckill(String id){
+        // 删除数据
+        xcx_2SeckillService.removeById(id);
     }
 }
