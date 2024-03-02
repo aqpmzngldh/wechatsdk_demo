@@ -320,4 +320,21 @@ public class Xcx_2CategoryController {
         System.out.println(list);
         return R.success(list);
     }
+
+    @GetMapping("/addBanner")
+    public void addBanner(String banner_cover,Integer goods_id,String video_url){
+        Xcx_2Banner xcx_2Banner = new Xcx_2Banner();
+        xcx_2Banner.setId(goods_id);
+        xcx_2Banner.setBannerCover(banner_cover);
+        xcx_2Banner.setVideoUrl(video_url);
+        // 插入数据
+        boolean success =xcx_2BannerService.save(xcx_2Banner);
+        System.out.println(success);
+    }
+
+    @GetMapping("/deleteBanner")
+    public void deleteBanner(String id){
+        // 删除数据
+        xcx_2BannerService.removeById(id);
+    }
 }
