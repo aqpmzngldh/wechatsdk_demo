@@ -362,7 +362,7 @@ public class Xcx_2CategoryController {
     }
     @GetMapping("/deleteSeckill")
     public void deleteSeckill(String id){
-        // 删除数据
+        // 删除数据哦打视频都怕
         xcx_2SeckillService.removeById(id);
     }
 }
