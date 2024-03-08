@@ -114,7 +114,7 @@ public class Xcx_2CategoryController {
 
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
-        String sss="F:\\www\\server\\img2\\";
+//        String sss="F:\\www\\server\\img2\\";
         // 获取上传的文件
         if (file.isEmpty()) {
             System.out.println("上传的文件为空");
@@ -125,16 +125,16 @@ public class Xcx_2CategoryController {
         log.info("传递过来的文件名为，{}",originalFilename);
 
         // 创建目标文件对象
-        File dest = new File(sss + originalFilename);
-//        File dest = new File(basePath + originalFilename);
+//        File dest = new File(sss + originalFilename);
+        File dest = new File(basePath + originalFilename);
         if (!dest.exists()) {
             dest.mkdirs();
         }
         try {
             // 将上传的文件保存到服务器
             file.transferTo(dest);
-            System.out.println("文件上传成功，保存路径为：" + sss + originalFilename);
-//            System.out.println("文件上传成功，保存路径为：" + basePath + originalFilename);
+//            System.out.println("文件上传成功，保存路径为：" + sss + originalFilename);
+            System.out.println("文件上传成功，保存路径为：" + basePath + originalFilename);
         } catch (IOException e) {
             System.out.println("文件上传失败: " + e.getMessage());
         }
