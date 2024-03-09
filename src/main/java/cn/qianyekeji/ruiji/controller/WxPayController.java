@@ -49,12 +49,12 @@ public class WxPayController {
 
 
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
-    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId) throws Exception {
+    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request) throws Exception {
 
         log.info("发起支付请求 v3");
 
         //返回支付二维码连接和订单号
-        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId);
+        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request);
         log.info("prepay_id={}",prepay_id);
         return prepay_id;
     }

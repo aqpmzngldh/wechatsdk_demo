@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface WxPayService {
 
-    R<String> jsapiPay(String getNonceStr, String timestamp, Long productId)throws Exception;
+    R<String> jsapiPay(String getNonceStr, String timestamp, Long productId,HttpServletRequest request)throws Exception;
 
     void processOrder(Map<String, Object> bodyMap, HttpServletRequest request)throws Exception;
 }

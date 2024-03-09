@@ -73,7 +73,7 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId) throws Exception {
+    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId,HttpServletRequest request) throws Exception {
 
 //2.调用统一下单API
         // 这部分代码的话通过文档中心-指引文档-基础支付-native支付-开发指引中获得
@@ -92,7 +92,8 @@ public class WxPayServiceImpl implements WxPayService {
         map.put("total",productId);
         map.put("currency","CNY");
         HashMap map1 = new HashMap<>();
-        map1.put("openid", "ofqpF6vyC8VSSKftWwDfwFi237IY");
+        String openid = (String)request.getSession().getAttribute("openid");
+        map1.put("openid", openid);
         //塞进去
         paramsMap.put("amount", map);
         paramsMap.put("payer", map1);
