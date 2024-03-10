@@ -223,7 +223,8 @@ public class Xcx_2CategoryController {
     public R<Page> selectGoods(int page, int pageSize,Xcx_2Goods xcx_2Goods){
         String category = xcx_2Goods.getCategory();
         System.out.println("------"+category+"------");
-
+        String videoUrl = xcx_2Goods.getVideoUrl();
+        System.out.println("------"+videoUrl+"------");
         //分页构造器
         Page<Xcx_2Goods> pageInfo = new Page<>(page,pageSize);
         if (category!=null){
@@ -231,6 +232,12 @@ public class Xcx_2CategoryController {
         LambdaQueryWrapper<Xcx_2Goods> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Xcx_2Goods::getCategory,category);
         xcx_2GoodsService.page(pageInfo,wrapper);
+        }else if(videoUrl!=null){
+            QueryWrapper<Xcx_2Goods> queryWrapper = new QueryWrapper<>();
+            queryWrapper.like("goods_title", videoUrl)
+                    .or()
+                    .like("category", videoUrl);
+            xcx_2GoodsService.page(pageInfo,queryWrapper);
         }else{
             System.out.println("等于null");
             QueryWrapper<Xcx_2Goods> wrapper = new QueryWrapper<>();
