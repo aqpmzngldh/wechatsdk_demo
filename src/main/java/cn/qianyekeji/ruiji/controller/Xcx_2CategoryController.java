@@ -234,7 +234,7 @@ public class Xcx_2CategoryController {
         }else{
             System.out.println("等于null");
             QueryWrapper<Xcx_2Goods> wrapper = new QueryWrapper<>();
-            wrapper.eq("shelves","true");
+            wrapper.eq("shelves","true").orderByDesc("sold"); // 添加根据 sold 字段进行降序排序条件;
         xcx_2GoodsService.page(pageInfo,wrapper);
         }
         return R.success(pageInfo);
