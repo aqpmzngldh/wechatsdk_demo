@@ -1,5 +1,8 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
@@ -13,9 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/xcx_2")
@@ -31,6 +36,8 @@ public class Xcx_2CategoryController {
     private Xcx_2BannerService xcx_2BannerService;
     @Autowired
     private Xcx_2SeckillService xcx_2SeckillService;
+    @Autowired
+    private Xcx_2VideoCommentService xcx_2VideoCommentService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -371,5 +378,47 @@ public class Xcx_2CategoryController {
     public void deleteSeckill(String id){
         // 删除数据哦打视频都怕
         xcx_2SeckillService.removeById(id);
+    }
+
+
+    @PostMapping("/wxLogin")
+    public R<String> access_token(HttpServletRequest request) {
+
+        System.out.println("点击按钮获取用户openid");
+        String appid="wx902a8a53a4554f9a";
+        String secret="e207e88f7b7117c02852b1a9a757a6b7";
+        String code = request.getParameter("code");
+        String url="https://api.weixin.qq.com/sns/jscode2session?appid="+appid+"&secret="+secret+"&js_code="+code+"&grant_type=authorization_code";
+        // 发送GET请求
+        HttpResponse response = HttpUtil.createGet(url).execute();
+        if (response.isOk()) {
+            String responseBody = response.body();
+            System.out.println("responseBody==="+responseBody);
+            Map<String, Object> map1 = JSONUtil.parseObj(responseBody);
+            System.out.println("map1===,"+map1);
+            String openid = (String) map1.get("openid");
+            System.out.println("openid==="+openid);
+            return R.success(openid);
+        } else {
+            // 处理错误
+            System.err.println("Failed.............." + response.getStatus());
+        }
+        return null;
+    }
+
+    @GetMapping("/selectOneGood")
+    public R<Xcx_2Goods> selectOneGood(Xcx_2Goods xcx_2Goods){
+
+        Xcx_2Goods byId = xcx_2GoodsService.getById(xcx_2Goods.getId());
+        return R.success(byId);
+    }
+
+    @GetMapping("/selectCommentNumber")
+    public R<Integer> selectCommentNumber(Xcx_2Goods xcx_2Goods){
+        Long id = xcx_2Goods.getId();
+        QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id);
+        int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
+        return R.success(size);
     }
 }
