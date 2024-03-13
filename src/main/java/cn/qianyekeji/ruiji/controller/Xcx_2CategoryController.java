@@ -475,5 +475,36 @@ public class Xcx_2CategoryController {
         xcx_2UserInfoService.update(one,objectQueryWrapper1);
     }
 
+    @GetMapping("/addVideoComment")
+    public void  addVideoComment(Xcx_2VideoComment xcx_2VideoComment){
+        System.out.println("添加用户的评论");
+        System.out.println(xcx_2VideoComment);
+        xcx_2VideoCommentService.save(xcx_2VideoComment);
+
+    }
+
+//    @GetMapping("/selectVideoComment")
+//    public R<List<Xcx_2VideoComment>>  selectVideoComment(Xcx_2VideoComment xcx_2VideoComment){
+//        System.out.println("加载用户的评论");
+//        System.out.println(xcx_2VideoComment);
+//        QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
+//        objectQueryWrapper.eq("id",xcx_2VideoComment.getId());
+//        List<Xcx_2VideoComment> list = xcx_2VideoCommentService.list(objectQueryWrapper);
+//        return R.success(list);
+//
+//    }
+
+    @GetMapping("/selectVideoComment")
+    public R<Page>  selectVideoComment(int page, int pageSize,Xcx_2VideoComment xcx_2VideoComment){
+        System.out.println("分页加载用户的评论");
+        Page<Xcx_2VideoComment> pageInfo = new Page<>(page,pageSize);
+
+        QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",xcx_2VideoComment.getId());
+        xcx_2VideoCommentService.page(pageInfo,objectQueryWrapper);
+        return R.success(pageInfo);
+    }
+
+
 
 }
