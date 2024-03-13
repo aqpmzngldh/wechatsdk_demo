@@ -38,6 +38,8 @@ public class Xcx_2CategoryController {
     private Xcx_2SeckillService xcx_2SeckillService;
     @Autowired
     private Xcx_2VideoCommentService xcx_2VideoCommentService;
+    @Autowired
+    private Xcx_2UserInfoService xcx_2UserInfoService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -421,4 +423,57 @@ public class Xcx_2CategoryController {
         int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
         return R.success(size);
     }
+
+    @GetMapping("/collectOr")
+    public Boolean collectOr(Xcx_2UserInfo xcx_2UserInfo){
+        System.out.println("判断是否收藏");
+        Integer id = xcx_2UserInfo.getId();
+//        String openid = xcx_2UserInfo.getOpenid();
+        String openid = "oYU2I5RKQRZcSHGwIBC1l9Yt34Iw";
+        QueryWrapper<Xcx_2UserInfo> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id).eq("openid",openid);
+        Boolean collect = null;
+        try {
+            collect = xcx_2UserInfoService.getOne(objectQueryWrapper).getCollect();
+        } catch (Exception e) {
+            return false;
+        }
+        System.out.println(collect);
+        return collect;
+    }
+
+    //如果有秒杀价的话就不显示原价了
+    @GetMapping("/selectSeckillPrice")
+    public R<Xcx_2Seckill>  selectSeckillPrice(Xcx_2Goods xcx_2Goods){
+        System.out.println("查看秒杀价");
+        return R.success(xcx_2SeckillService.getById(xcx_2Goods.getId()));
+    }
+
+    @GetMapping("/addUserInfo")
+    public void  addUserInfo(Xcx_2UserInfo xcx_2UserInfo){
+        System.out.println("添加用户信息");
+
+        Integer id = xcx_2UserInfo.getId();
+        String openid = xcx_2UserInfo.getOpenid();
+        String avatarUrl = xcx_2UserInfo.getAvatarUrl();
+        String nickName = xcx_2UserInfo.getNickName();
+        Boolean collect = xcx_2UserInfo.getCollect();
+        System.out.println(id+","+openid+","+avatarUrl+","+nickName+","+collect);
+
+        QueryWrapper<Xcx_2UserInfo> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid).eq("id",id);
+        Xcx_2UserInfo one = xcx_2UserInfoService.getOne(objectQueryWrapper);
+        if (one==null){
+            //这里不应该直接存，应该在存之前先取一下，存在的话我们给收藏字段取反就好了
+            xcx_2UserInfoService.save(xcx_2UserInfo);
+            return;
+        }
+        System.out.println("hahaha");
+        one.setCollect(collect);
+        QueryWrapper<Xcx_2UserInfo> objectQueryWrapper1 = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid).eq("id",id);
+        xcx_2UserInfoService.update(one,objectQueryWrapper1);
+    }
+
+
 }
