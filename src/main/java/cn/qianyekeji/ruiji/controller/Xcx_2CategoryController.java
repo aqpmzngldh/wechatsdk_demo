@@ -505,6 +505,17 @@ public class Xcx_2CategoryController {
         return R.success(pageInfo);
     }
 
+    @GetMapping("/selectOneGoods")
+    public R<Xcx_2Goods> selectOneGoods(Xcx_2Goods xcx_2Goods){
+        System.out.println("根据id查询单个商品");
+        Xcx_2Goods byId = xcx_2GoodsService.getById(xcx_2Goods.getId());
+        return R.success(byId);
+    }
 
+    @GetMapping("/selectOneSeckill")
+    public R<Xcx_2Seckill>  selectOneSeckill(Xcx_2Seckill xcx_2Seckill){
+        System.out.println("根据id查询秒杀商品");
+        return R.success(xcx_2SeckillService.getById(xcx_2Seckill.getId()));
+    }
 
 }
