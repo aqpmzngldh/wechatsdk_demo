@@ -28,6 +28,11 @@ public class Xcx_2VideoComment implements Serializable {
     //评论内容
     private String content;
 
+    //上面那个是视频中的评论。这里我把商品详情里面的评论也加在这个数据库中
+    //商品详情图
+    private String eav_image;
+    //商品规格
+    private String specs;
 
 
 }

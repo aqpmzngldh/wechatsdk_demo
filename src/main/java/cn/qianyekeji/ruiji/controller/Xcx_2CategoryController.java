@@ -419,7 +419,7 @@ public class Xcx_2CategoryController {
     public R<Integer> selectCommentNumber(Xcx_2Goods xcx_2Goods){
         Long id = xcx_2Goods.getId();
         QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("id",id);
+        objectQueryWrapper.eq("id",id).isNull("eav_image");
         int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
         return R.success(size);
     }
@@ -500,7 +500,7 @@ public class Xcx_2CategoryController {
         Page<Xcx_2VideoComment> pageInfo = new Page<>(page,pageSize);
 
         QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("id",xcx_2VideoComment.getId());
+        objectQueryWrapper.eq("id",xcx_2VideoComment.getId()).isNull("eav_image");
         xcx_2VideoCommentService.page(pageInfo,objectQueryWrapper);
         return R.success(pageInfo);
     }
