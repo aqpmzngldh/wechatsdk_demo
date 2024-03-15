@@ -518,4 +518,28 @@ public class Xcx_2CategoryController {
         return R.success(xcx_2SeckillService.getById(xcx_2Seckill.getId()));
     }
 
+    @GetMapping("/selectVideoCommentAll")
+    public R<Integer> selectVideoCommentAll(Xcx_2VideoComment xcx_2VideoComment){
+        System.out.println("查询id为xcx_2VideoComment.getId()的商品详情页的所有评论数量");
+        Integer id = xcx_2VideoComment.getId();
+        QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id).isNotNull("eav_image");
+        int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
+        return R.success(size);
+    }
+
+    @GetMapping("/selectVideoCommentThree")
+    public R<Page> selectVideoCommentThree(int page, int pageSize,Xcx_2VideoComment xcx_2VideoComment){
+        System.out.println("评价前三条数据");
+        Integer id = xcx_2VideoComment.getId();
+        //分页构造器
+        Page<Xcx_2VideoComment> pageInfo = new Page<>(page,pageSize);
+        //条件构造器
+        QueryWrapper<Xcx_2VideoComment> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id",id).isNotNull("eav_image");
+
+        //分页查询
+        xcx_2VideoCommentService.page(pageInfo,queryWrapper);
+        return R.success(pageInfo);
+    }
 }
