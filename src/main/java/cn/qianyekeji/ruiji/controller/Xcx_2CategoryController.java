@@ -424,22 +424,39 @@ public class Xcx_2CategoryController {
         return R.success(size);
     }
 
+//    @GetMapping("/collectOr")
+//    public Boolean collectOr(Xcx_2UserInfo xcx_2UserInfo){
+//        System.out.println("判断是否收藏");
+//        Integer id = xcx_2UserInfo.getId();
+////        String openid = xcx_2UserInfo.getOpenid();
+//        String openid = "oYU2I5RKQRZcSHGwIBC1l9Yt34Iw";
+//        QueryWrapper<Xcx_2UserInfo> objectQueryWrapper = new QueryWrapper<>();
+//        objectQueryWrapper.eq("id",id).eq("openid",openid);
+//        Boolean collect = null;
+//        try {
+//            collect = xcx_2UserInfoService.getOne(objectQueryWrapper).getCollect();
+//        } catch (Exception e) {
+//            return false;
+//        }
+//        System.out.println(collect);
+//        return collect;
+//    }
+
     @GetMapping("/collectOr")
-    public Boolean collectOr(Xcx_2UserInfo xcx_2UserInfo){
+    public R<Boolean> collectOr(Xcx_2UserInfo xcx_2UserInfo){
         System.out.println("判断是否收藏");
         Integer id = xcx_2UserInfo.getId();
-//        String openid = xcx_2UserInfo.getOpenid();
-        String openid = "oYU2I5RKQRZcSHGwIBC1l9Yt34Iw";
+        String openid = xcx_2UserInfo.getOpenid();
         QueryWrapper<Xcx_2UserInfo> objectQueryWrapper = new QueryWrapper<>();
         objectQueryWrapper.eq("id",id).eq("openid",openid);
         Boolean collect = null;
         try {
             collect = xcx_2UserInfoService.getOne(objectQueryWrapper).getCollect();
         } catch (Exception e) {
-            return false;
+            return R.success(false);
         }
         System.out.println(collect);
-        return collect;
+        return R.success(collect);
     }
 
     //如果有秒杀价的话就不显示原价了
@@ -471,7 +488,7 @@ public class Xcx_2CategoryController {
         System.out.println("hahaha");
         one.setCollect(collect);
         QueryWrapper<Xcx_2UserInfo> objectQueryWrapper1 = new QueryWrapper<>();
-        objectQueryWrapper.eq("openid",openid).eq("id",id);
+        objectQueryWrapper1.eq("openid",openid).eq("id",id);
         xcx_2UserInfoService.update(one,objectQueryWrapper1);
     }
 
@@ -541,5 +558,12 @@ public class Xcx_2CategoryController {
         //分页查询
         xcx_2VideoCommentService.page(pageInfo,queryWrapper);
         return R.success(pageInfo);
+    }
+
+    @GetMapping("/selectOneSkuData")
+    public R<Xcx_2SkuData> selectOneSkuData(Xcx_2SkuData xcx_2SkuData){
+        System.out.println("查询当前商品的sku数据");
+        Xcx_2SkuData byId = xcx_2SkuDataService.getById(xcx_2SkuData.getId());
+        return R.success(byId);
     }
 }
