@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -40,6 +41,8 @@ public class Xcx_2CategoryController {
     private Xcx_2VideoCommentService xcx_2VideoCommentService;
     @Autowired
     private Xcx_2UserInfoService xcx_2UserInfoService;
+    @Autowired
+    private Xcx_2CartService xcx_2CartService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -566,4 +569,53 @@ public class Xcx_2CategoryController {
         Xcx_2SkuData byId = xcx_2SkuDataService.getById(xcx_2SkuData.getId());
         return R.success(byId);
     }
+
+    @GetMapping("/getCartAll")
+    public R<Integer> getCartAll(Xcx_2Cart xcx_2Cart) {
+        System.out.println("查询某人购物车全部条数");
+        String openid = xcx_2Cart.getOpenid();
+        QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2Cart> list = xcx_2CartService.list(objectQueryWrapper);
+        return R.success(list.size());
+    }
+
+
+    @PostMapping("/getCartSame")
+    public R<Integer> getCartSame(Xcx_2Cart xcx_2Cart) {
+        System.out.println("判断购物车数据库是否出现相同的数据");
+        String goodsId = xcx_2Cart.getGoodsId();
+        String specs = xcx_2Cart.getSpecs();
+        String openid = xcx_2Cart.getOpenid();
+        System.out.println("接收的数据为"+goodsId+","+specs+","+openid);
+
+        QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid).eq("specs",specs).eq("goods_id",goodsId);
+        List<Xcx_2Cart> list = xcx_2CartService.list(objectQueryWrapper);
+        System.out.println(list.size());
+        return R.success(list.size());
+    }
+
+    @PostMapping("/addCart")
+    public void addCart(String data,String openid) {
+        System.out.println("判断数据到购物车");
+        System.out.println(JSON.parse(data));
+        Map parse = (Map) JSON.parse(data);
+
+        Xcx_2Cart xcx_2Cart = new Xcx_2Cart();
+        xcx_2Cart.setGoodsId((String) parse.get("goods_id"));
+        xcx_2Cart.setBuyAmount(String.valueOf(parse.get("buy_amount")));
+        xcx_2Cart.setGoodsImage((String) parse.get("goods_image"));
+        xcx_2Cart.setGoodsPrice(String.valueOf(parse.get("goods_price")));
+        xcx_2Cart.setGoodsTitle((String) parse.get("goods_title"));
+        xcx_2Cart.setOpenid(openid);
+        xcx_2Cart.setSelectOr(""+parse.get("select"));
+        xcx_2Cart.setSpecs(""+parse.get("specs"));
+        xcx_2Cart.setSubtotal(""+parse.get("subtotal"));
+
+        xcx_2CartService.save(xcx_2Cart);
+
+    }
+
+
 }
