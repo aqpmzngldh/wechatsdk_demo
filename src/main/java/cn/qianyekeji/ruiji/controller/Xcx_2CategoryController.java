@@ -43,6 +43,8 @@ public class Xcx_2CategoryController {
     private Xcx_2UserInfoService xcx_2UserInfoService;
     @Autowired
     private Xcx_2CartService xcx_2CartService;
+    @Autowired
+    private Xcx_2AddressService xcx_2AddressService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -617,5 +619,96 @@ public class Xcx_2CategoryController {
 
     }
 
+    @PostMapping("/selectAddress")
+    public R<List<Xcx_2Address>> addCart(String openid) {
+        System.out.println("查询用户地址数据库");
+        QueryWrapper<Xcx_2Address> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2Address> list = xcx_2AddressService.list(objectQueryWrapper);
+        return R.success(list);
+
+    }
+
+    @PostMapping("/selectAddressMo")
+    public R<List<Xcx_2Address>> selectAddressMo(String openid,String tacitly) {
+        System.out.println("查询默认的用户地址数据库");
+        QueryWrapper<Xcx_2Address> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid).eq("tacitly",tacitly);
+        List<Xcx_2Address> list = xcx_2AddressService.list(objectQueryWrapper);
+        return R.success(list);
+
+    }
+
+    @PostMapping("/addAddress")
+    public void addAddress(String data,String openid) {
+        System.out.println("新增用户收货地址");
+        //在新增用户收货地址的时候，先给数据库中所有的都设置为false，因为新增的地址一般都是想用的
+        QueryWrapper<Xcx_2Address> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2Address> list = xcx_2AddressService.list(objectQueryWrapper);
+        for (Xcx_2Address xcx_2Address1 : list) {
+            xcx_2Address1.setTacitly("false");
+            xcx_2AddressService.updateById(xcx_2Address1);
+
+        }
+
+
+        Map parse = (Map) JSON.parse(data);
+
+        Xcx_2Address xcx_2Address = new Xcx_2Address();
+        xcx_2Address.setAddress(parse.get("address")+"");
+        xcx_2Address.setDistrict(parse.get("district")+"");
+        xcx_2Address.setMobile(parse.get("mobile")+"");
+        xcx_2Address.setName(parse.get("name")+"");
+        xcx_2Address.setOpenid(openid);
+        xcx_2Address.setTacitly(parse.get("tacitly")+"");
+
+        xcx_2AddressService.save(xcx_2Address);
+
+    }
+
+    @PostMapping("/deleteAddressById")
+    public void deleteAddressById(String id) {
+        System.out.println("删除用户收货地址");
+        xcx_2AddressService.removeById(id);
+    }
+
+    @PostMapping("/updateAddress")
+    public void updateAddress(String id,String data,String openid) {
+        System.out.println("修改用户收货地址");
+        Map parse = (Map) JSON.parse(data);
+
+        Xcx_2Address xcx_2Address = new Xcx_2Address();
+        xcx_2Address.setAddress(parse.get("address")+"");
+        xcx_2Address.setDistrict(parse.get("district")+"");
+        xcx_2Address.setMobile(parse.get("mobile")+"");
+        xcx_2Address.setName(parse.get("name")+"");
+        xcx_2Address.setOpenid(openid);
+        xcx_2Address.setTacitly(parse.get("tacitly")+"");
+
+        QueryWrapper<Xcx_2Address> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id);
+        xcx_2AddressService.update(xcx_2Address,objectQueryWrapper);
+    }
+
+    @PostMapping("/updateAddressById")
+    public void updateAddressById(String openid,String id) {
+        System.out.println("设置默认用户收货地址");
+        QueryWrapper<Xcx_2Address> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2Address> list = xcx_2AddressService.list(objectQueryWrapper);
+        for (Xcx_2Address xcx_2Address : list) {
+
+            if (!(xcx_2Address.getId()+"").equals(id)) {
+                xcx_2Address.setTacitly("false");
+                xcx_2AddressService.updateById(xcx_2Address);
+            }else{
+                xcx_2Address.setTacitly("true");
+                xcx_2AddressService.updateById(xcx_2Address);
+            }
+
+        }
+
+    }
 
 }
