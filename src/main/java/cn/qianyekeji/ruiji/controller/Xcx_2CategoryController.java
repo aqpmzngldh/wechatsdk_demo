@@ -710,5 +710,6 @@ public class Xcx_2CategoryController {
         }
 
     }
+    //测试贡献度
 
 }
