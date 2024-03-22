@@ -37,8 +37,11 @@ public class WxPayConfig {
     // APIv3密钥
     private String apiV3Key;
 
-    // APPID
+    // 千小夜公众号APPID
     private String appid;
+
+    // 千小夜小程序APPID
+    private String appid1;
 
     // 微信服务器地址
     private String domain;

@@ -73,7 +73,7 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId,HttpServletRequest request) throws Exception {
+    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr) throws Exception {
 
 //2.调用统一下单API
         // 这部分代码的话通过文档中心-指引文档-基础支付-native支付-开发指引中获得
@@ -81,7 +81,14 @@ public class WxPayServiceImpl implements WxPayService {
         HttpPost httpPost = new HttpPost(wxPayConfig.getDomain().concat(WxApiType.JSAPI_PAY.getType()));
         // 根据native支付的api字典填写必要的请求参数，这里参数比较多，写进map里
         Map paramsMap = new HashMap();
-        paramsMap.put("appid",wxPayConfig.getAppid());
+//        paramsMap.put("appid",wxPayConfig.getAppid());
+        if ("xcx".equals(xcxOrgongzhonghao)){
+            //千小夜小程序appid
+            paramsMap.put("appid",wxPayConfig.getAppid1());
+        }else{
+            //千小夜公众号appid
+            paramsMap.put("appid",wxPayConfig.getAppid());
+        }
         paramsMap.put("mchid",wxPayConfig.getMchId());
         paramsMap.put("description","疑难解答");
         paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
@@ -93,7 +100,15 @@ public class WxPayServiceImpl implements WxPayService {
         map.put("currency","CNY");
         HashMap map1 = new HashMap<>();
         String openid = (String)request.getSession().getAttribute("openid");
-        map1.put("openid", openid);
+//        map1.put("openid", openid);
+//        map1.put("openid", "ofqpF6vyC8VSSKftWwDfwFi237IY");
+        if ("xcx".equals(xcxOrgongzhonghao)){
+            //小程序进来会传递这个xcx字段，openid也从前端带过来
+            map1.put("openid", openidOr);
+        }else{
+            //公众号里面的支付openid直接从session中取
+            map1.put("openid", openid);
+        }
         //塞进去
         paramsMap.put("amount", map);
         paramsMap.put("payer", map1);
@@ -127,10 +142,28 @@ public class WxPayServiceImpl implements WxPayService {
 
             System.out.println(timestamp+"---"+getNonceStr);
             // 构建签名字符串
-            String text = "wx61c514e5d83894bf\n"+
+//            String text = "wx61c514e5d83894bf\n"+
+//                    timestamp+"\n"+
+//                    getNonceStr+"\n"+
+//                    "prepay_id="+prepay_id + "\n";
+//            String text = "wx902a8a53a4554f9a\n"+
+//                    timestamp+"\n"+
+//                    getNonceStr+"\n"+
+//                    "prepay_id="+prepay_id + "\n";
+            String text="";
+            if ("xcx".equals(xcxOrgongzhonghao)){
+                //千小夜小程序zhifu
+                text = "wx902a8a53a4554f9a\n"+
+                        timestamp+"\n"+
+                        getNonceStr+"\n"+
+                        "prepay_id="+prepay_id + "\n";
+            }else{
+                //千小夜公众号支付
+                text = "wx61c514e5d83894bf\n"+
                     timestamp+"\n"+
                     getNonceStr+"\n"+
                     "prepay_id="+prepay_id + "\n";
+            }
             long timestamp1 = System.currentTimeMillis();//时间戳
 
             System.out.println(timestamp1+"=====");

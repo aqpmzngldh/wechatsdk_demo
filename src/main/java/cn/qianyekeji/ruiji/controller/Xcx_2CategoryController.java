@@ -6,20 +6,27 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
+import cn.qianyekeji.ruiji.utils.HttpUtils;
+import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
+import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +52,10 @@ public class Xcx_2CategoryController {
     private Xcx_2CartService xcx_2CartService;
     @Autowired
     private Xcx_2AddressService xcx_2AddressService;
+    @Resource
+    private WxPayService wxPayService;
+    @Resource
+    private Verifier verifier;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -710,6 +721,17 @@ public class Xcx_2CategoryController {
         }
 
     }
-    //测试贡献度
+
+    //发起支付
+    @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
+    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr) throws Exception {
+
+        log.info("发起支付请求 v3");
+        System.out.println(xcxOrgongzhonghao);
+        //返回支付二维码连接和订单号
+        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,xcxOrgongzhonghao,openidOr);
+        log.info("prepay_id={}",prepay_id);
+        return prepay_id;
+    }
 
 }
