@@ -13,6 +13,7 @@ public enum WxNotifyType {
 	NATIVE_NOTIFY("/api/wx-pay/native/notify"),
 
 	JSAPI_NOTIFY("/api/wx-pay/jsapi/notify"),
+	JSAPI_NOTIFY2("/xcx_2/jsapi/notify"),
 
 	/**
 	 * 支付通知v2

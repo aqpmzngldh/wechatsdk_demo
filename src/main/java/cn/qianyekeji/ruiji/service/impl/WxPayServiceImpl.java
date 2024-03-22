@@ -93,8 +93,13 @@ public class WxPayServiceImpl implements WxPayService {
         paramsMap.put("description",name2);
 //        paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
         paramsMap.put("out_trade_no", out_trade_no);
-//        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.NATIVE_NOTIFY.getType()));
-        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY.getType()));
+
+//        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY.getType()));
+//        if ("999".equals(openidOr)){
+//            paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY.getType()));
+//        }else{
+        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY2.getType()));
+//        }
         //订单金额里有两个变量，所以再建一个map
         HashMap map = new HashMap<>();
         map.put("total",productId);
@@ -240,6 +245,31 @@ public class WxPayServiceImpl implements WxPayService {
 
             //清空购物车数据
             shoppingCartService.remove(wrapper);
+        }
+
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void processOrder1(Map<String, Object> bodyMap, HttpServletRequest request) throws Exception {
+        log.info("处理订单");
+
+        //解密报文
+        String plainText = decryptFromResource(bodyMap);
+
+        //将明文转换成map,方便取出订单号来更改订单状态
+        Gson gson = new Gson();
+        HashMap plainTextMap = gson.fromJson(plainText, HashMap.class);
+        String orderNo = (String)plainTextMap.get("out_trade_no");
+        System.out.println(plainTextMap);
+        System.out.println(orderNo);
+        String trade_state_desc = (String)plainTextMap.get("trade_state_desc");
+        System.out.println("交易状态描述："+trade_state_desc);
+        if ("支付成功".equals(trade_state_desc)){
+            System.out.println("8888888888888888");
+            System.out.println("这个支付成功了哈哈");
+            System.out.println("8888888888888888");
         }
 
     }
