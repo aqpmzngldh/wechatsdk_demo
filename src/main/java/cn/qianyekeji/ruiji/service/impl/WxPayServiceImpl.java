@@ -73,7 +73,7 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr) throws Exception {
+    public R<String> jsapiPay(String getNonceStr,String timestamp,Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr,String name2,String out_trade_no) throws Exception {
 
 //2.调用统一下单API
         // 这部分代码的话通过文档中心-指引文档-基础支付-native支付-开发指引中获得
@@ -90,8 +90,9 @@ public class WxPayServiceImpl implements WxPayService {
             paramsMap.put("appid",wxPayConfig.getAppid());
         }
         paramsMap.put("mchid",wxPayConfig.getMchId());
-        paramsMap.put("description","疑难解答");
-        paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
+        paramsMap.put("description",name2);
+//        paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
+        paramsMap.put("out_trade_no", out_trade_no);
 //        paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.NATIVE_NOTIFY.getType()));
         paramsMap.put("notify_url",wxPayConfig.getNotifyDomain().concat(WxNotifyType.JSAPI_NOTIFY.getType()));
         //订单金额里有两个变量，所以再建一个map

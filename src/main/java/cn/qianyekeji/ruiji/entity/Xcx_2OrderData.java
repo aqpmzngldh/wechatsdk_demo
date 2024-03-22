@@ -31,7 +31,7 @@ public class Xcx_2OrderData implements Serializable {
     //    '规格',
     private String subtotal;
     //    '总价',
-    private String select;
+    private String selectOr;
     //    '购物车是否选中'
     private String orderNumber;
     //    '订单编号',
@@ -57,6 +57,8 @@ public class Xcx_2OrderData implements Serializable {
     //    '商户订单号',
     private String outRefund;
 //    '商户退款单号',
+    private String openid;
+    //用户标识
 
 
 }

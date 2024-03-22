@@ -56,6 +56,8 @@ public class Xcx_2CategoryController {
     private WxPayService wxPayService;
     @Resource
     private Verifier verifier;
+    @Autowired
+    private Xcx_2OrderDataService xcx_2OrderDataService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -724,14 +726,64 @@ public class Xcx_2CategoryController {
 
     //发起支付
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
-    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr) throws Exception {
+    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr,String name2,String out_trade_no) throws Exception {
 
         log.info("发起支付请求 v3");
         System.out.println(xcxOrgongzhonghao);
         //返回支付二维码连接和订单号
-        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,xcxOrgongzhonghao,openidOr);
+        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,xcxOrgongzhonghao,openidOr,name2,out_trade_no);
         log.info("prepay_id={}",prepay_id);
         return prepay_id;
+    }
+
+
+
+    //新增订单
+    @PostMapping("/addOrderData")
+    public void addOrderData(String order,String address,String time,String openid,String query_time,String out_trade_no) throws Exception {
+        System.out.println("1111111111");
+        System.out.println(order);
+//        System.out.println(address);
+//        System.out.println(time);
+//        System.out.println(openid);
+//        System.out.println(query_time);
+//        System.out.println(out_trade_no);
+        System.out.println("2222222222");
+        //因为传递过来的是个数组，所以我们给数组的最外面[]去掉后再转换
+//        String jsonObjStr = order.substring(1, order.length() - 1);
+        //不转换的话这行报错
+        Map parse = (Map) JSON.parse(order);
+        String goods_id = parse.get("goods_id")+"";
+        String goods_image = parse.get("goods_image")+"";
+        String goods_title = parse.get("goods_title")+"";
+        String goods_price = parse.get("goods_price")+"";
+        String buy_amount = parse.get("buy_amount")+"";
+        String specs = parse.get("specs")+"";
+        String subtotal = parse.get("subtotal")+"";
+        String select = parse.get("select")+"";
+        String order_number = parse.get("order_number")+"";
+
+        Xcx_2OrderData xcx_2OrderData = new Xcx_2OrderData();
+        xcx_2OrderData.setGoodsId(goods_id);
+        xcx_2OrderData.setGoodsImage(goods_image);
+        xcx_2OrderData.setGoodsTitle(goods_title);
+        xcx_2OrderData.setGoodsPrice(goods_price);
+        xcx_2OrderData.setBuyAmount(buy_amount);
+        xcx_2OrderData.setSpecs(specs);
+        xcx_2OrderData.setSubtotal(subtotal);
+        xcx_2OrderData.setSelectOr(select);
+        xcx_2OrderData.setOrderNumber(order_number);
+
+        xcx_2OrderData.setAddress(address);
+
+        xcx_2OrderData.setOpenid(openid);
+        xcx_2OrderData.setOrderTime(time);
+        xcx_2OrderData.setQueryTime(query_time);
+        xcx_2OrderData.setAddress(address);
+        xcx_2OrderData.setOutTrade(out_trade_no);
+
+        xcx_2OrderDataService.save(xcx_2OrderData);
+
     }
 
 }

@@ -5,6 +5,7 @@ import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.WxPayService;
 import cn.qianyekeji.ruiji.utils.HttpUtils;
+import cn.qianyekeji.ruiji.utils.OrderNoUtils;
 import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
 import com.google.gson.Gson;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
@@ -54,7 +55,8 @@ public class WxPayController {
         log.info("发起支付请求 v3");
 
         //返回支付二维码连接和订单号
-        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,"999","999");
+        String orderNo = OrderNoUtils.getOrderNo();
+        R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,"999","999","千小夜商城",orderNo);
         log.info("prepay_id={}",prepay_id);
         return prepay_id;
     }
