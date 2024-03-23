@@ -848,4 +848,15 @@ public class Xcx_2CategoryController {
 
     }
 
+
+    @PostMapping("/deleteCartById")
+    public void deleteCartById(String openid,String id) throws Exception {
+        System.out.println("删除购物车中的数据");
+        QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("goods_id",id).eq("openid",openid);
+        xcx_2CartService.remove(objectQueryWrapper);
+
+    }
+
+
 }
