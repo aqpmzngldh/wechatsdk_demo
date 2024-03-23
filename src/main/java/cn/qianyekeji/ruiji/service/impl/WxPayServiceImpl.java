@@ -6,18 +6,17 @@ import cn.qianyekeji.ruiji.common.CustomException;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.config.WxPayConfig;
 
-import cn.qianyekeji.ruiji.entity.Dish;
-import cn.qianyekeji.ruiji.entity.ShoppingCart;
+import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.enums.wxpay.WxApiType;
 import cn.qianyekeji.ruiji.enums.wxpay.WxNotifyType;
 
-import cn.qianyekeji.ruiji.service.DishService;
-import cn.qianyekeji.ruiji.service.ShoppingCartService;
-import cn.qianyekeji.ruiji.service.WxPayService;
+import cn.qianyekeji.ruiji.service.*;
 
 import cn.qianyekeji.ruiji.utils.OrderNoUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
 import com.wechat.pay.contrib.apache.httpclient.util.AesUtil;
@@ -29,6 +28,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -60,6 +60,12 @@ public class WxPayServiceImpl implements WxPayService {
     private ShoppingCartService shoppingCartService;
     @Resource
     private DishService dishService;
+    @Autowired
+    private Xcx_2OrderDataService xcx_2OrderDataService;
+    @Autowired
+    private Xcx_2GoodsService xcx_2GoodsService;
+    @Autowired
+    private Xcx_2CartService xcx_2CartService;
 
     @Resource
     private CloseableHttpClient wxPayNoSignClient; //无需应答签名
@@ -270,6 +276,48 @@ public class WxPayServiceImpl implements WxPayService {
             System.out.println("8888888888888888");
             System.out.println("这个支付成功了哈哈");
             System.out.println("8888888888888888");
+            //1.支付成功去数据库改成pay_success支付成功，deliver待发货状态
+            QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+            objectQueryWrapper.eq("out_trade",orderNo);
+            List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
+            for (Xcx_2OrderData order : list) {
+                order.setPaySuccess("支付成功");
+                order.setDeliver("待发货");
+                // 更新到数据库
+                xcx_2OrderDataService.updateById(order);
+            //2.库存减少，销量增加
+                //获取商品id和商品数量，判断是哪个商品卖了多少件
+                String goodsId = order.getGoodsId();
+                Integer buyAmount = Integer.valueOf(order.getBuyAmount());
+
+                QueryWrapper<Xcx_2Goods> objectQueryWrapper1 = new QueryWrapper<>();
+                objectQueryWrapper1.eq("id",goodsId);
+                Xcx_2Goods one = xcx_2GoodsService.getOne(objectQueryWrapper1);
+                // 更新库存和销量
+                UpdateWrapper<Xcx_2Goods> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", goodsId)
+                        .set("stock", Integer.valueOf(one.getStock()) - buyAmount)
+                        .set("sold", Integer.valueOf(one.getSold()) + buyAmount);
+                xcx_2GoodsService.update(updateWrapper);
+            //3.把购物车中的数据删除
+                //这时候要注意，删除下单那个人的购物车中的下单数据就行了
+                //根据payment字段判断是购物车下单的还是直接下单的，直接下单的就没添加进购物车，就不用删
+                //payment字段是cart表示是购物车下单的，这时候我们删除购物车数据，
+                String payment = order.getPayment();
+                System.out.println("是购物车下单的还是直接下单的"+payment);
+                if ("cart".equals(payment)){
+                LinkedTreeMap   payer = (LinkedTreeMap)plainTextMap.get("payer");
+                String openid = (String) payer.get("openid");
+                System.out.println("下单的人为"+payer);
+                System.out.println("下单的商品id为"+goodsId);
+                QueryWrapper<Xcx_2Cart> objectQueryWrapper2 = new QueryWrapper<>();
+                // TODO 这里删除的时候可以选择再拼接一个商品规格字段，要不然购物车有同种商品，但是规格不一样，只是下单支付一个，
+                // TODO 另外一个也就删掉了，这里我就先不删除了
+                objectQueryWrapper2.eq("goods_id",goodsId).eq("openid",openid);
+                xcx_2CartService.remove(objectQueryWrapper2);
+                }
+            }
+
         }
 
     }

@@ -801,14 +801,14 @@ public class Xcx_2CategoryController {
 
     //新增订单
     @PostMapping("/addOrderData")
-    public void addOrderData(String order,String address,String time,String openid,String query_time,String out_trade_no) throws Exception {
+    public void addOrderData(String order,String address,String time,String openid,String query_time,String out_trade_no,String type) throws Exception {
         System.out.println("1111111111");
         System.out.println(order);
-//        System.out.println(address);
-//        System.out.println(time);
-//        System.out.println(openid);
-//        System.out.println(query_time);
-//        System.out.println(out_trade_no);
+        System.out.println(address);
+        System.out.println(time);
+        System.out.println(openid);
+        System.out.println(query_time);
+        System.out.println(out_trade_no);
         System.out.println("2222222222");
         //因为传递过来的是个数组，所以我们给数组的最外面[]去掉后再转换
 //        String jsonObjStr = order.substring(1, order.length() - 1);
@@ -842,6 +842,7 @@ public class Xcx_2CategoryController {
         xcx_2OrderData.setQueryTime(query_time);
         xcx_2OrderData.setAddress(address);
         xcx_2OrderData.setOutTrade(out_trade_no);
+        xcx_2OrderData.setPayment(type);
 
         xcx_2OrderDataService.save(xcx_2OrderData);
 
