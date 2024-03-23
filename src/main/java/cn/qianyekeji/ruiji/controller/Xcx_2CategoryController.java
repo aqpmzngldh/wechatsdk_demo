@@ -881,7 +881,14 @@ public class Xcx_2CategoryController {
             Object value = entry.getValue();
             queryWrapper.eq(key, value);
         }
-
+        // TODO 这里应该再加一个条件，因为用户如果进入支付输入密码界面的时候，这时候用户手机关机了
+        // TODO 然后既不能微信通知中让我们改变其状态为未支付，也不能在前端取消支付时候也不会触发（也不能让我们改成未支付），这时候数据库
+        // TODO 中的pay_success字段就是为null，而不是为待支付: not_pay字段，这会出现一个什么情况呢
+        // TODO 就是说页面这种查全部可以查到，但是不属于其他四个任何一个分类，所以拼接pay_success字段不为null的值
+        // TODO bububu，这里不拼接pay_success字段不为null的值了，直接给pay_success字段为null的值全部删掉即可
+        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.isNull("pay_success");
+        xcx_2OrderDataService.remove(objectQueryWrapper);
 
         //分页查询
         xcx_2OrderDataService.page(pageInfo,queryWrapper);
@@ -889,4 +896,13 @@ public class Xcx_2CategoryController {
     }
 
 
+    //修改订单为未支付状态
+    @PostMapping("/updateOrder")
+    public void updateOrder(String out_trade_no) throws Exception {
+        System.out.println("修改订单为未支付状态");
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("out_trade",out_trade_no)
+                .set("pay_success","not_pay");
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
 }
