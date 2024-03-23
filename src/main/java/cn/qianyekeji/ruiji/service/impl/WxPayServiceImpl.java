@@ -281,8 +281,8 @@ public class WxPayServiceImpl implements WxPayService {
             objectQueryWrapper.eq("out_trade",orderNo);
             List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
             for (Xcx_2OrderData order : list) {
-                order.setPaySuccess("支付成功");
-                order.setDeliver("待发货");
+                order.setPaySuccess("success");
+                order.setDeliver("stay");
                 // 更新到数据库
                 xcx_2OrderDataService.updateById(order);
             //2.库存减少，销量增加

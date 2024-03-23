@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -856,6 +857,35 @@ public class Xcx_2CategoryController {
         objectQueryWrapper.eq("goods_id",id).eq("openid",openid);
         xcx_2CartService.remove(objectQueryWrapper);
 
+    }
+
+    @GetMapping("/selectOrder")
+    public R<Page> selectOrder(String openid,String query,int page, int pageSize){
+        System.out.println("订单界面数据展示");
+        System.out.println("接收到的openid，"+openid);
+        System.out.println("接收到的query，"+query);
+        System.out.println("接收到的page，"+page);
+        System.out.println("接收到的pageSize，"+pageSize);
+        //分页构造器
+        Page<Xcx_2OrderData> pageInfo = new Page<>(page,pageSize);
+        //条件构造器
+        QueryWrapper<Xcx_2OrderData> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("openid",openid);
+        // 当 query 不为空时，拼接上额外的查询条件
+        // 使用 Hutool 将 query 字符串解析为 Map
+        Map<String, Object> queryMap = JSONUtil.toBean(query, Map.class);
+
+        // 遍历 Map,构造查询条件
+        for (Map.Entry<String, Object> entry : queryMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            queryWrapper.eq(key, value);
+        }
+
+
+        //分页查询
+        xcx_2OrderDataService.page(pageInfo,queryWrapper);
+        return R.success(pageInfo);
     }
 
 
