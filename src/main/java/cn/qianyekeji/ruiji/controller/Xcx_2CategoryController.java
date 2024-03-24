@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/xcx_2")
@@ -59,6 +62,8 @@ public class Xcx_2CategoryController {
     private Verifier verifier;
     @Autowired
     private Xcx_2OrderDataService xcx_2OrderDataService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -728,14 +733,45 @@ public class Xcx_2CategoryController {
     //发起支付
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
     public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr,String name2,String out_trade_no) throws Exception {
-
         log.info("发起支付请求 v3");
+
+        // 使用 openidOr 作为 Redis Hash 的 key
+        String hashKey = openidOr;
+        // 从Redis中获取预支付单号
+        // 从 Redis Hash 中获取预支付订单号
+        String prepayId = (String) redisTemplate.opsForHash().get(hashKey, out_trade_no);
+
+        if (prepayId != null) {
+            // 存在预支付订单号,直接返回
+            log.info("从 Redis 获取预支付订单号: {}", prepayId);
+            System.out.println("预支付订单号,"+prepayId);
+            // 分别获取 bodyAsString 的起始位置
+            int bodyAsStringIndex = prepayId.indexOf("bodyAsString=") + "bodyAsString=".length();
+            int timestampIndex = prepayId.indexOf("timestamp=") + "timestamp=".length();
+            int getNonceStrIndex = prepayId.indexOf("getNonceStr=") + "getNonceStr=".length();
+            // 分别获取 paySign 的起始位置
+            int paySignIndex = prepayId.indexOf("paySign=") + "paySign=".length();
+            // 从 prepayId 字符串中提取 bodyAsString
+            String bodyAsString = prepayId.substring(bodyAsStringIndex, prepayId.indexOf(",", bodyAsStringIndex));
+            String timestamp1 = prepayId.substring(timestampIndex, prepayId.indexOf("}", timestampIndex));
+            String getNonceStr1 = prepayId.substring(getNonceStrIndex, prepayId.indexOf(",", getNonceStrIndex));
+            // 从 prepayId 字符串中提取 paySign
+            String paySign = prepayId.substring(paySignIndex, prepayId.indexOf(",", paySignIndex));
+            // 打印 bodyAsString
+            System.out.println("bodyAsString: " + bodyAsString);
+            // 打印 paySign
+            System.out.println("paySign: " + paySign);
+            return R.success("").add("bodyAsString",bodyAsString)
+                    .add("timestamp",timestamp1).add("getNonceStr",getNonceStr1).add("paySign",paySign);
+        }
         System.out.println(xcxOrgongzhonghao);
         //返回支付二维码连接和订单号
         R<String> prepay_id= wxPayService.jsapiPay(getNonceStr,timestamp,productId,request,xcxOrgongzhonghao,openidOr,name2,out_trade_no);
         log.info("prepay_id={}",prepay_id);
         return prepay_id;
     }
+
+
 
 
     /**
@@ -844,6 +880,13 @@ public class Xcx_2CategoryController {
         xcx_2OrderData.setAddress(address);
         xcx_2OrderData.setOutTrade(out_trade_no);
         xcx_2OrderData.setPayment(type);
+
+        //TODO 在新增订单时候判断用户传递过来的out_trade_no和openid和goods_id和pay_success等于not_pay查询，是否能查询到同样的数据
+        //TODO 如果能，则用户是第一次没有支付，然后选择在订单界面继续支付的,这时候我们直接先删除数据库中的这个数据再添加
+//        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+//        objectQueryWrapper.eq("out_trade",out_trade_no).eq("openid",openid)
+//                .eq("goods_id",goods_id).eq("pay_success","not_pay");
+//        xcx_2OrderDataService.remove(objectQueryWrapper);
 
         xcx_2OrderDataService.save(xcx_2OrderData);
 

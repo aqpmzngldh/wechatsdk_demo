@@ -29,6 +29,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -46,6 +47,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
@@ -66,6 +68,8 @@ public class WxPayServiceImpl implements WxPayService {
     private Xcx_2GoodsService xcx_2GoodsService;
     @Autowired
     private Xcx_2CartService xcx_2CartService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
     @Resource
     private CloseableHttpClient wxPayNoSignClient; //无需应答签名
@@ -195,12 +199,25 @@ public class WxPayServiceImpl implements WxPayService {
             // base64编码
             String paySign = Base64.getEncoder().encodeToString(signed);
 
-            return R.success("").add("bodyAsString",prepay_id).add("paySign",paySign);
+            R<String> add = R.success("").add("bodyAsString", prepay_id).add("timestamp", timestamp)
+                    .add("getNonceStr", getNonceStr).add("paySign", paySign);
+
+
+            Map<String, String> chatRecord = new HashMap<>();
+            chatRecord.put(out_trade_no, add+"");
+            redisTemplate.opsForHash().putAll(openidOr, chatRecord);
+            redisTemplate.expire(openidOr, 90, TimeUnit.MINUTES);
+            return add;
 
         } finally {
             response.close();
         }
     }
+
+
+
+
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override
