@@ -290,6 +290,12 @@ public class WxPayServiceImpl implements WxPayService {
         String trade_state_desc = (String)plainTextMap.get("trade_state_desc");
         System.out.println("交易状态描述："+trade_state_desc);
         if ("支付成功".equals(trade_state_desc)){
+            //去redis中删除缓存的用户的预交易标识，因为这个预交易标识是让用户没有支付，然后继续支付的，现在已经支付了，就不要了
+            //也可以不删除，毕竟我规定的过期时间是90分钟，90分钟后自动删除
+//            LinkedTreeMap   payer1 = (LinkedTreeMap)plainTextMap.get("payer");
+//            String openid1 = (String) payer1.get("openid");
+//            redisTemplate.opsForHash().delete(openid1, orderNo);
+
             System.out.println("8888888888888888");
             System.out.println("这个支付成功了哈哈");
             System.out.println("8888888888888888");

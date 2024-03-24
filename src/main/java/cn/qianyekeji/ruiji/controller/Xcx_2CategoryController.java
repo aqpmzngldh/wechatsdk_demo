@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,9 +31,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -941,11 +945,52 @@ public class Xcx_2CategoryController {
 
     //修改订单为未支付状态
     @PostMapping("/updateOrder")
-    public void updateOrder(String out_trade_no) throws Exception {
+    public void updateOrder(String out_trade_no,String openid) throws Exception {
         System.out.println("修改订单为未支付状态");
         UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
-        objectUpdateWrapper.eq("out_trade",out_trade_no)
+        objectUpdateWrapper.eq("out_trade",out_trade_no).eq("openid",openid)
                 .set("pay_success","not_pay");
+
+        // TODO 修改订单为未支付的同时，把订单加入到redis，为什么要加入redis，如果用户调起支付界面但是没有支付，30分钟之内还没有支付，我们就修改
+        //订单状态为已取消订单can_order，为什么要有个时间限制，因为预支付标识的时间限制是2小时，我们给预支付交易标识存进redis缓存了90分钟
+        //所以肯定要小于90分钟，就设置30分钟好了，用redis中的zset集合，因为zset中有个score，可以根据他判断时间有咩有超过30分钟
+
+        // 将 uuid 和时间戳信息存储到 Redis 中
+        long timestamp = Instant.now().toEpochMilli(); // 获取当前时间的时间戳
+        redisTemplate.opsForZSet().add("xcx_2quxiaoOr", openid + "_" + out_trade_no, timestamp);
+
         xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
+
+    // 每隔3分钟执行一次的定时任务，误差在3分钟，不过关系不大
+    @Scheduled(fixedDelay = 180000)
+    public void removeExpiredElements() {
+        // 获取当前时间戳
+        long currentTime = Instant.now().toEpochMilli();
+
+        // 获取 Redis 中所有的元素
+        Set<ZSetOperations.TypedTuple<String>> elements = redisTemplate.opsForZSet().rangeWithScores("xcx_2quxiaoOr", 0, -1);
+
+        // 遍历所有元素
+        for (ZSetOperations.TypedTuple<String> element : elements) {
+            String uuid = (String) element.getValue();
+            long timestamp = element.getScore().longValue();
+
+            // 如果当前时间与时间戳的差值大于30分钟，则删除该元素
+            if ((currentTime - timestamp) > 1800000) {
+                redisTemplate.opsForZSet().remove("xcx_2quxiaoOr", uuid);
+
+                String[] parts = uuid.split("_");
+                // 第一个部分。openid
+                String part1 = parts[0];
+                // 第二个部分商户订单号out_trade_no
+                String part2 = parts[1];
+                UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+                objectUpdateWrapper.eq("out_trade",part2).eq("openid",part1)
+                        .set("pay_success","can_order");
+                xcx_2OrderDataService.update(objectUpdateWrapper);
+
+            }
+        }
     }
 }
