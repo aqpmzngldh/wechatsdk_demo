@@ -447,7 +447,8 @@ public class Xcx_2CategoryController {
     public R<Integer> selectCommentNumber(Xcx_2Goods xcx_2Goods){
         Long id = xcx_2Goods.getId();
         QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("id",id).isNull("eav_image");
+//        objectQueryWrapper.eq("id",id).isNull("eav_image");
+        objectQueryWrapper.eq("id",id).isNull("biao");
         int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
         return R.success(size);
     }
@@ -545,7 +546,8 @@ public class Xcx_2CategoryController {
         Page<Xcx_2VideoComment> pageInfo = new Page<>(page,pageSize);
 
         QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("id",xcx_2VideoComment.getId()).isNull("eav_image");
+//        objectQueryWrapper.eq("id",xcx_2VideoComment.getId()).isNull("eav_image");
+        objectQueryWrapper.eq("id",xcx_2VideoComment.getId()).isNull("biao");
         xcx_2VideoCommentService.page(pageInfo,objectQueryWrapper);
         return R.success(pageInfo);
     }
@@ -568,7 +570,8 @@ public class Xcx_2CategoryController {
         System.out.println("查询id为xcx_2VideoComment.getId()的商品详情页的所有评论数量");
         Integer id = xcx_2VideoComment.getId();
         QueryWrapper<Xcx_2VideoComment> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.eq("id",id).isNotNull("eav_image");
+//        objectQueryWrapper.eq("id",id).isNotNull("eav_image");
+        objectQueryWrapper.eq("id",id).isNotNull("biao");
         int size = xcx_2VideoCommentService.list(objectQueryWrapper).size();
         return R.success(size);
     }
@@ -581,7 +584,8 @@ public class Xcx_2CategoryController {
         Page<Xcx_2VideoComment> pageInfo = new Page<>(page,pageSize);
         //条件构造器
         QueryWrapper<Xcx_2VideoComment> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",id).isNotNull("eav_image");
+//        queryWrapper.eq("id",id).isNotNull("eav_image");
+        queryWrapper.eq("id",id).isNotNull("biao");
 
         //分页查询
         xcx_2VideoCommentService.page(pageInfo,queryWrapper);
@@ -928,6 +932,10 @@ public class Xcx_2CategoryController {
             Object value = entry.getValue();
             queryWrapper.eq(key, value);
         }
+
+        // 根据数据库的order_time字段进行倒序排列
+        queryWrapper.orderByDesc("order_time");
+
         // TODO 这里应该再加一个条件，因为用户如果进入支付输入密码界面的时候，这时候用户手机关机了
         // TODO 然后既不能微信通知中让我们改变其状态为未支付，也不能在前端取消支付时候也不会触发（也不能让我们改成未支付），这时候数据库
         // TODO 中的pay_success字段就是为null，而不是为待支付: not_pay字段，这会出现一个什么情况呢
