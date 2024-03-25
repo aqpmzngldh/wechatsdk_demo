@@ -993,4 +993,45 @@ public class Xcx_2CategoryController {
             }
         }
     }
+
+    //修改订单为未支付状态
+    @PostMapping("/cancelOrder")
+    public void cancelOrder(String id) throws Exception {
+        System.out.println("修改订单为取消状态");
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("id",id).set("pay_success","can_order");
+
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
+
+    //用户端退款
+    @PostMapping("/tuiKuan")
+    public void tuiKuan(String id,String ReReason) throws Exception {
+        System.out.println("用户端退款");
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("id",id).set("deliver","ref_pro").set("Re_reason",ReReason);
+
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
+
+    //用户端收货
+    @PostMapping("/shouHuo")
+    public void shouHuo(String id) throws Exception {
+        System.out.println("用户端收获");
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("id",id).set("deliver","rece_goods");
+
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
+
+    //修改订单评价字段为已评价
+    @PostMapping("/updateOrderPingJia")
+    public void updateOrderPingJia(String id) throws Exception {
+        System.out.println("用户已评价");
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("id",id).set("evaluate","true");
+
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+    }
+
 }
