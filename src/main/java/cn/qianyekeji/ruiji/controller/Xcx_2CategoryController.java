@@ -1042,4 +1042,30 @@ public class Xcx_2CategoryController {
         xcx_2OrderDataService.update(objectUpdateWrapper);
     }
 
+    @PostMapping("/getCartByOpenid")
+    public R<List<Xcx_2Cart>> getCartByOpenid(String openid) throws Exception {
+        System.out.println("查询购物车中的数据");
+        QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2Cart> list = xcx_2CartService.list(objectQueryWrapper);
+        return R.success(list);
+    }
+
+    @PostMapping("/addDeleteGoodNumberCartByOpenid")
+    public void addDeleteGoodNumberCartByOpenid(Long id,String buyAmount,String subtotal) throws Exception {
+        System.out.println("添加或者减少某个人的购物车中的某个商品的数量和价格");
+            UpdateWrapper<Xcx_2Cart> objectUpdateWrapper = new UpdateWrapper<>();
+            objectUpdateWrapper.eq("id",id)
+                    .set("buy_amount",buyAmount).set("subtotal",subtotal);
+        xcx_2CartService.update(objectUpdateWrapper);
+
+    }
+
+    @PostMapping("/deleteCart")
+    public void deleteCart(Long id) throws Exception {
+        System.out.println("删除购物车中的某个商品");
+        QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id);
+        xcx_2CartService.remove(objectQueryWrapper);
+    }
 }
