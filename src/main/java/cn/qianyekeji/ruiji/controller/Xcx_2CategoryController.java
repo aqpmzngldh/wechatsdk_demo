@@ -31,11 +31,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -951,6 +949,52 @@ public class Xcx_2CategoryController {
     }
 
 
+    //商家端订单管理选项，商家端不用拼接openid。所以重新写个吧
+    @GetMapping("/selectOrder1")
+    public R<Page> selectOrder1(String query,int page, int pageSize){
+        System.out.println("商户端订单界面数据展示");
+        System.out.println("接收到的query，"+query);
+        System.out.println("接收到的page，"+page);
+        System.out.println("接收到的pageSize，"+pageSize);
+        //分页构造器
+        Page<Xcx_2OrderData> pageInfo = new Page<>(page,pageSize);
+        //条件构造器
+        QueryWrapper<Xcx_2OrderData> queryWrapper = new QueryWrapper<>();
+
+        // 当 query 不为空时，拼接上额外的查询条件
+        // 使用 Hutool 将 query 字符串解析为 Map
+        Map<String, Object> queryMap = JSONUtil.toBean(query, Map.class);
+        if (queryMap.get("biao")!=null){
+            System.out.println(queryMap.get("biao"));
+            System.out.println("这个用来判断是不是退款的两种状态之一");
+            queryWrapper.eq("pay_success","success").eq("deliver","ref_pro").or().eq("deliver","ref_succ");
+            queryWrapper.orderByDesc("order_time");
+            //分页查询
+            xcx_2OrderDataService.page(pageInfo,queryWrapper);
+            return R.success(pageInfo);
+        }
+
+        // 遍历 Map,构造查询条件
+        for (Map.Entry<String, Object> entry : queryMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            queryWrapper.eq(key, value);
+        }
+
+        // 根据数据库的order_time字段进行倒序排列
+        queryWrapper.orderByDesc("order_time");
+
+
+        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.isNull("pay_success");
+        xcx_2OrderDataService.remove(objectQueryWrapper);
+
+        //分页查询
+        xcx_2OrderDataService.page(pageInfo,queryWrapper);
+        return R.success(pageInfo);
+    }
+
+
     //修改订单为未支付状态
     @PostMapping("/updateOrder")
     public void updateOrder(String out_trade_no,String openid) throws Exception {
@@ -1067,5 +1111,86 @@ public class Xcx_2CategoryController {
         QueryWrapper<Xcx_2Cart> objectQueryWrapper = new QueryWrapper<>();
         objectQueryWrapper.eq("id",id);
         xcx_2CartService.remove(objectQueryWrapper);
+    }
+
+    @GetMapping("/getOpenidCollect")
+    public R<List<Xcx_2Goods>> getOpenidCollect(String openid){
+        System.out.println("查看用户收藏");
+        QueryWrapper<Xcx_2UserInfo> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("openid",openid);
+        List<Xcx_2UserInfo> list = xcx_2UserInfoService.list(objectQueryWrapper);
+        // 2. 创建一个列表存储商品信息
+        List<Xcx_2Goods> resultList =new ArrayList<>();
+        // 遍历 userInfoList，根据每个 userInfo 的 id 查询商品表
+        for (Xcx_2UserInfo userInfo : list) {
+            Integer id = userInfo.getId();// 获取 id
+            // 根据 id 查询商品表，获取商品信息
+            Xcx_2Goods byId = xcx_2GoodsService.getById(id);
+
+            // 将商品信息添加到结果列表中
+            resultList.add(byId);
+        }
+        return R.success(resultList);
+    }
+
+
+
+    @PostMapping("/zongShouyi")
+    public R<BigDecimal> zongShouyi(String str,String time) throws Exception {
+        System.out.println("商户端四个数据展示查询");
+        BigDecimal bigDecimal = BigDecimal.ZERO; // 初始化 bigDecimal 为 0
+       if("zong".equals(str)){
+           System.out.println("计算累计收益");
+           QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+           objectQueryWrapper.eq("pay_success","success").ne("deliver", "ref_pro").ne("deliver", "ref_succ");
+           List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
+           for (int i = 0; i < list.size(); i++) {
+               String subtotal = list.get(i).getSubtotal();
+               // 将 subtotal 转换成 BigDecimal 并累加到 bigDecimal 中
+               bigDecimal =bigDecimal.add(new BigDecimal(subtotal));
+           }
+           System.out.println("累计收益为，"+bigDecimal);
+           return R.success(bigDecimal);
+       }else if ("jinri".equals(str)){
+           System.out.println("计算今日收益");
+           QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+           objectQueryWrapper.eq("pay_success","success").eq("query_time",time).ne("deliver", "ref_pro").ne("deliver", "ref_succ");
+           List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
+           for (int i = 0; i < list.size(); i++) {
+               String subtotal = list.get(i).getSubtotal();
+               // 将 subtotal 转换成 BigDecimal 并累加到 bigDecimal 中
+               bigDecimal =bigDecimal.add(new BigDecimal(subtotal));
+           }
+           System.out.println("今日收益为，"+bigDecimal);
+           return R.success(bigDecimal);
+       }else if("jinridingdan".equals(str)){
+           System.out.println("计算今日订单数量");
+           QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+           objectQueryWrapper.eq("query_time",time);
+           List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
+
+           System.out.println("今日订单数量，"+list.size());
+           BigDecimal bigDecimal1 = new BigDecimal(list.size());
+           return R.success(bigDecimal1);
+       }else if ("leijidingdan".equals(str)){
+           System.out.println("计算累计订单数量");
+           int count = xcx_2OrderDataService.count();
+
+           System.out.println("累计订单数量，"+count);
+           BigDecimal bigDecimal11 = new BigDecimal(count);
+           return R.success(bigDecimal11);
+       }
+      return null;
+    }
+
+
+    @PostMapping("/fahuo")
+    public void fahuo(String id,String waybill_No) throws Exception {
+        System.out.println("商户端填写运单号发货");
+        System.out.println(id);
+        System.out.println(waybill_No);
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("id",id).set("deliver","already").set("waybill_no",waybill_No);
+        xcx_2OrderDataService.update(objectUpdateWrapper);
     }
 }
