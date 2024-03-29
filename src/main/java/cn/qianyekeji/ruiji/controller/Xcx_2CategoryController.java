@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -841,6 +842,83 @@ public class Xcx_2CategoryController {
 
     }
 
+    @PostMapping("/tuikuan")
+    public R<String> refunds(Long id) throws Exception {
+
+        log.info("申请退款");
+        System.out.println(id);
+        String refund = wxPayService.refund(id);
+        return R.success(refund);
+    }
+
+    /**
+     * 查询退款
+     * @param refundNo
+     * @return
+     * @throws Exception
+     */
+
+//    @GetMapping("/query-refund/{refundNo}")
+//    public R queryRefund(@PathVariable String refundNo) throws Exception {
+//
+//        log.info("查询退款");
+//
+//        String result = wxPayService.queryRefund(refundNo);
+//        return R.success(result);
+//    }
+
+    /**
+     * 退款结果通知
+     * 退款状态改变后，微信会把相关退款结果发送给商户。
+     */
+
+    @PostMapping("/refunds/notify")
+    public String refundsNotify(HttpServletRequest request, HttpServletResponse response){
+
+        log.info("退款通知执行");
+        Gson gson = new Gson();
+        Map<String, String> map = new HashMap<>();//应答对象
+
+        try {
+            //处理通知参数
+            String body = HttpUtils.readData(request);
+            Map<String, Object> bodyMap = gson.fromJson(body, HashMap.class);
+            String requestId = (String)bodyMap.get("id");
+            log.info("支付通知的id ===> {}", requestId);
+
+            //签名的验证
+            WechatPay2ValidatorForRequest wechatPay2ValidatorForRequest
+                    = new WechatPay2ValidatorForRequest(verifier, requestId, body);
+            if(!wechatPay2ValidatorForRequest.validate(request)){
+
+                log.error("通知验签失败");
+                //失败应答
+                response.setStatus(500);
+                map.put("code", "ERROR");
+                map.put("message", "通知验签失败");
+                return gson.toJson(map);
+            }
+            log.info("通知验签成功");
+
+            //处理退款单
+            wxPayService.processRefund(bodyMap);
+
+            //成功应答
+            response.setStatus(200);
+            map.put("code", "SUCCESS");
+            map.put("message", "成功");
+            return gson.toJson(map);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //失败应答
+            response.setStatus(500);
+            map.put("code", "ERROR");
+            map.put("message", "失败");
+            return gson.toJson(map);
+        }
+    }
+
 
     //新增订单
     @PostMapping("/addOrderData")
@@ -887,15 +965,26 @@ public class Xcx_2CategoryController {
         xcx_2OrderData.setOutTrade(out_trade_no);
         xcx_2OrderData.setPayment(type);
 
-        //TODO 在新增订单时候判断用户传递过来的out_trade_no和openid和goods_id和pay_success等于not_pay查询，是否能查询到同样的数据
-        //TODO 如果能，则用户是第一次没有支付，然后选择在订单界面继续支付的,这时候我们直接先删除数据库中的这个数据再添加
-//        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
-//        objectQueryWrapper.eq("out_trade",out_trade_no).eq("openid",openid)
-//                .eq("goods_id",goods_id).eq("pay_success","not_pay");
-//        xcx_2OrderDataService.remove(objectQueryWrapper);
+        xcx_2OrderData.setOutRefund(getNo());
 
-        xcx_2OrderDataService.save(xcx_2OrderData);
+        boolean save = xcx_2OrderDataService.save(xcx_2OrderData);
+        System.out.println("新增订单的结果是,"+save);
 
+    }
+
+    /**
+     * 获取随机退款单编号
+     * @return
+     */
+    public  String getNo() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newDate = sdf.format(new Date());
+        String result = "";
+        Random random = new Random();
+        for (int i = 0; i <9; i++) {
+            result += random.nextInt(10);
+        }
+        return newDate + result;
     }
 
 
@@ -939,9 +1028,12 @@ public class Xcx_2CategoryController {
         // TODO 中的pay_success字段就是为null，而不是为待支付: not_pay字段，这会出现一个什么情况呢
         // TODO 就是说页面这种查全部可以查到，但是不属于其他四个任何一个分类，所以拼接pay_success字段不为null的值
         // TODO bububu，这里不拼接pay_success字段不为null的值了，直接给pay_success字段为null的值全部删掉即可
-        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
-        objectQueryWrapper.isNull("pay_success");
-        xcx_2OrderDataService.remove(objectQueryWrapper);
+
+        //TODO 这块应该定时项目更新的时候删除，因为有可能用户下单了，但是微信通知还没有给订单状态改过来呢，结果就直接删掉了，，，
+        //TODO 或者不删也行，反正也查不出来
+//        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+//        objectQueryWrapper.isNull("pay_success");
+//        xcx_2OrderDataService.remove(objectQueryWrapper);
 
         //分页查询
         xcx_2OrderDataService.page(pageInfo,queryWrapper);

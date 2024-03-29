@@ -13,4 +13,12 @@ public interface WxPayService {
     void processOrder(Map<String, Object> bodyMap, HttpServletRequest request)throws Exception;
 
     void processOrder1(Map<String, Object> bodyMap, HttpServletRequest request)throws Exception;
+
+    //退款
+    String refund(Long id) throws Exception;
+
+    //查询退款
+//    String queryRefund(String refundNo)throws Exception;
+    //退款通知
+    void processRefund(Map<String, Object> bodyMap)throws Exception;
 }

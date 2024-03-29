@@ -7,6 +7,7 @@ import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.config.WxPayConfig;
 
 import cn.qianyekeji.ruiji.entity.*;
+import cn.qianyekeji.ruiji.enums.OrderStatus;
 import cn.qianyekeji.ruiji.enums.wxpay.WxApiType;
 import cn.qianyekeji.ruiji.enums.wxpay.WxNotifyType;
 
@@ -39,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
@@ -373,5 +375,169 @@ public class WxPayServiceImpl implements WxPayService {
         log.info("明文 ===> {}", plainText);
 
         return plainText;
+    }
+
+
+
+
+    /**
+     * 退款
+     * @param
+     * @param
+     * @throws IOException
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public String refund(Long id) throws Exception {
+
+        log.info("创建退款单记录");
+        //根据id查询具体的订单号然后赋值
+        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id);
+        Xcx_2OrderData one = xcx_2OrderDataService.getOne(objectQueryWrapper);
+        System.out.println(one);
+
+        log.info("调用退款API");
+
+        String url = wxPayConfig.getDomain().concat(WxApiType.DOMESTIC_REFUNDS.getType());
+        HttpPost httpPost = new HttpPost(url);
+
+        // 请求body参数
+        Gson gson = new Gson();
+        Map paramsMap = new HashMap();
+        //商户订单号
+        paramsMap.put("out_trade_no", one.getOutTrade());
+        //退款单编号-随机生成，退款失败后还必须用原来的退款单号，可以先给退款单编号存入redis数据库，然后退款通知中成功了后删除
+        //这里就先不这样操作了，默认所有的都退款成功，保证商户平台中有钱支付就行
+        paramsMap.put("out_refund_no", one.getOutRefund());
+        //退款原因
+        paramsMap.put("reason",one.getReReason());
+        //退款通知地址
+        paramsMap.put("notify_url", wxPayConfig.getNotifyDomain().concat(WxNotifyType.REFUND_NOTIFY.getType()));
+
+        Map amountMap = new HashMap();
+        //退款金额
+        BigDecimal bigDecimal99 = new BigDecimal(one.getSubtotal());
+        amountMap.put("refund", bigDecimal99);
+        //原订单金额--如购物车一起下单了三个商品，总价为5，退款金额就是5，那当前要退款的这个金额是2，那订单金额就是2
+        //这里再去查一下
+        String outTrade = one.getOutTrade();
+        QueryWrapper<Xcx_2OrderData> objectQueryWrapper1 = new QueryWrapper<>();
+        objectQueryWrapper1.eq("out_trade",outTrade);
+        List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper1);
+        BigDecimal bigDecimal1 = BigDecimal.ZERO; // 初始化 bigDecimal 为 0
+        for (int i = 0; i < list.size(); i++) {
+            String subtotal = list.get(i).getSubtotal();
+            BigDecimal bigDecimal = new BigDecimal(subtotal);
+            bigDecimal1 = bigDecimal1.add(bigDecimal); // 使用add方法进行加法操作
+        }
+
+        amountMap.put("total", bigDecimal1);
+        amountMap.put("currency", "CNY");//退款币种
+        paramsMap.put("amount", amountMap);
+
+        //将参数转换成json字符串
+        String jsonParams = gson.toJson(paramsMap);
+        log.info("请求参数 ===> {}" + jsonParams);
+
+        StringEntity entity = new StringEntity(jsonParams,"utf-8");
+        entity.setContentType("application/json");//设置请求报文格式
+        httpPost.setEntity(entity);//将请求报文放入请求对象
+        httpPost.setHeader("Accept", "application/json");//设置响应报文格式
+
+        //完成签名并执行请求，并完成验签
+        CloseableHttpResponse response = wxPayClient.execute(httpPost);
+
+        try {
+
+            //解析响应结果
+            String bodyAsString = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                log.info("成功, 退款返回结果 = " + bodyAsString);
+            } else if (statusCode == 204) {
+                log.info("成功");
+            } else {
+                return "9";
+//                throw new RuntimeException("退款异常, 响应码 = " + statusCode+ ", 退款返回结果 = " + bodyAsString);
+            }
+            return "0";
+
+        } finally {
+            response.close();
+        }
+    }
+
+    /**
+     * 查询退款接口调用
+     * @param refundNo
+     * @return
+     */
+//    @Override
+//    public String queryRefund(String refundNo) throws Exception {
+//
+//        log.info("查询退款接口调用 ===> {}", refundNo);
+//
+//        String url =  String.format(WxApiType.DOMESTIC_REFUNDS_QUERY.getType(), refundNo);
+//        url = wxPayConfig.getDomain().concat(url);
+//
+//        //创建远程Get 请求对象
+//        HttpGet httpGet = new HttpGet(url);
+//        httpGet.setHeader("Accept", "application/json");
+//
+//        //完成签名并执行请求
+//        CloseableHttpResponse response = wxPayClient.execute(httpGet);
+//
+//        try {
+//            String bodyAsString = EntityUtils.toString(response.getEntity());
+//            int statusCode = response.getStatusLine().getStatusCode();
+//            if (statusCode == 200) {
+//                log.info("成功, 查询退款返回结果 = " + bodyAsString);
+//            } else if (statusCode == 204) {
+//                log.info("成功");
+//            } else {
+//                throw new RuntimeException("查询退款异常, 响应码 = " + statusCode+ ", 查询退款返回结果 = " + bodyAsString);
+//            }
+//
+//            return bodyAsString;
+//
+//        } finally {
+//            response.close();
+//        }
+//    }
+
+
+
+    /**
+     * 处理退款单
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void processRefund(Map<String, Object> bodyMap) throws Exception {
+
+        log.info("退款单");
+
+        //解密报文
+        String plainText = decryptFromResource(bodyMap);
+
+        //将明文转换成map
+        Gson gson = new Gson();
+        HashMap plainTextMap = gson.fromJson(plainText, HashMap.class);
+        String orderNo = (String)plainTextMap.get("out_trade_no");
+        System.out.println("退款通知解密，"+plainTextMap);
+
+        if(lock.tryLock()){
+            try {
+                //把deliver字段改成退款成功ref_succ
+                String out_refund_no = (String)plainTextMap.get("out_refund_no");
+                UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+                objectUpdateWrapper.eq("out_refund",out_refund_no).set("deliver","ref_succ");
+                xcx_2OrderDataService.update(objectUpdateWrapper);
+
+            } finally {
+                //要主动释放锁
+                lock.unlock();
+            }
+        }
     }
 }
