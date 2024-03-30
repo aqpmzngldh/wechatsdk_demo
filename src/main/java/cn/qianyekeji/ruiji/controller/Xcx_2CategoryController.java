@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 @RequestMapping("/xcx_2")
 @Slf4j
 public class Xcx_2CategoryController {
+    public static final QueryWrapper<Object> OBJECT_QUERY_WRAPPER = new QueryWrapper<>();
     @Autowired
     private Xcx_2CategoryService xcx_2CategoryService;
     @Autowired
@@ -739,7 +740,7 @@ public class Xcx_2CategoryController {
 
     //发起支付
     @PostMapping("/jsapi/{getNonceStr}/{timestamp}/{productId}")
-    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr,String name2,String out_trade_no) throws Exception {
+    public R<String> jsapiPay(@PathVariable String getNonceStr,@PathVariable String timestamp,@PathVariable Long productId,HttpServletRequest request,String xcxOrgongzhonghao,String openidOr,String name2,String out_trade_no,String id) throws Exception {
         log.info("发起支付请求 v3");
 
         // 使用 openidOr 作为 Redis Hash 的 key
@@ -747,7 +748,7 @@ public class Xcx_2CategoryController {
         // 从Redis中获取预支付单号
         // 从 Redis Hash 中获取预支付订单号
         String prepayId = (String) redisTemplate.opsForHash().get(hashKey, out_trade_no);
-
+        System.out.println(prepayId);
         if (prepayId != null) {
             // 存在预支付订单号,直接返回
             log.info("从 Redis 获取预支付订单号: {}", prepayId);
@@ -1004,6 +1005,15 @@ public class Xcx_2CategoryController {
         System.out.println("接收到的query，"+query);
         System.out.println("接收到的page，"+page);
         System.out.println("接收到的pageSize，"+pageSize);
+        //TODO 现在的情况是：用户购物车下单后，如果用户没有支付，比如用户下单了两个商品，这时候我会把用户的预支付标识写到redis数据库，以防止用户下次继续支付
+        //TODO 但是随之而来出现一个问题，单个商品是没什么问题的，如果是购物车多个商品的话，用户第一次没有支付，第二次继续支付的话，会先去redis取预支付标识，
+        //TODO 取出来之后呢，如果用户点击订单界面中两个未支付的商品中的某个商品，他们都是购物车的商品的话，这时候支付金额是全部的金额，而不是单个金额，
+        //TODO 为什么我要把用户的预支付标识存进redis，因为继续支付的话需要的就是原来的预支付标识，而预支付标识我们无法改变，是微信给出来的
+        //TODO 现在暂时的解决方案是，判断是不是购物车来的订单数据，是的话，如果用户在下单购物车商品时候取消，直接更改订单状态为已取消
+        UpdateWrapper<Xcx_2OrderData> objectUpdateWrapper = new UpdateWrapper<>();
+        objectUpdateWrapper.eq("pay_success","not_pay").eq("payment","cart").set("pay_success","can_order");
+        xcx_2OrderDataService.update(objectUpdateWrapper);
+
         //分页构造器
         Page<Xcx_2OrderData> pageInfo = new Page<>(page,pageSize);
         //条件构造器

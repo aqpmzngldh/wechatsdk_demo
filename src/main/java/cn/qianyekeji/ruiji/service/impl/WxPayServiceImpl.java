@@ -103,6 +103,8 @@ public class WxPayServiceImpl implements WxPayService {
         }
         paramsMap.put("mchid",wxPayConfig.getMchId());
         paramsMap.put("description",name2);
+
+//        paramsMap.put("attach",id);
 //        paramsMap.put("out_trade_no", OrderNoUtils.getOrderNo());
         paramsMap.put("out_trade_no", out_trade_no);
 
@@ -114,6 +116,7 @@ public class WxPayServiceImpl implements WxPayService {
 //        }
         //订单金额里有两个变量，所以再建一个map
         HashMap map = new HashMap<>();
+        System.out.println("支付的总价是，"+productId);
         map.put("total",productId);
         map.put("currency","CNY");
         HashMap map1 = new HashMap<>();
@@ -287,6 +290,7 @@ public class WxPayServiceImpl implements WxPayService {
         Gson gson = new Gson();
         HashMap plainTextMap = gson.fromJson(plainText, HashMap.class);
         String orderNo = (String)plainTextMap.get("out_trade_no");
+        String attach = (String)plainTextMap.get("attach");
         System.out.println(plainTextMap);
         System.out.println(orderNo);
         String trade_state_desc = (String)plainTextMap.get("trade_state_desc");
@@ -304,6 +308,7 @@ public class WxPayServiceImpl implements WxPayService {
             //1.支付成功去数据库改成pay_success支付成功，deliver待发货状态
             QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
             objectQueryWrapper.eq("out_trade",orderNo);
+
             List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
             for (Xcx_2OrderData order : list) {
                 order.setPaySuccess("success");
@@ -418,7 +423,9 @@ public class WxPayServiceImpl implements WxPayService {
         Map amountMap = new HashMap();
         //退款金额
         BigDecimal bigDecimal99 = new BigDecimal(one.getSubtotal());
-        amountMap.put("refund", bigDecimal99);
+        BigDecimal refundAmount = bigDecimal99.multiply(new BigDecimal("100"));
+        amountMap.put("refund", refundAmount);
+        System.out.println("退款金额，"+bigDecimal99);
         //原订单金额--如购物车一起下单了三个商品，总价为5，退款金额就是5，那当前要退款的这个金额是2，那订单金额就是2
         //这里再去查一下
         String outTrade = one.getOutTrade();
@@ -431,8 +438,9 @@ public class WxPayServiceImpl implements WxPayService {
             BigDecimal bigDecimal = new BigDecimal(subtotal);
             bigDecimal1 = bigDecimal1.add(bigDecimal); // 使用add方法进行加法操作
         }
-
-        amountMap.put("total", bigDecimal1);
+        System.out.println("订单金额，"+bigDecimal1);
+        BigDecimal refundAmount1111 = bigDecimal1.multiply(new BigDecimal("100"));
+        amountMap.put("total", refundAmount1111);
         amountMap.put("currency", "CNY");//退款币种
         paramsMap.put("amount", amountMap);
 
@@ -458,8 +466,8 @@ public class WxPayServiceImpl implements WxPayService {
             } else if (statusCode == 204) {
                 log.info("成功");
             } else {
-                return "9";
-//                throw new RuntimeException("退款异常, 响应码 = " + statusCode+ ", 退款返回结果 = " + bodyAsString);
+//                return "9";
+                throw new RuntimeException("退款异常, 响应码 = " + statusCode+ ", 退款返回结果 = " + bodyAsString);
             }
             return "0";
 
