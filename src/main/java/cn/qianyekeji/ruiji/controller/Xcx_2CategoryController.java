@@ -14,6 +14,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.gson.Gson;
+import com.qiniu.common.Zone;
+import com.qiniu.storage.Configuration;
+import com.qiniu.storage.UploadManager;
+import com.qiniu.util.Auth;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -149,34 +153,34 @@ public class Xcx_2CategoryController {
         }
     }
 
-    @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-//        String sss="F:\\www\\server\\img2\\";
-        // 获取上传的文件
-        if (file.isEmpty()) {
-            System.out.println("上传的文件为空");
-        }else{
-            System.out.println("上传的文件不不不为空");
-        }
-        String originalFilename = file.getOriginalFilename();
-        log.info("传递过来的文件名为，{}",originalFilename);
-
-        // 创建目标文件对象
-//        File dest = new File(sss + originalFilename);
-        File dest = new File(basePath + originalFilename);
-        if (!dest.exists()) {
-            dest.mkdirs();
-        }
-        try {
-            // 将上传的文件保存到服务器
-            file.transferTo(dest);
-//            System.out.println("文件上传成功，保存路径为：" + sss + originalFilename);
-            System.out.println("文件上传成功，保存路径为：" + basePath + originalFilename);
-        } catch (IOException e) {
-            System.out.println("文件上传失败: " + e.getMessage());
-        }
-        return "https://qianyekeji.cn/img2/"+originalFilename;
-    }
+//    @PostMapping("/upload")
+//    public String uploadFile(@RequestParam("file") MultipartFile file) {
+////        String sss="F:\\www\\server\\img2\\";
+//        // 获取上传的文件
+//        if (file.isEmpty()) {
+//            System.out.println("上传的文件为空");
+//        }else{
+//            System.out.println("上传的文件不不不为空");
+//        }
+//        String originalFilename = file.getOriginalFilename();
+//        log.info("传递过来的文件名为，{}",originalFilename);
+//
+//        // 创建目标文件对象
+////        File dest = new File(sss + originalFilename);
+//        File dest = new File(basePath + originalFilename);
+//        if (!dest.exists()) {
+//            dest.mkdirs();
+//        }
+//        try {
+//            // 将上传的文件保存到服务器
+//            file.transferTo(dest);
+////            System.out.println("文件上传成功，保存路径为：" + sss + originalFilename);
+//            System.out.println("文件上传成功，保存路径为：" + basePath + originalFilename);
+//        } catch (IOException e) {
+//            System.out.println("文件上传失败: " + e.getMessage());
+//        }
+//        return "https://qianyekeji.cn/img2/"+originalFilename;
+//    }
 
     @GetMapping("/getCategoryAll")
     public R<List<Xcx_2Category>> getCategoryAll() {
@@ -1298,4 +1302,78 @@ public class Xcx_2CategoryController {
         objectUpdateWrapper.eq("id",id).set("deliver","already").set("waybill_no",waybill_No);
         xcx_2OrderDataService.update(objectUpdateWrapper);
     }
+
+
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("file") MultipartFile file) {
+        // 获取上传的文件
+        if (file.isEmpty()) {
+            System.out.println("上传的文件为空");
+            throw new RuntimeException("上传的文件为空");
+        }
+        String originalFilename = file.getOriginalFilename();
+        log.info("传递过来的文件名为，{}",originalFilename);
+        // 获取文件扩展名
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1).toLowerCase();
+
+        try {
+            // 判断文件类型
+            if (isImageFile(fileExtension)) {
+                System.out.println("使用七牛云存储");
+                // 如果是图片文件,使用七牛云存储
+                return uploadToQiniu(file, originalFilename);
+            } else {
+                System.out.println("用自己服务器存储");
+                // 如果不是图片文件,使用本地服务器存储
+                return uploadToServer(file, originalFilename);
+            }
+        } catch (Exception e) {
+            log.error("文件上传失败", e);
+            throw new RuntimeException("文件上传失败: " + e.getMessage());
+        }
+
+    }
+
+    private boolean isImageFile(String fileExtension) {
+        String[] imageExtensions = {"png", "jpg", "jpeg", "gif", "bmp", "tiff", "webp", "svg", "tif", "raw", "psd"};
+        return Arrays.asList(imageExtensions).contains(fileExtension.toLowerCase());
+    }
+
+    private String uploadToServer(MultipartFile file, String fileName) {
+        // 服务器本地存储的逻辑
+        File dest = new File(basePath + fileName);
+        if (dest.exists()) {
+            log.warn("文件 {} 已存在，不重复上传", fileName);
+            return "https://qianyekeji.cn/img2/" + fileName;
+        }
+
+        try {
+            dest.mkdirs();
+            file.transferTo(dest);
+            log.info("文件上传成功，保存路径为：{}", dest.getAbsolutePath());
+            return "https://qianyekeji.cn/img2/" + fileName;
+        } catch (IOException e) {
+            log.error("文件上传失败", e);
+            throw new RuntimeException("文件上传失败: " + e.getMessage());
+        }
+    }
+
+    private String uploadToQiniu(MultipartFile file, String fileName) {
+        Auth auth = Auth.create("lQAMZBIr7OW9QQ9dyrTUN1p5jsNfgRz-74VfCeCv", "pOnpbdKhTFfyRfksGMMg-LoJBqS3FbYbCzoTnzZg");
+        String upToken = auth.uploadToken("qianyekeji");
+
+        Configuration cfg = new Configuration(Zone.zone0());
+        UploadManager uploadManager = new UploadManager(cfg);
+        try {
+            byte[] bytes = file.getBytes();
+            uploadManager.put(bytes, fileName, upToken);
+            return "http://im1g.qianyekeji.cn/" + fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "文件上传失败: " + e.getMessage();
+        }
+    }
+
+
+
 }
