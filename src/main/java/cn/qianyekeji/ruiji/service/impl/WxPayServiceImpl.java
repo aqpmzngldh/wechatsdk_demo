@@ -481,38 +481,38 @@ public class WxPayServiceImpl implements WxPayService {
      * @param refundNo
      * @return
      */
-//    @Override
-//    public String queryRefund(String refundNo) throws Exception {
-//
-//        log.info("查询退款接口调用 ===> {}", refundNo);
-//
-//        String url =  String.format(WxApiType.DOMESTIC_REFUNDS_QUERY.getType(), refundNo);
-//        url = wxPayConfig.getDomain().concat(url);
-//
-//        //创建远程Get 请求对象
-//        HttpGet httpGet = new HttpGet(url);
-//        httpGet.setHeader("Accept", "application/json");
-//
-//        //完成签名并执行请求
-//        CloseableHttpResponse response = wxPayClient.execute(httpGet);
-//
-//        try {
-//            String bodyAsString = EntityUtils.toString(response.getEntity());
-//            int statusCode = response.getStatusLine().getStatusCode();
-//            if (statusCode == 200) {
-//                log.info("成功, 查询退款返回结果 = " + bodyAsString);
-//            } else if (statusCode == 204) {
-//                log.info("成功");
-//            } else {
-//                throw new RuntimeException("查询退款异常, 响应码 = " + statusCode+ ", 查询退款返回结果 = " + bodyAsString);
-//            }
-//
-//            return bodyAsString;
-//
-//        } finally {
-//            response.close();
-//        }
-//    }
+    @Override
+    public String queryRefund(String refundNo) throws Exception {
+
+        log.info("查询退款接口调用 ===> {}", refundNo);
+
+        String url =  String.format(WxApiType.DOMESTIC_REFUNDS_QUERY.getType(), refundNo);
+        url = wxPayConfig.getDomain().concat(url);
+
+        //创建远程Get 请求对象
+        HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader("Accept", "application/json");
+
+        //完成签名并执行请求
+        CloseableHttpResponse response = wxPayClient.execute(httpGet);
+
+        try {
+            String bodyAsString = EntityUtils.toString(response.getEntity());
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 200) {
+                log.info("成功, 查询退款返回结果 = " + bodyAsString);
+            } else if (statusCode == 204) {
+                log.info("成功");
+            } else {
+                throw new RuntimeException("查询退款异常, 响应码 = " + statusCode+ ", 查询退款返回结果 = " + bodyAsString);
+            }
+
+            return bodyAsString;
+
+        } finally {
+            response.close();
+        }
+    }
 
 
 

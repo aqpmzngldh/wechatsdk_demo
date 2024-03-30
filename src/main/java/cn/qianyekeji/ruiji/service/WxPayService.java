@@ -18,7 +18,7 @@ public interface WxPayService {
     String refund(Long id) throws Exception;
 
     //查询退款
-//    String queryRefund(String refundNo)throws Exception;
+    String queryRefund(String refundNo)throws Exception;
     //退款通知
     void processRefund(Map<String, Object> bodyMap)throws Exception;
 }

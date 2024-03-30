@@ -854,19 +854,22 @@ public class Xcx_2CategoryController {
 
     /**
      * 查询退款
-     * @param refundNo
+     * @param
      * @return
      * @throws Exception
      */
 
-//    @GetMapping("/query-refund/{refundNo}")
-//    public R queryRefund(@PathVariable String refundNo) throws Exception {
-//
-//        log.info("查询退款");
-//
-//        String result = wxPayService.queryRefund(refundNo);
-//        return R.success(result);
-//    }
+    @GetMapping("/queryRefund")
+    public R queryRefund(String id) throws Exception {
+
+        log.info("查询退款");
+        QueryWrapper<Xcx_2OrderData> objectQueryWrapper = new QueryWrapper<>();
+        objectQueryWrapper.eq("id",id);
+        String outRefund = xcx_2OrderDataService.getOne(objectQueryWrapper).getOutRefund();
+
+        String result = wxPayService.queryRefund(outRefund);
+        return R.success(result);
+    }
 
     /**
      * 退款结果通知
