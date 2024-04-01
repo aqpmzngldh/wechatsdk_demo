@@ -48,6 +48,16 @@ function chatName3(data) {
     })
 }
 
+//小程序客服
+function chatName4(data) {
+    return $axios({
+        'url': '/other1',
+        'method': 'post',
+        params:{...data}
+    })
+}
+
+
 //查看群聊当天聊天记录
 function chatSee() {
     return $axios({
