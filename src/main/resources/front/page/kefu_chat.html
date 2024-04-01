@@ -383,7 +383,7 @@
                         // 附加任何其他表单数据到FormData对象;
                         // 使用AJAX请求将表单数据发送到后端
                         const xhr = new XMLHttpRequest();
-                        xhr.open('POST', '/other');
+                        xhr.open('POST', '/other1');
                         xhr.send(formData);
                     })
                 };
@@ -437,7 +437,7 @@
                     type: 'warning'
                 }).then(() => {
                     let parameter = getParameter("value");
-                    let nmae="https://qianyekeji.cn/front/page/room_chat.html?value="+parameter
+                    let nmae="https://qianyekeji.cn/front/page/kefu_chat.html?value="+parameter
                     this.copyToClipboard(nmae);
                     this.$notify({type: 'success', message: '已复制本房间链接到剪切板'});
                 }).catch(() => {
