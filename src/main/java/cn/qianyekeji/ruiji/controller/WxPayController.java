@@ -155,4 +155,37 @@ public class WxPayController {
         inputStream.close();
         outputStream.close();
     }
+
+    @RequestMapping("/Q1SbMpygd1.txt")
+    public void Q1SbMpygd1(HttpServletRequest request, HttpServletResponse response) throws Exception{
+        // 获取文件名
+        String filename = request.getParameter("filename");
+
+        // 构造文件对象
+        File file = new File("/www/server/tomcat/999/" + filename);
+
+        // 设置response头部信息
+        response.setContentType(request.getServletContext().getMimeType(filename));
+        response.setContentLength((int)file.length());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+
+        // 使用FileChannel读取文件内容到ByteBuffer
+        RandomAccessFile raf = new RandomAccessFile(file, "r");
+        FileChannel fileChannel = raf.getChannel();
+        ByteBuffer buffer = ByteBuffer.allocateDirect((int)fileChannel.size());
+        fileChannel.read(buffer);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+
+        FileInputStream inputStream = new FileInputStream(file);
+
+        byte[] buffer1 = new byte[4096];
+        int length;
+        while ((length = inputStream.read(buffer1)) > 0) {
+            outputStream.write(buffer1, 0, length);
+        }
+
+        inputStream.close();
+        outputStream.close();
+    }
 }

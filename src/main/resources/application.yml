@@ -11,7 +11,7 @@ spring:
 #      云服务数据库
       url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
-#      password:
+#      password: root
       password: MXMPbrxyc4t7sBje
 #      小程序2中上传的视频大小最大为10MB
   servlet:
