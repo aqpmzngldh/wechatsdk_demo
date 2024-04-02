@@ -22,6 +22,7 @@ public class Xcx_2Xian implements Serializable {
     private String stock;
     private String price1;
     private String stock1;
+    private String time;
 
 
 
