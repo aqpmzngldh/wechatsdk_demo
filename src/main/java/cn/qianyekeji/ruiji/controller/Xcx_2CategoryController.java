@@ -72,6 +72,8 @@ public class Xcx_2CategoryController {
     private Xcx_2OrderDataService xcx_2OrderDataService;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private Xcx_2XianService xcx_2XianService;
 
     @Value("${ruiji.path2}")
     private String basePath;
@@ -1374,6 +1376,12 @@ public class Xcx_2CategoryController {
         }
     }
 
+    @PostMapping("/addXianyu")
+    public void addXianyu(Xcx_2Xian xcx_2Xian) {
+        System.out.println("咸鱼之王用户提交的充值信息");
+        System.out.println(xcx_2Xian);
+        xcx_2XianService.save(xcx_2Xian);
 
+    }
 
 }
