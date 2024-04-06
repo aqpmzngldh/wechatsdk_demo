@@ -95,7 +95,7 @@
         .el-textarea {
             /*padding-right: 20px;*/
             display: inline-block;
-            width: 70%;
+            /*width: 70%;*/
             height: 40px;
         }
 
@@ -212,6 +212,26 @@
         audio#audioPlayer {
             margin-top: 8px;
         }
+        .chat-input {
+            width: 100%;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .flex-item-left {
+            padding-right: 20px;
+        }
+
+        .flex-item-center {
+            width: 100%;
+        }
+
+        .flex-item-right {
+            padding-left: 20px;
+        }
     </style>
 
 </head>
@@ -302,14 +322,14 @@
                 <div @click="changeName">随机改名</div>
                 <div @click="join">加入管理员</div>
                 <div @click="tiXing">提醒管理上线</div>
-                <div @click="make">一键制作</div>
-                <a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>
+                <!--<div @click="make">一键制作</div>-->
+                <!--<a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>-->
                 <div id="pay" @click="pay">打赏0.01</div>
                 <a href="https://qianyekeji.cn/front/index.html">疑难解答</a>
-                <div id="pay1" @click="anb">开始录音</div>
-                <div @click="ann">停止录音</div>
-                <div @click="anm">播放录音</div>
-                <div @click="nnn">发送录音</div>
+                <!--<div id="pay1" @click="anb">开始录音</div>-->
+                <!--<div @click="ann">停止录音</div>-->
+                <!--<div @click="anm">播放录音</div>-->
+                <!--<div @click="nnn">发送录音</div>-->
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
@@ -321,25 +341,34 @@
         <p ref="firstParagraph" v-show="isShow">在线人数<span style="color: black">{{person}}</span>人,写下你想对我,想对它说的话吧</p>
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
-            <!--<el-button type="primary" icon="el-icon-phone" v-show="isShow" @click="voice"></el-button>-->
-            <el-input :disabled="isButtonDisabled"
-                      type="textarea"
-                      v-model="inputText"
-                      placeholder="回车键发送消息..."
-                      @keyup.enter.native="sendMessage"
-                      @blur="diuShi"
-                      @click.native="hideParagraphs"
-            ></el-input>
-            <el-button type="primary" icon="el-icon-plus" v-show="isShow" @click="selectImage"></el-button>
-
-            <!--<el-upload-->
-            <!--class="upload-demo" action="/chat"-->
-            <!--:before-upload="beforeUpload"-->
-            <!--:show-file-list="false"-->
-            <!--&gt;-->
-            <!--<el-button size="small" icon="el-icon-plus" v-show="isShow" type="primary"></el-button>-->
-            <!--</el-upload>-->
-
+            <div class="flex-container">
+                <div class="flex-item-left">
+                    <el-button type="primary"  @click="isShowYuyin = !isShowYuyin">语音</el-button>
+                </div>
+                <div class="flex-item-center" v-show="!isShowYuyin">
+                    <el-input :disabled="isButtonDisabled"
+                              type="textarea"
+                              v-model="inputText"
+                              placeholder="回车键发送消息..."
+                              @keyup.enter.native="sendMessage"
+                              @blur="diuShi"
+                              @click.native="hideParagraphs">
+                    </el-input>
+                </div>
+                <div class="flex-item-center" v-show="isShowYuyin">
+                    <el-button type="primary"  class="flex-item-center"
+                               @click="isRecording=!isRecording,isShow1=!isShow1"
+                               >
+                        <span v-if="isRecording">正在录音</span>
+                        <!--<span v-else @click.stop="wx.startRecord();">点击录音</span>-->
+                        <span v-else @click.stop="startLuyin">点击录音</span>
+                    </el-button>
+                </div>
+                <div class="flex-item-right">
+                    <el-button type="primary" icon="el-icon-plus" v-if="isShow1" @click="selectImage"></el-button>
+                    <el-button type="primary"  v-else @click="send">发送</el-button>
+                </div>
+            </div>
         </div>
         <div class="a">
             <a href="https://beian.miit.gov.cn/">陕ICP备2022014746号-1</a>
@@ -387,6 +416,7 @@
                 inputText: '',
                 rows: 1,
                 isShow: true,
+                isShow1: true,
                 Show: false,
                 title: '',
                 isInteger: 0,
@@ -398,6 +428,9 @@
                 add: '',
                 music: false,
                 title_name: '',
+                isShowYuyin: false,
+                isRecording: false,
+                longPressTimer: null,
                 audioSrc: "../images/11.mp3" // 初始音频路径为空
             };
         },
@@ -569,9 +602,10 @@
             diuShi() {
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
-                textareaEl.style.width = '70%';
+                // textareaEl.style.width = '70%';
                 setTimeout(() => {
                     this.isShow = true;
+                    this.isShow1 = true;
                 }, 500);
                 // this.music = true
             },
@@ -580,6 +614,7 @@
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '100%';
                 this.isShow = false
+                this.isShow1 = true
                 // this.music = false
             },
             async tiXing() {
@@ -974,6 +1009,55 @@
 
 
             },
+            startLuyin(){
+                wx.startRecord();
+            },
+            send() {
+                //先停止录音
+                wx.stopRecord({
+                    success: function (res) {
+                        let localId = res.localId;
+                        // alert(localId)
+                        localStorage.setItem('localId', localId);
+                    }
+                });
+                //再发送录音
+                let name = localStorage.getItem('myName');
+                let voiceid = localStorage.getItem('localId');
+                if (voiceid===""){
+                    this.$message({
+                        type: 'info',
+                        message: '请先录音后再发送'
+                    });
+                    return;
+                }
+                wx.uploadVoice({
+                    localId: voiceid, // 需要上传的音频的本地ID，由stopRecord接口获得
+                    isShowProgressTips: 1, // 默认为1，显示进度提示
+                    success:  (res)=> {
+                        var serverId = res.serverId; // 返回音频的服务器端ID
+                        let uuid = localStorage.getItem('uuid');
+                        const message = {
+                            name: name,
+                            address: this.add,
+                            uuid: uuid,
+                            time: new Date().toLocaleString(),
+                            body: this.inputText,
+                            voiceid: serverId
+                        };
+                        this.messages.push(message);
+                        chatName(message);
+                        this.inputText = '';
+                        this.rows = 1;
+                        // location.reload()
+                        this.initData()
+                        this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                        localStorage.setItem('localId', "");
+                    }
+                });
+
+            },
+
             playVoice(voice){
                 // alert(voice)
                 wx.playVoice({
