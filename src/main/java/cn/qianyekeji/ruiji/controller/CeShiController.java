@@ -472,10 +472,19 @@ public class CeShiController {
 
             HashMap<String, Object> subButton2 = new HashMap<>();
             subButton2.put("type", "miniprogram");
-            subButton2.put("name", "千生万物");
+            subButton2.put("name", "数字狂想");
             subButton2.put("url", "https://qianyekeji.cn");
             subButton2.put("appid", "wxf88c1f139cc9011a");
             subButton2.put("pagepath", "pages/index/index");
+
+            HashMap<String, Object> subButton33 = new HashMap<>();
+            subButton33.put("type", "miniprogram");
+            subButton33.put("name", "千小夜");
+            subButton33.put("url", "https://qianyekeji.cn");
+            subButton33.put("appid", "wx902a8a53a4554f9a");
+            subButton33.put("pagepath", "pages/index/index");
+
+            subButtons.add(subButton33);
             subButtons.add(subButton2);
             subButtons.add(subButton1);
 
