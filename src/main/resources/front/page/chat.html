@@ -326,10 +326,10 @@
                 <!--<a href="/api/wx-pay/download?filename=qunliao.msi">下载windows版</a>-->
                 <div id="pay" @click="pay">打赏0.01</div>
                 <a href="https://qianyekeji.cn/front/index.html">疑难解答</a>
-                <!--<div id="pay1" @click="anb">开始录音</div>-->
-                <!--<div @click="ann">停止录音</div>-->
-                <!--<div @click="anm">播放录音</div>-->
-                <!--<div @click="nnn">发送录音</div>-->
+                <div id="pay1" @click="anb">开始录音</div>
+                <div @click="ann">停止录音</div>
+                <div @click="anm">播放录音</div>
+                <div @click="nnn">发送录音</div>
                 <!--<div @click="delete1">删除消息</div>-->
                 <!--<div @click="banned">封禁某人</div>-->
                 <!--<div><a href="/front/page/eth.html">echarts之ETH</a></div>-->
@@ -342,8 +342,8 @@
         <p ref="secondParagraph" v-show="isShow">匿名群聊不记录任何数据，聊天记录每天凌晨12点由定时任务自动删除</p>
         <div class="chat-input">
             <div class="flex-container">
-                <div class="flex-item-left">
-                    <el-button type="primary"  @click="isShowYuyin = !isShowYuyin">语音</el-button>
+                <div class="flex-item-left" v-show="show2">
+                    <el-button type="primary"  @click="isShowYuyin = !isShowYuyin,isRecording=false,isShow1=true">语音</el-button>
                 </div>
                 <div class="flex-item-center" v-show="!isShowYuyin">
                     <el-input :disabled="isButtonDisabled"
@@ -355,16 +355,13 @@
                               @click.native="hideParagraphs">
                     </el-input>
                 </div>
-                <div class="flex-item-center" v-show="isShowYuyin">
-                    <el-button type="primary"  class="flex-item-center"
-                               @click="isRecording=!isRecording,isShow1=!isShow1"
-                               >
-                        <span v-if="isRecording">正在录音</span>
-                        <!--<span v-else @click.stop="wx.startRecord();">点击录音</span>-->
-                        <span v-else @click.stop="startLuyin">点击录音</span>
+                <div class="flex-item-center" v-if="isShowYuyin">
+                    <el-button type="primary"  class="flex-item-center" @click.stop="startLuyin">
+                        <span v-if="isRecording==true">正在录音</span>
+                        <span v-if="isRecording==false">点击录音</span>
                     </el-button>
                 </div>
-                <div class="flex-item-right">
+                <div class="flex-item-right" v-show="show2">
                     <el-button type="primary" icon="el-icon-plus" v-if="isShow1" @click="selectImage"></el-button>
                     <el-button type="primary"  v-else @click="send">发送</el-button>
                 </div>
@@ -430,6 +427,7 @@
                 title_name: '',
                 isShowYuyin: false,
                 isRecording: false,
+                show2:true,
                 longPressTimer: null,
                 audioSrc: "../images/11.mp3" // 初始音频路径为空
             };
@@ -600,6 +598,7 @@
                 element.scrollIntoView(false);
             },
             diuShi() {
+                this.show2=true
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
                 // textareaEl.style.width = '70%';
@@ -610,6 +609,7 @@
                 // this.music = true
             },
             hideParagraphs() {
+                this.show2=false
                 let textareaEl = document.querySelector('.chat-input .el-textarea');
                 let width = textareaEl.offsetWidth;
                 textareaEl.style.width = '100%';
@@ -1010,9 +1010,24 @@
 
             },
             startLuyin(){
-                wx.startRecord();
+                if (this.isRecording==false){
+                    //用户点击了语音后，并点击了点击录音
+                    //先让点击录音变成正在录音
+                    this.isRecording=!this.isRecording
+                    wx.startRecord();
+                    this.isShow1=false
+                }else{
+                   //用户再次点击正在录音变成点击录音
+                    this.isRecording=!this.isRecording
+                }
+
+
+
             },
             send() {
+                this.isRecording=false
+                this.isShow1=true
+                console.log(this.isRecording)
                 //先停止录音
                 wx.stopRecord({
                     success: function (res) {
