@@ -1010,13 +1010,18 @@
 
             },
             startLuyin(){
+                // alert("调用开始录音")
                 if (this.isRecording==false){
+                    // alert("调用开始录音1")
                     //用户点击了语音后，并点击了点击录音
                     //先让点击录音变成正在录音
                     this.isRecording=!this.isRecording
+                    let url = window.location.href;
                     wx.startRecord();
+                    // alert("调用开始录音2")
                     this.isShow1=false
                 }else{
+                    // alert("调用开始录音3")
                    //用户再次点击正在录音变成点击录音
                     this.isRecording=!this.isRecording
                 }
