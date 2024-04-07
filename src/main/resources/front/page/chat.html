@@ -1027,56 +1027,70 @@
             send() {
                 this.isRecording=false
                 this.isShow1=true
-                alert("停止录音")
-                //先停止录音
-                var voiceid;
-                wx.stopRecord({
-                    success: function (res) {
-                        voiceid = res.localId;
-                    }
-                });
-                alert("发送录音")
-                //再发送录音
-                let name = localStorage.getItem('myName');
-                if (voiceid===""){
-                    this.$message({
-                        type: 'info',
-                        message: '请先录音后再发送'
+                // alert("停止录音")
+
+
+                return new Promise((resolve, reject) => {
+                    wx.stopRecord({
+                        success: (res) => {
+                            const voiceid = res.localId;
+                            // alert("发送录音");
+
+                            if (!voiceid) {
+                                this.$message({
+                                    type: 'info',
+                                    message: '请先录音后再发送'
+                                });
+                                reject('no voiceid');
+                                return;
+                            }
+
+                            // alert("上传录音");
+                            // alert(voiceid);
+
+                            wx.uploadVoice({
+                                localId: voiceid, // 需要上传的音频的本地ID，由stopRecord接口获得
+                                isShowProgressTips: 1, // 默认为1，显示进度提示
+                                success: (res) => {
+                                    const serverId = res.serverId; // 返回音频的服务器端ID
+                                    const uuid = localStorage.getItem('uuid');
+                                    const name = localStorage.getItem('myName');
+                                    const message = {
+                                        name,
+                                        address: this.add,
+                                        uuid,
+                                        time: new Date().toLocaleString(),
+                                        body: this.inputText,
+                                        voiceid: serverId
+                                    };
+                                    this.messages.push(message);
+                                    chatName(message);
+                                    this.inputText = '';
+                                    this.rows = 1;
+                                    this.initData();
+                                    this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
+                                    localStorage.setItem('localId', "");
+                                    resolve();
+                                },
+                                fail: (res) => {
+                                    // alert(JSON.stringify(res));
+                                    this.$message({
+                                        type: 'error',
+                                        message: '录音上传失败: ' + res
+                                    });
+                                    reject(res.errMsg);
+                                }
+                            });
+                        },
+                        fail: (res) => {
+                            // alert(JSON.stringify(res));
+                            this.$message({
+                                type: 'error',
+                                message: '录音停止失败: ' + res.errMsg
+                            });
+                            reject(res.errMsg);
+                        }
                     });
-                    return;
-                }
-                alert("上传录音")
-                alert(voiceid)
-                wx.uploadVoice({
-                    localId: voiceid, // 需要上传的音频的本地ID，由stopRecord接口获得
-                    isShowProgressTips: 1, // 默认为1，显示进度提示
-                    success:  (res)=> {
-                        var serverId = res.serverId; // 返回音频的服务器端ID
-                        let uuid = localStorage.getItem('uuid');
-                        const message = {
-                            name: name,
-                            address: this.add,
-                            uuid: uuid,
-                            time: new Date().toLocaleString(),
-                            body: this.inputText,
-                            voiceid: serverId
-                        };
-                        this.messages.push(message);
-                        chatName(message);
-                        this.inputText = '';
-                        this.rows = 1;
-                        // location.reload()
-                        this.initData()
-                        this.scrollToEnd(); // 每次添加消息时自动滚动到最底部
-                        localStorage.setItem('localId', "");
-                    },
-                    fail: (res) => {
-                        alert(JSON.stringify(res))
-                        this.$message({
-                            type: 'error',
-                            message: '录音上传失败: ' + res
-                        });
-                    }
                 });
 
             },
