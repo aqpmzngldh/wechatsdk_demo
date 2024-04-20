@@ -41,7 +41,10 @@ public class chatgptController {
         //获取用户的标识和消息
         String userId = chatRequest.getUserId();
         String message = chatRequest.getMessage();
+        System.out.println(userId);
+        System.out.println(message);
         String chat = chatGptService.chat(userId, message);
+        System.out.println(chat);
         return chat;
 //        // 检查用户会话是否存在
 //        if (!userSessions.containsKey(userId)) {
