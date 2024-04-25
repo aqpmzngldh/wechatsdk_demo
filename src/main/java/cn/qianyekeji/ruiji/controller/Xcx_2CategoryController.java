@@ -2,6 +2,7 @@ package cn.qianyekeji.ruiji.controller;
 
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
@@ -1382,6 +1383,59 @@ public class Xcx_2CategoryController {
         System.out.println(xcx_2Xian);
         xcx_2XianService.save(xcx_2Xian);
 
+    }
+
+    @PostMapping("/a")
+    public R<String> a() {
+        System.out.println("测试获取图片");
+        String url = "https://v2.api-m.com/api/heisi";
+        // 发送GET请求
+        HttpResponse response1 = HttpUtil.createGet(url).execute();
+        if (response1.isOk()) {
+            String responseBody = response1.body();
+            Map<String, Object> map = JSONUtil.parseObj(responseBody);
+            String result = (String)map.get("data");
+            return R.success(result);
+        } else {
+            // 处理错误
+            return R.error("请求图片出错");
+        }
+    }
+
+    @PostMapping("/b")
+    public R<String> b() {
+        System.out.println("测试获取图片");
+        String url = "https://api.qqsuu.cn/api/dm-littlesister?type=json";
+        // 发送GET请求
+        HttpResponse response1 = HttpUtil.createGet(url).execute();
+        if (response1.isOk()) {
+            String responseBody = response1.body();
+            Map<String, Object> map = JSONUtil.parseObj(responseBody);
+            String result = (String)map.get("img");
+            return R.success(result);
+        } else {
+            // 处理错误
+            return R.error("请求图片出错");
+        }
+    }
+
+
+
+    @PostMapping("/c")
+    public R<String> c() {
+        System.out.println("测试获取视频");
+        String url = "https://api.qqsuu.cn/api/dm-xjj?type=json&apiKey=b4bd29e2d83ea412fa368e2747c8ef41";
+        // 发送GET请求
+        HttpResponse response1 = HttpUtil.createGet(url).execute();
+        if (response1.isOk()) {
+            String responseBody = response1.body();
+            Map<String, Object> map = JSONUtil.parseObj(responseBody);
+            String result = (String)map.get("video");
+            return R.success(result);
+        } else {
+            // 处理错误
+            return R.error("请求图片出错");
+        }
     }
 
 }
