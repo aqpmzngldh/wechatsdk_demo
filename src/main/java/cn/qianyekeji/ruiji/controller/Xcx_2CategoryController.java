@@ -1438,4 +1438,42 @@ public class Xcx_2CategoryController {
         }
     }
 
+    @PostMapping("/d")
+    public R<Boolean> d(String id) {
+        System.out.println("用户发送消息的时候去redis判断当前群聊的机器人是开启还是关闭状态");
+        System.out.println("如果没获取到或者获取到的是on，则放行返回true，否则返回false");
+        System.out.println("当前群聊的id是"+id);
+        String prepayId = (String) redisTemplate.opsForHash().get("a_jiqiren", id);
+        System.out.println("获取到prepayId值是"+prepayId);
+        if ((prepayId == null || prepayId.isEmpty())||("on").equals(prepayId)) {
+            System.out.println("无法获取到prepayId"+prepayId);
+            return R.success(true);
+        }else{
+            return R.success(false);
+        }
+    }
+
+    @PostMapping("/e")
+    public void e(String id) {
+        System.out.println("设置机器人状态为关闭");
+        redisTemplate.opsForHash().put("a_jiqiren", id, "off");
+    }
+
+    @PostMapping("/f")
+    public void f(String id) {
+        System.out.println("设置机器人状态为开启");
+        redisTemplate.opsForHash().put("a_jiqiren", id, "on");
+    }
+
+    @PostMapping("/g")
+    public void g(String topic,String userNice,String command) {
+        System.out.println("设置gpt回复每个人时候的前缀");
+        redisTemplate.opsForHash().put(topic, userNice, command);
+    }
+    @PostMapping("/h")
+    public R<String> h(String topic,String userNice) {
+        System.out.println("获取gpt回复每个人时候的前缀");
+        String value = (String) redisTemplate.opsForHash().get(topic, userNice);
+        return R.success(value);
+    }
 }
