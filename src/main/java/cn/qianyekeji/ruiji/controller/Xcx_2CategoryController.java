@@ -1474,6 +1474,9 @@ public class Xcx_2CategoryController {
     public R<String> h(String topic,String userNice) {
         System.out.println("获取gpt回复每个人时候的前缀");
         String value = (String) redisTemplate.opsForHash().get(topic, userNice);
-        return R.success(value);
+        if (value==null){
+            return R.success("");
+        }
+        return R.success(value+"，");
     }
 }
