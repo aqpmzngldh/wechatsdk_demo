@@ -1479,4 +1479,19 @@ public class Xcx_2CategoryController {
         }
         return R.success(value+"，");
     }
+
+
+    @PostMapping("/i")
+    public R<Boolean> i(String id) {
+        System.out.println("判断当前群是否有操作咸王的权利");
+        System.out.println("当前群聊的房间名是"+id);
+        String prepayId = (String) redisTemplate.opsForHash().get("a_quanli", id);
+        System.out.println("获取到prepayId值是"+prepayId);
+        if (prepayId == null || prepayId.isEmpty()) {
+            System.out.println("无法获取到prepayId，说明没有权利操作咸王");
+            return R.success(false);
+        }else{
+            return R.success(true);
+        }
+    }
 }
