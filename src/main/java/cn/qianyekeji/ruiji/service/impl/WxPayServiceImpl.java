@@ -1,5 +1,6 @@
 package cn.qianyekeji.ruiji.service.impl;
 
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.CustomException;
@@ -310,6 +311,16 @@ public class WxPayServiceImpl implements WxPayService {
             objectQueryWrapper.eq("out_trade",orderNo);
 
             List<Xcx_2OrderData> list = xcx_2OrderDataService.list(objectQueryWrapper);
+            if(list.size()==1){
+                String address = list.get(0).getAddress();
+                // 解析JSON字符串为JSONArray
+                JSONArray jsonArray = JSONUtil.parseArray(address);
+                // 获取第一个JSONObject
+                JSONObject jsonObject = jsonArray.getJSONObject(0);
+                // 获取name字段的值
+                String result = jsonObject.getStr("name");
+                redisTemplate.opsForHash().put("a_quanli",result,"有权");
+            }
             for (Xcx_2OrderData order : list) {
                 order.setPaySuccess("success");
                 order.setDeliver("stay");

@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
+import cn.qianyekeji.ruiji.utils.AudioWavUtils;
 import cn.qianyekeji.ruiji.utils.HttpUtils;
 import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
 import com.alibaba.fastjson.JSON;
@@ -1493,5 +1494,15 @@ public class Xcx_2CategoryController {
         }else{
             return R.success(true);
         }
+    }
+
+    @PostMapping("/j")
+    public R<String> j(String url) throws Exception{
+        String localPath = "/www/server/yuyin/audio_" + System.currentTimeMillis() + ".wav";
+        AudioWavUtils.downloadFile(url, localPath);
+        // 获取本地文件的信息
+        Long wavInfo = AudioWavUtils.getWavInfo(localPath);
+        System.out.println("这个wav的秒数是："+wavInfo);
+        return R.success(wavInfo+"");
     }
 }
