@@ -1,43 +1,44 @@
 Manifest-Version: 1.0
-Class-Path: xstream-1.4.18.jar okio-1.17.2.jar spring-jcl-5.3.6.jar ja
- vax.activation-api-1.2.0.jar mybatis-plus-annotation-3.4.2.jar snakey
- aml-1.27.jar jaxb-api-2.3.1.jar httpcore-4.4.14.jar netty-common-4.1.
- 63.Final.jar mybatis-plus-3.4.2.jar netty-codec-4.1.63.Final.jar spri
- ng-data-commons-2.4.8.jar tomcat-embed-websocket-9.0.45.jar spring-bo
- ot-starter-quartz-2.4.5.jar spring-boot-starter-logging-2.4.5.jar spr
- ing-boot-autoconfigure-2.4.5.jar qcloudsms-1.0.6.jar spring-context-5
- .3.6.jar jackson-module-parameter-names-2.11.4.jar jackson-core-2.11.
- 4.jar commons-logging-1.2.jar spring-boot-starter-json-2.4.5.jar spri
- ng-data-redis-2.6.2.jar netty-transport-4.1.63.Final.jar netty-buffer
- -4.1.63.Final.jar poi-ooxml-schemas-3.14.jar jackson-datatype-jsr310-
- 2.11.4.jar tomcat-embed-core-9.0.45.jar mybatis-3.5.6.jar slf4j-api-1
- .7.30.jar mxparser-1.2.2.jar jackson-annotations-2.11.4.jar httpmime-
- 4.5.13.jar opentracing-api-0.33.0.jar ini4j-0.5.4.jar jakarta.activat
- ion-1.2.2.jar spring-boot-starter-2.4.5.jar lombok-1.18.20.jar logbac
- k-core-1.2.3.jar httpclient-4.5.13.jar spring-boot-2.4.5.jar mybatis-
- plus-boot-starter-3.4.2.jar jakarta.el-3.0.3.jar commons-lang-2.6.jar
-  spring-web-5.3.6.jar reactive-streams-1.0.3.jar spring-tx-5.3.6.jar 
- mybatis-plus-core-3.4.2.jar spring-jdbc-5.3.6.jar spring-context-supp
- ort-5.3.6.jar gson-2.8.6.jar druid-spring-boot-starter-1.1.23.jar jav
- e-1.0.3.jar spring-data-keyvalue-2.4.8.jar spring-boot-starter-jdbc-2
- .4.5.jar org.jacoco.agent-0.8.6-runtime.jar opentracing-noop-0.33.0.j
- ar spring-webmvc-5.3.6.jar wechatpay-apache-httpclient-0.3.0.jar spri
- ng-boot-starter-cache-2.4.5.jar quartz-2.3.2.jar xmlbeans-2.6.0.jar h
- utool-all-5.8.8.jar log4j-api-2.13.3.jar mybatis-spring-2.0.5.jar spr
- ing-boot-starter-data-redis-2.4.5.jar spring-aop-5.3.6.jar curvesapi-
- 1.03.jar stax-api-1.0.1.jar jackson-datatype-jdk8-2.11.4.jar json-201
- 70516.jar fastjson-1.2.76.jar aliyun-java-sdk-core-4.5.16.jar spring-
- boot-starter-tomcat-2.4.5.jar spring-boot-starter-web-2.4.5.jar netty
- -resolver-4.1.63.Final.jar jul-to-slf4j-1.7.30.jar poi-ooxml-3.14.jar
-  spring-boot-configuration-processor-2.4.5.jar okhttp-3.14.9.jar jsql
- parser-4.0.jar lettuce-core-6.1.6.RELEASE.jar spring-beans-5.3.6.jar 
- mybatis-plus-extension-3.4.2.jar jakarta.mail-1.6.7.jar reactor-core-
- 3.4.5.jar qiniu-java-sdk-7.7.0.jar log4j-to-slf4j-2.13.3.jar logback-
- classic-1.2.3.jar spring-core-5.3.6.jar aliyun-java-sdk-dysmsapi-2.1.
- 0.jar netty-handler-4.1.63.Final.jar jackson-databind-2.11.4.jar comm
- ons-codec-1.15.jar jakarta.annotation-api-1.3.5.jar spring-oxm-5.3.6.
- jar xmlpull-1.1.3.1.jar spring-expression-5.3.6.jar poi-3.14.jar open
- tracing-util-0.33.0.jar mysql-connector-java-8.0.23.jar druid-1.1.23.
- jar mchange-commons-java-0.2.15.jar HikariCP-3.4.5.jar
+Class-Path: lombok-1.18.20.jar curvesapi-1.03.jar spring-context-5.3.6
+ .jar fastjson-1.2.76.jar netty-handler-4.1.63.Final.jar json-20170516
+ .jar quartz-2.3.2.jar spring-jcl-5.3.6.jar qcloudsms-1.0.6.jar mybati
+ s-3.5.6.jar httpclient-4.5.13.jar jul-to-slf4j-1.7.30.jar spring-boot
+ -starter-web-2.4.5.jar lettuce-core-6.1.6.RELEASE.jar jakarta.annotat
+ ion-api-1.3.5.jar spring-boot-starter-quartz-2.4.5.jar jaxb-api-2.3.1
+ .jar netty-codec-4.1.63.Final.jar jackson-module-parameter-names-2.11
+ .4.jar log4j-api-2.13.3.jar xmlbeans-2.6.0.jar hutool-all-5.8.8.jar o
+ pentracing-noop-0.33.0.jar spring-expression-5.3.6.jar jakarta.mail-1
+ .6.7.jar spring-boot-starter-json-2.4.5.jar spring-boot-starter-jdbc-
+ 2.4.5.jar spring-context-support-5.3.6.jar mxparser-1.2.2.jar spring-
+ core-5.3.6.jar jackson-datatype-jdk8-2.11.4.jar httpmime-4.5.13.jar s
+ pring-boot-starter-cache-2.4.5.jar spring-tx-5.3.6.jar spring-data-ke
+ yvalue-2.4.8.jar poi-3.14.jar poi-ooxml-schemas-3.14.jar spring-boot-
+ starter-2.4.5.jar mchange-commons-java-0.2.15.jar logback-core-1.2.3.
+ jar mybatis-spring-2.0.5.jar commons-codec-1.15.jar spring-boot-autoc
+ onfigure-2.4.5.jar spring-boot-2.4.5.jar wechatpay-apache-httpclient-
+ 0.3.0.jar opentracing-util-0.33.0.jar netty-common-4.1.63.Final.jar l
+ ogback-classic-1.2.3.jar spring-web-5.3.6.jar stax-api-1.0.1.jar java
+ x.activation-api-1.2.0.jar spring-boot-starter-data-redis-2.4.5.jar s
+ pring-boot-configuration-processor-2.4.5.jar aliyun-java-sdk-dysmsapi
+ -2.1.0.jar netty-resolver-4.1.63.Final.jar snakeyaml-1.27.jar HikariC
+ P-3.4.5.jar xstream-1.4.18.jar netty-transport-4.1.63.Final.jar react
+ ive-streams-1.0.3.jar jaudiotagger-2.0.1.jar httpcore-4.4.14.jar nett
+ y-buffer-4.1.63.Final.jar aliyun-java-sdk-core-4.5.16.jar druid-sprin
+ g-boot-starter-1.1.23.jar reactor-core-3.4.5.jar qiniu-java-sdk-7.7.0
+ .jar opentracing-api-0.33.0.jar tomcat-embed-core-9.0.45.jar mybatis-
+ plus-extension-3.4.2.jar jakarta.activation-1.2.2.jar gson-2.8.6.jar 
+ spring-jdbc-5.3.6.jar tomcat-embed-websocket-9.0.45.jar jackson-datab
+ ind-2.11.4.jar jakarta.el-3.0.3.jar mybatis-plus-boot-starter-3.4.2.j
+ ar org.jacoco.agent-0.8.6-runtime.jar commons-lang-2.6.jar spring-web
+ mvc-5.3.6.jar spring-boot-starter-logging-2.4.5.jar mybatis-plus-anno
+ tation-3.4.2.jar spring-data-redis-2.6.2.jar mybatis-plus-core-3.4.2.
+ jar okhttp-3.14.9.jar jackson-core-2.11.4.jar spring-beans-5.3.6.jar 
+ spring-oxm-5.3.6.jar ini4j-0.5.4.jar log4j-to-slf4j-2.13.3.jar jackso
+ n-datatype-jsr310-2.11.4.jar druid-1.1.23.jar spring-aop-5.3.6.jar js
+ qlparser-4.0.jar jave-1.0.3.jar poi-ooxml-3.14.jar slf4j-api-1.7.30.j
+ ar spring-data-commons-2.4.8.jar commons-logging-1.2.jar spring-boot-
+ starter-tomcat-2.4.5.jar jackson-annotations-2.11.4.jar mysql-connect
+ or-java-8.0.23.jar okio-1.17.2.jar mybatis-plus-3.4.2.jar xmlpull-1.1
+ .3.1.jar
 Main-Class: cn.qianyekeji.ruiji.RuijiApplication
 
