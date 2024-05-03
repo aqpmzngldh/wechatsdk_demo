@@ -216,6 +216,17 @@
             </dependency>
 
 
+        <dependency>
+            <groupId>com.googlecode.soundlibs</groupId>
+            <artifactId>tritonus-share</artifactId>
+            <version>0.3.7.4</version>
+        </dependency>
+
+
+
+
+
+
 
 
 
