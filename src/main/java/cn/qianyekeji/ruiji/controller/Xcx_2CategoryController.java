@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
+import cn.qianyekeji.ruiji.utils.AudioUtils;
 import cn.qianyekeji.ruiji.utils.AudioWavUtils;
 import cn.qianyekeji.ruiji.utils.HttpUtils;
 import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
@@ -21,6 +22,7 @@ import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1504,5 +1506,19 @@ public class Xcx_2CategoryController {
         Long wavInfo = AudioWavUtils.getWavInfo(localPath);
         System.out.println("这个wav的秒数是："+wavInfo);
         return R.success(wavInfo+"");
+    }
+
+    @PostMapping("/k")
+    public R<String> k(String url) throws Exception{
+        String address="audio_" + System.currentTimeMillis() + ".wav";
+        String localPath = "/www/server/yuyin/" + address;
+        AudioWavUtils.downloadFile(url, localPath);
+        // 获取本地文件的信息
+        Long wavInfo = AudioWavUtils.getWavInfo(localPath);
+        System.out.println("这个wav的秒数是："+wavInfo);
+        String s = AudioUtils.transferAudioSilk("/www/server/yuyin/", address, false);
+
+
+        return R.success("").add("second",wavInfo).add("sil",s);
     }
 }

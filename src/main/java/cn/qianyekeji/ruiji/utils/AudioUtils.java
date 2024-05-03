@@ -21,8 +21,13 @@ public class AudioUtils {
     /**
      * 工具地址
      **/
-//    static String path = "lib/silk_converter/";
-    static String path = "F:\\project\\ruiji\\src\\main\\java\\cn\\qianyekeji\\ruiji\\silk\\";
+
+//    static String path = "F:\\project\\ruiji\\src\\main\\java\\cn\\qianyekeji\\ruiji\\silk\\";
+    static String path = "src/main/java/cn/qianyekeji/ruiji/silk/";
+
+//    因为这silk文件夹底下的三个exe文件是windows的可执行文件，但是在linux下不可执行
+//    static String path = "/www/server/yuyin/silk/";
+
 
     public static void main(String[] args) {
         // TODO: mp3 转 silk
@@ -74,20 +79,24 @@ public class AudioUtils {
             // 先将mp3/wav转换成pcm格式
             transferAudioPcm(filePath, pcmPath);
             // 导出的silk格式路径
-            String silkPath = path + "SILK_" + time + ".silk";
+//            String silkPath = path + "SILK_" + time + ".silk";
+//            String silkPath = path + "SILK_" + time + ".sil";
+            String fileName = name.substring(0, name.lastIndexOf("."));
+            String silkPath = path + fileName + ".sil";
+            System.out.println("文件名：" + silkPath);
             // 转换成silk格式
             transferPcmSilk(pcmPath, silkPath);
             // 删除pcm文件
-            File pcmFile = new File(pcmPath);
-            if (pcmFile.exists()) {
-                pcmFile.delete();
-            }
-            if (isSource) {
-                File audioFile = new File(filePath);
-                if (audioFile.exists()) {
-                    audioFile.delete();
-                }
-            }
+//            File pcmFile = new File(pcmPath);
+//            if (pcmFile.exists()) {
+//                pcmFile.delete();
+//            }
+//            if (isSource) {
+//                File audioFile = new File(filePath);
+//                if (audioFile.exists()) {
+//                    audioFile.delete();
+//                }
+//            }
             return silkPath;
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,6 +202,19 @@ public class AudioUtils {
             }
         }
     }
+
+//    public static void transferPcmSilk(String pcmPath, String target) {
+//        try {
+//            ProcessBuilder pb = new ProcessBuilder(path + "silk_v3_encoder.exe", pcmPath, target, "-tencent");
+//            File logFile = new File("/www/server/yuyin/silk_encoder.log");
+//            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
+//            pb.redirectError(ProcessBuilder.Redirect.appendTo(logFile));
+//            Process process = pb.start();
+//            process.waitFor();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     /**
