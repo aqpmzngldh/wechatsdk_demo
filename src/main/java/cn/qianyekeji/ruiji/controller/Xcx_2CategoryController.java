@@ -7,10 +7,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.common.R;
 import cn.qianyekeji.ruiji.entity.*;
 import cn.qianyekeji.ruiji.service.*;
-import cn.qianyekeji.ruiji.utils.AudioUtils;
-import cn.qianyekeji.ruiji.utils.AudioWavUtils;
-import cn.qianyekeji.ruiji.utils.HttpUtils;
-import cn.qianyekeji.ruiji.utils.WechatPay2ValidatorForRequest;
+import cn.qianyekeji.ruiji.utils.*;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -1516,9 +1513,58 @@ public class Xcx_2CategoryController {
         // 获取本地文件的信息
         Long wavInfo = AudioWavUtils.getWavInfo(localPath);
         System.out.println("这个wav的秒数是："+wavInfo);
-        String s = AudioUtils.transferAudioSilk("/www/server/yuyin/", address, false);
+
+//        AudioUtils这个工具类在本地可以实现wav编码成silk格式，但是在linux中不行，使用不了里面的命令行工具
+//        而且那个exe文件也不能在linux用的
+//        String s = AudioUtils.transferAudioSilk("/www/server/yuyin/", address, false);
+
+//        现在换种实现，就是wav转换成MP3，再由MP3编码成silk格式
+//        1.1 wav转换成MP3
+        String wavFilePath = localPath;
+        String mp3FilePath="";
+        String basePath="";
+        int index = wavFilePath.lastIndexOf(".wav");
+        if (index != -1) {
+            basePath = wavFilePath.substring(0, index);
+            System.out.println(basePath); // 输出: /www/server/yuyin/123
+            mp3FilePath = basePath+".mp3";
+            WavToMp3Converter.convertWavToMp3(wavFilePath, mp3FilePath);
+        } else {
+            System.out.println("字符串截取失败");
+        }
+//        1.2 MP3编码成silk格式
+        // 初始化
+        try {
+            AudioLinuxUtils.init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 测试MP3转SILK
+        File mp3File = new File(mp3FilePath);
+        try {
+            File silkFile = AudioLinuxUtils.mp3ToSilk(mp3File);
+            System.out.println("MP3转SILK成功，SILK文件路径：" + silkFile.getAbsolutePath());
+
+            // 获取 MP3 文件名前缀
+            String mp3FileName = mp3File.getName();
+            int lastIndex = mp3FileName.lastIndexOf('.');
+            String silkFileNamePrefix = lastIndex != -1 ? mp3FileName.substring(0, lastIndex) : mp3FileName;
+
+            // 将生成的 SILK 文件复制到与 MP3 文件相同的目录下，并设置文件名前缀
+            String mp3FileParentDirectory = mp3File.getParent();
+            File copiedSilkFile = new File(mp3FileParentDirectory + File.separator + silkFileNamePrefix + ".sil");
+            if (silkFile.renameTo(copiedSilkFile)) {
+                System.out.println("已将生成的 SILK 文件复制到目录：" + copiedSilkFile.getParent());
+            } else {
+                System.err.println("无法将 SILK 文件移动到目录：" + mp3FileParentDirectory);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        return R.success("").add("second",wavInfo).add("sil",s);
+
+        return R.success("").add("second",wavInfo).add("sil",basePath+".sil");
     }
 }
