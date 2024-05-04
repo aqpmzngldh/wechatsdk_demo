@@ -31,9 +31,9 @@ public class AudioUtils {
 
     public static void main(String[] args) {
         // TODO: mp3 转 silk
-//        transferAudioSilk("路径\\", "文件名.mp3", false);
+        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\ce\\", "audio_1714785935768.mp3", false);
         // TODO: wav 转 silk
-        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\", "5270.wav", false);
+//        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\", "5270.wav", false);
         // TODO: mp3转amr
 //        transferMp3Amr("路径\\文件名.mp3", "路径\\文件名.amr");
     }

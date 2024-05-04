@@ -626,7 +626,7 @@ public class CeShiController {
 //        更适合在过滤器的那种场景下
         request.getSession().setAttribute("openid",openid);
 //        return "/chat";
-        return "redirect:/front/page/chat.html";
+        return "redirect:https://qianyekeji.cn/front/page/chat.html";
     }
 
     //本来打算一键制作传递name和title通过底下的make方法随时获取用户的openid，但是这种后端发送

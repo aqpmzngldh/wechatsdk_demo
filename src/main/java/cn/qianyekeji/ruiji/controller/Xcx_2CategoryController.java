@@ -1533,35 +1533,7 @@ public class Xcx_2CategoryController {
             System.out.println("字符串截取失败");
         }
 //        1.2 MP3编码成silk格式
-        // 初始化
-        try {
-            AudioLinuxUtils.init();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        // 测试MP3转SILK
-        File mp3File = new File(mp3FilePath);
-        try {
-            File silkFile = AudioLinuxUtils.mp3ToSilk(mp3File);
-            System.out.println("MP3转SILK成功，SILK文件路径：" + silkFile.getAbsolutePath());
-
-            // 获取 MP3 文件名前缀
-            String mp3FileName = mp3File.getName();
-            int lastIndex = mp3FileName.lastIndexOf('.');
-            String silkFileNamePrefix = lastIndex != -1 ? mp3FileName.substring(0, lastIndex) : mp3FileName;
-
-            // 将生成的 SILK 文件复制到与 MP3 文件相同的目录下，并设置文件名前缀
-            String mp3FileParentDirectory = mp3File.getParent();
-            File copiedSilkFile = new File(mp3FileParentDirectory + File.separator + silkFileNamePrefix + ".sil");
-            if (silkFile.renameTo(copiedSilkFile)) {
-                System.out.println("已将生成的 SILK 文件复制到目录：" + copiedSilkFile.getParent());
-            } else {
-                System.err.println("无法将 SILK 文件移动到目录：" + mp3FileParentDirectory);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
 

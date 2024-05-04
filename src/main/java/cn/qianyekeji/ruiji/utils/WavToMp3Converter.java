@@ -41,8 +41,8 @@ public class WavToMp3Converter {
 
     public static void main(String[] args) {
         // 测试转换
-        String wavFilePath = "C:\\Users\\qianye\\Desktop\\2222\\5270.wav";
-        String mp3FilePath = "C:\\Users\\qianye\\Desktop\\2222\\5270.mp3";
+        String wavFilePath = "C:\\Users\\qianye\\Desktop\\2222\\ce\\audio_1714785935768.wav";
+        String mp3FilePath = "C:\\Users\\qianye\\Desktop\\2222\\ce\\audio_1714785935768.mp3";
         convertWavToMp3(wavFilePath, mp3FilePath);
     }
 }
