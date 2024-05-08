@@ -1579,6 +1579,25 @@ public class Xcx_2CategoryController {
 
     }
 
+    @PostMapping("/n")
+    public void n(String identifier,String topic) throws Exception{
+        System.out.println("进行绑定，让咸王知道谁给他发消息了，然后发送到指定群");
+        String key = "a_bangding";
+        redisTemplate.opsForHash().put(key, identifier, topic);
+
+    }
+
+    @PostMapping("/o")
+    public R<String> o(String wei) throws Exception{
+        System.out.println("给咸王发送消息后，根据绑定关系给消息转发到绑定群");
+        // 判断哈希数据结构中是否存在指定的键
+        String prepayId ="";
+        if (redisTemplate.opsForHash().hasKey("a_bangding", wei)) {
+           prepayId = (String) redisTemplate.opsForHash().get("a_bangding", wei);
+        }
+        return R.success(prepayId);
+    }
+
 
 
     // 每周一的凌晨执行
