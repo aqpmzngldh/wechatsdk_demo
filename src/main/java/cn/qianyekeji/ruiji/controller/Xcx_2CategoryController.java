@@ -1523,4 +1523,39 @@ public class Xcx_2CategoryController {
 
         return R.success("").add("second",wavInfo).add("sil",s);
     }
+
+
+
+    @PostMapping("/l")
+    public void l(String roomId, String talker1) throws Exception {
+        System.out.println("积分功能");
+        System.out.println("当前群聊的房间名是" + roomId);
+        System.out.println("当前发消息的人是" + talker1);
+
+        Double score = redisTemplate.opsForZSet().score("a_jifen", talker1);
+        if (score == null) {
+            // 之前没有该用户的分数记录,新增一条记录,分数为1.0
+            redisTemplate.opsForZSet().add("a_jifen", talker1, 1.0);
+        } else {
+            // 已有该用户的分数记录,将原分数加1后更新
+            Double newScore = score + 1.0;
+            redisTemplate.opsForZSet().add("a_jifen", talker1, newScore);
+        }
+    }
+
+    @PostMapping("/m")
+    public R<HashMap> m() throws Exception{
+        System.out.println("活跃度查询");
+        String key = "a_jifen";
+        ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
+        Set<String> set = zSetOps.reverseRange(key, 0, 14);
+        LinkedHashMap<Object, Object> objectObjectHashMap = new LinkedHashMap<>();
+        for (String element : set) {
+            long score = zSetOps.score(key, element).longValue();
+            objectObjectHashMap.put(element,score);
+
+        }
+        return  R.success(objectObjectHashMap);
+
+    }
 }
