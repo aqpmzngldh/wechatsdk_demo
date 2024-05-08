@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -1532,6 +1534,15 @@ public class Xcx_2CategoryController {
         System.out.println("当前群聊的房间名是" + roomId);
         System.out.println("当前发消息的人是" + talker1);
 
+        //限制用户每天获取的积分最高是10
+        String key = "a_jifen_count_" + roomId + "_" + talker1;
+        // 获取今天该用户已经添加的次数
+        Long count = redisTemplate.opsForValue().increment(key, 0);
+        if (count != null && count >= 10) {
+            System.out.println("今天的添加次数已达到上限，不能再添加了。");
+            return;
+        }
+
         Double score = redisTemplate.opsForZSet().score("a_jifen_"+roomId, talker1);
         if (score == null) {
             // 之前没有该用户的分数记录,新增一条记录,分数为1.0
@@ -1541,6 +1552,15 @@ public class Xcx_2CategoryController {
             Double newScore = score + 1.0;
             redisTemplate.opsForZSet().add("a_jifen_"+roomId, talker1, newScore);
         }
+
+        // 获取当前日期
+        LocalDate today = LocalDate.now();
+        // 获取当天的结束时间戳（毫秒）
+        long endOfDay = today.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+        // 更新计数器，并设置过期时间为当天剩余时间
+        long remainingTime = endOfDay - System.currentTimeMillis();
+        redisTemplate.opsForValue().increment(key, 1);
+        redisTemplate.expire(key, remainingTime, TimeUnit.MILLISECONDS);
     }
 
     @PostMapping("/m")
