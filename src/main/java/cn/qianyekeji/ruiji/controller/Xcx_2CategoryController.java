@@ -1508,7 +1508,8 @@ public class Xcx_2CategoryController {
     @PostMapping("/k")
     public R<String> k(String url) throws Exception{
         String address="audio_" + System.currentTimeMillis() + ".wav";
-        String localPath = "/www/server/yuyin/" + address;
+//        String localPath = "/www/server/yuyin/" + address;
+        String localPath = "F:\\yuyin\\" + address;
         AudioWavUtils.downloadFile(url, localPath);
         // 获取本地文件的信息
         Long wavInfo = AudioWavUtils.getWavInfo(localPath);
@@ -1517,26 +1518,9 @@ public class Xcx_2CategoryController {
 //        AudioUtils这个工具类在本地可以实现wav编码成silk格式，但是在linux中不行，使用不了里面的命令行工具
 //        而且那个exe文件也不能在linux用的
 //        String s = AudioUtils.transferAudioSilk("/www/server/yuyin/", address, false);
-
-//        现在换种实现，就是wav转换成MP3，再由MP3编码成silk格式
-//        1.1 wav转换成MP3
-        String wavFilePath = localPath;
-        String mp3FilePath="";
-        String basePath="";
-        int index = wavFilePath.lastIndexOf(".wav");
-        if (index != -1) {
-            basePath = wavFilePath.substring(0, index);
-            System.out.println(basePath); // 输出: /www/server/yuyin/123
-            mp3FilePath = basePath+".mp3";
-            WavToMp3Converter.convertWavToMp3(wavFilePath, mp3FilePath);
-        } else {
-            System.out.println("字符串截取失败");
-        }
-//        1.2 MP3编码成silk格式
+        String s = AudioUtils.transferAudioSilk("F:\\yuyin\\", address, false);
 
 
-
-
-        return R.success("").add("second",wavInfo).add("sil",basePath+".sil");
+        return R.success("").add("second",wavInfo).add("sil",s);
     }
 }

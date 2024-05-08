@@ -31,7 +31,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addResourceLocations("file:/www/server/img2/");  // 服务器中存放图片的路径
 
         registry.addResourceHandler("/yuyin/**")     // 映射路径, 其中的img可以随便改
-                .addResourceLocations("file:/www/server/yuyin/");  // 服务器中存放图片的路径
+                .addResourceLocations("file:F:/yuyin/");  // 服务器中存放图片的路径
 
         registry.addResourceHandler("/Q1SbMpygd1.txt")
                 .addResourceLocations("file:/www/server/img2/niuniu/Q1SbMpygd1.txt");
