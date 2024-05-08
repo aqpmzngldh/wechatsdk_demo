@@ -1532,21 +1532,21 @@ public class Xcx_2CategoryController {
         System.out.println("当前群聊的房间名是" + roomId);
         System.out.println("当前发消息的人是" + talker1);
 
-        Double score = redisTemplate.opsForZSet().score("a_jifen", talker1);
+        Double score = redisTemplate.opsForZSet().score("a_jifen_"+roomId, talker1);
         if (score == null) {
             // 之前没有该用户的分数记录,新增一条记录,分数为1.0
-            redisTemplate.opsForZSet().add("a_jifen", talker1, 1.0);
+            redisTemplate.opsForZSet().add("a_jifen_"+roomId, talker1, 1.0);
         } else {
             // 已有该用户的分数记录,将原分数加1后更新
             Double newScore = score + 1.0;
-            redisTemplate.opsForZSet().add("a_jifen", talker1, newScore);
+            redisTemplate.opsForZSet().add("a_jifen_"+roomId, talker1, newScore);
         }
     }
 
     @PostMapping("/m")
-    public R<HashMap> m() throws Exception{
+    public R<HashMap> m(String roomId) throws Exception{
         System.out.println("活跃度查询");
-        String key = "a_jifen";
+        String key = "a_jifen_"+roomId;
         ZSetOperations<String, String> zSetOps = redisTemplate.opsForZSet();
         Set<String> set = zSetOps.reverseRange(key, 0, 14);
         LinkedHashMap<Object, Object> objectObjectHashMap = new LinkedHashMap<>();
@@ -1557,5 +1557,18 @@ public class Xcx_2CategoryController {
         }
         return  R.success(objectObjectHashMap);
 
+    }
+
+
+
+    // 每周一的凌晨执行
+    @Scheduled(cron = "0 0 0 ? * MON")
+    public void remove() {
+        // 获取以"a_jifen_"开头的所有键
+        Set<String> keys = redisTemplate.keys("a_jifen_*");
+        if (keys != null && !keys.isEmpty()) {
+            // 删除这些键
+            redisTemplate.delete(keys);
+        }
     }
 }
