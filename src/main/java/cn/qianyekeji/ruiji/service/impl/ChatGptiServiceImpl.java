@@ -13,10 +13,12 @@ import cn.qianyekeji.ruiji.service.CeShiService;
 import cn.qianyekeji.ruiji.service.ChatGptService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,23 +98,53 @@ public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest>
 
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = null;
-        try {
-            response = restTemplate.postForEntity(OPENAI_API_URL,request, String.class);
-        } catch (RestClientException e) {
-            e.printStackTrace();
-            return "网络错误，请重试";
+//        try {
+//            response = restTemplate.postForEntity(OPENAI_API_URL,request, String.class);
+//        } catch (RestClientException e) {
+//            e.printStackTrace();
+//            return "网络错误，请重试";
+//        }
+//        HttpStatus statusCode = response.getStatusCode();
+//        System.out.println("---------------------"+statusCode+"--------------------");
+//        // 提取回复消息
+//        String responseBody = response.getBody();
+//        String reply = extractReplyFromResponse(responseBody);
+//        System.out.println("-------------------"+reply+"--------------------");
+//
+//        //把回复消息也存进当前用户的的list中，方便上下文记忆
+//        sessionMessages.add(reply);
+//
+//        return reply;
+
+        int maxRetries = 5;
+        int retries = 0;
+        while (retries < maxRetries) {
+            try {
+                response = restTemplate.postForEntity(OPENAI_API_URL, request, String.class);
+                HttpStatus statusCode = response.getStatusCode();
+                System.out.println("---------------------" + statusCode + "--------------------");
+                // 提取回复消息
+                String responseBody = response.getBody();
+                String reply = extractReplyFromResponse(responseBody);
+                System.out.println("-------------------" + reply + "--------------------");
+
+                // 如果成功收到回复，返回回复消息，并把回复消息也存进当前用户的的list中，方便上下文记忆
+                sessionMessages.add(reply);
+                return reply;
+            } catch (RestClientException e) {
+                // 发生异常时增加重试次数，并输出错误信息
+                retries++;
+                System.out.println("Retry attempt: " + retries);
+                e.printStackTrace();
+                try {
+                    // 延迟5秒后重试
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
         }
-        HttpStatus statusCode = response.getStatusCode();
-        System.out.println("---------------------"+statusCode+"--------------------");
-        // 提取回复消息
-        String responseBody = response.getBody();
-        String reply = extractReplyFromResponse(responseBody);
-        System.out.println("-------------------"+reply+"--------------------");
-
-        //把回复消息也存进当前用户的的list中，方便上下文记忆
-        sessionMessages.add(reply);
-
-        return reply;
+        return "当前访问人数过多，请稍后重试";
     }
     private String buildRequestBody(String userId, List<String> sessionMessages) {
         JSONArray messagesArray = new JSONArray();
@@ -138,5 +170,31 @@ public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest>
         String reply = message.getStr("content");
 
         return reply;
+    }
+
+
+    // 设置定时任务，每小时执行一次
+    @Scheduled(cron = "0 0 * * * *")
+    public void cleanUserSessions() {
+        System.out.println("Starting user session cleanup...");
+
+        // 获取当前时间
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // 遍历用户会话数据，清理过期数据
+        for (String userId : userSessions.keySet()) {
+            List<String> sessionMessages = userSessions.get(userId);
+            // 判断会话数据是否过期，这里假设会话数据过期时间为1小时
+            if (sessionMessages != null && !sessionMessages.isEmpty()) {
+                LocalDateTime lastMessageTime = LocalDateTime.parse(sessionMessages.get(sessionMessages.size() - 1));
+                if (lastMessageTime.plusHours(1).isBefore(currentTime)) {
+                    // 如果会话数据过期，清理该用户会话数据
+                    userSessions.remove(userId);
+                    System.out.println("Cleaned session for user: " + userId);
+                }
+            }
+        }
+
+        System.out.println("User session cleanup completed.");
     }
 }
