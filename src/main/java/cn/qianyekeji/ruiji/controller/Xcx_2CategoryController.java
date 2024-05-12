@@ -1598,6 +1598,22 @@ public class Xcx_2CategoryController {
         return R.success(prepayId);
     }
 
+    @PostMapping("/p")
+    public void p(String topic) throws Exception{
+        System.out.println("解除绑定");
+
+        // 获取哈希表中所有的键值对
+        String key = "a_bangding";
+        Map<Object, Object> bindings = redisTemplate.opsForHash().entries(key);
+
+        // 遍历所有的键值对，找到与指定 topic 匹配的键值对，并删除它们
+        for (Map.Entry<Object, Object> entry : bindings.entrySet()) {
+            if (entry.getValue().equals(topic)) {
+                redisTemplate.opsForHash().delete(key, entry.getKey());
+            }
+        }
+    }
+
 
 
     // 每周一的凌晨执行
