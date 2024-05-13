@@ -18,10 +18,18 @@ import com.qiniu.common.Zone;
 import com.qiniu.storage.Configuration;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import com.rometools.fetcher.FeedFetcher;
+import com.rometools.fetcher.impl.HttpURLFeedFetcher;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
 import com.wechat.pay.contrib.apache.httpclient.auth.Verifier;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
@@ -37,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -1613,6 +1622,53 @@ public class Xcx_2CategoryController {
             }
         }
     }
+
+    @PostMapping("/q")
+    public String q() throws Exception{
+        System.out.println("对csdn中的极客日报发的新闻热点进行解析获取");
+        try {
+
+            String url = "https://rss.csdn.net/csdngeeknews/rss/map?spm=1001.2014.3001.5494";
+
+            // 发送GET请求
+            HttpResponse response = HttpUtil.createGet(url).execute();
+
+            if (response.isOk()) {
+                String responseBody = response.body();
+//                System.out.println("尝试查看这个字符串："+responseBody);
+                int startIndex = responseBody.indexOf("<link>", responseBody.indexOf("<link>") + 1) + "<link>".length();
+                int endIndex = responseBody.indexOf("</link>", responseBody.indexOf("</link>")+1);
+                String firstLink = responseBody.substring(startIndex, endIndex);
+                System.out.println("尝试查看提取的链接："+firstLink);
+
+                String articleUrl = firstLink; // 替换为你感兴趣的文章链接
+            try {
+                Document doc = Jsoup.connect(articleUrl).get();
+//                String htmlContent = doc.html(); // 获取网页的HTML内容
+//                System.out.println(htmlContent); // 打印HTML内容
+                // 提取新闻热点
+                StringBuilder sb = new StringBuilder();
+                Elements hotNewsElements = doc.select("#content_views > ul > li > p");
+                System.out.println("新闻热点:");
+                for (Element hotNewsElement : hotNewsElements) {
+//                    System.out.println(hotNewsElement.text());
+                    sb.append(hotNewsElement.text()).append(System.lineSeparator()); // 使用System.lineSeparator()获取当前系统换行符
+                }
+                System.out.println(sb.toString());
+                return sb.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            } else {
+                // 处理错误
+                System.err.println("Failed to 获取新闻热点csdn" + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  "暂无今日新闻推荐";
+    }
+
 
 
 
