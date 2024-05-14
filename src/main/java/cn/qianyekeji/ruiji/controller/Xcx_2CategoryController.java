@@ -1669,36 +1669,82 @@ public class Xcx_2CategoryController {
     }
 
 
-    @PostMapping("/r")
-    public String r() throws Exception{
+//    @PostMapping("/r")
+//    public String r() throws Exception{
+//        System.out.println("用接口启动wechaty方便用户启动");
+//
+//        try {
+//            ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr/index.js");
+//            // 创建日志文件并重定向标准输出和错误输出
+//            File logFile = new File("/www/wwwlogs/nodejs/ren1.log");
+//            processBuilder.redirectOutput(logFile);
+//            processBuilder.redirectError(logFile);
+//
+//            Process process = processBuilder.start();
+//
+//            InputStream inputStream = process.getInputStream();
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+//
+//            String line;
+//            String qrcodeUrl = null;
+//            while ((line = reader.readLine()) != null) {
+//                if (line.contains("https://wechaty.js.org/qrcode/")) {
+//                    qrcodeUrl = line;
+//                    break;
+//                }
+//            }
+//
+//            reader.close();
+//            inputStream.close();
+//
+//            return qrcodeUrl;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
+
+
+    @GetMapping("/niuniu")
+    public String r() throws Exception {
         System.out.println("用接口启动wechaty方便用户启动");
 
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr/index.js");
+            // 创建日志文件并重定向标准输出和错误输出
+            File logFile = new File("/www/wwwlogs/nodejs/ren1.log");
+            processBuilder.redirectOutput(logFile);
+            processBuilder.redirectError(logFile);
+
             Process process = processBuilder.start();
 
-            InputStream inputStream = process.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
+            // 等待二维码URL出现在日志中
+            BufferedReader reader = new BufferedReader(new FileReader(logFile));
             String line;
             String qrcodeUrl = null;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("https://wechaty.js.org/qrcode/")) {
-                    qrcodeUrl = line;
-                    break;
+            boolean found = false;
+            while (!found) {
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("https://wechaty.js.org/qrcode/")) {
+                        qrcodeUrl = line;
+                        found = true;
+                        break;
+                    }
+                }
+                // 如果还没找到，等待一会儿再继续读取
+                if (!found) {
+                    Thread.sleep(1000);
                 }
             }
 
             reader.close();
-            inputStream.close();
 
             return qrcodeUrl;
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return null;
         }
     }
-
 
 
 

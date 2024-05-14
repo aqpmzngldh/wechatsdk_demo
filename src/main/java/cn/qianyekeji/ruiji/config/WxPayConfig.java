@@ -11,11 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import javax.net.ssl.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 
 
 @Configuration
@@ -69,12 +71,46 @@ public class WxPayConfig {
         }
     }
 
+    private void configureSSLContext() {
+        try {
+            // 创建一个信任所有证书的 TrustManager
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return null;
+                        }
+
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                        }
+
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                        }
+                    }
+            };
+
+            // 设置 SSL 上下文
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // 设置主机名验证器
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                public boolean verify(String urlHostName, SSLSession session) {
+                    return true;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * 获取签名验证器
      * @return
      */
     @Bean
     public ScheduledUpdateCertificatesVerifier getVerifier(){
+        // 先配置 SSL 上下文
+        configureSSLContext();
 
         log.info("获取签名验证器");
 
