@@ -42,8 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -1667,6 +1666,37 @@ public class Xcx_2CategoryController {
             e.printStackTrace();
         }
         return  "暂无今日新闻推荐";
+    }
+
+
+    @PostMapping("/r")
+    public String r() throws Exception{
+        System.out.println("用接口启动wechaty方便用户启动");
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr/index.js");
+            Process process = processBuilder.start();
+
+            InputStream inputStream = process.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+            String qrcodeUrl = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("https://wechaty.js.org/qrcode/")) {
+                    qrcodeUrl = line;
+                    break;
+                }
+            }
+
+            reader.close();
+            inputStream.close();
+
+            return qrcodeUrl;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 
