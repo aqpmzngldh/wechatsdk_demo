@@ -1669,40 +1669,29 @@ public class Xcx_2CategoryController {
     }
 
 
-//    @PostMapping("/r")
-//    public String r() throws Exception{
-//        System.out.println("用接口启动wechaty方便用户启动");
-//
-//        try {
-//            ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr/index.js");
-//            // 创建日志文件并重定向标准输出和错误输出
-//            File logFile = new File("/www/wwwlogs/nodejs/ren1.log");
-//            processBuilder.redirectOutput(logFile);
-//            processBuilder.redirectError(logFile);
-//
-//            Process process = processBuilder.start();
-//
-//            InputStream inputStream = process.getInputStream();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-//
-//            String line;
-//            String qrcodeUrl = null;
-//            while ((line = reader.readLine()) != null) {
-//                if (line.contains("https://wechaty.js.org/qrcode/")) {
-//                    qrcodeUrl = line;
-//                    break;
-//                }
-//            }
-//
-//            reader.close();
-//            inputStream.close();
-//
-//            return qrcodeUrl;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    @PostMapping("/r")
+    public String r(String from1,String topic) throws Exception{
+        System.out.println("先判断当前群是否存在id，如果存在返回空字符串，如果不存在则随机生成一个value为时间戳进行存储");
+        // a_yonghu_from1是当前登录的用户名，为redis中的hash中的键，key为群名topic，value为群的id，value为自动生成
+        // 定义Redis中的键
+        String redisKey = "a_yonghu_" + topic;
+        // 获取Hash操作对象
+        HashOperations<String, String, String> hashOperations = redisTemplate.opsForHash();
+
+        // 检查群名是否存在
+        if (hashOperations.hasKey(redisKey, topic)) {
+            // 如果存在,返回对应的value
+            return hashOperations.get(redisKey, topic);
+        } else {
+            // 生成当前时间戳作为ID
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            // 存储到Redis
+            hashOperations.put(redisKey, topic, timestamp);
+            return timestamp;
+        }
+    }
+
+
 
 
     @GetMapping("/niuniu")
@@ -1745,6 +1734,93 @@ public class Xcx_2CategoryController {
             return null;
         }
     }
+
+
+
+    @GetMapping("/duoLaAMeng")
+    public String s() throws Exception {
+        System.out.println("用接口启动wechaty方便用户启动");
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr_1/index.js");
+            // 创建日志文件并重定向标准输出和错误输出
+            File logFile = new File("/www/wwwlogs/nodejs/ren2.log");
+            processBuilder.redirectOutput(logFile);
+            processBuilder.redirectError(logFile);
+
+            Process process = processBuilder.start();
+
+            // 等待二维码URL出现在日志中
+            BufferedReader reader = new BufferedReader(new FileReader(logFile));
+            String line;
+            String qrcodeUrl = null;
+            boolean found = false;
+            while (!found) {
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("https://wechaty.js.org/qrcode/")) {
+                        qrcodeUrl = line;
+                        found = true;
+                        break;
+                    }
+                }
+                // 如果还没找到，等待一会儿再继续读取
+                if (!found) {
+                    Thread.sleep(1000);
+                }
+            }
+
+            reader.close();
+
+            return qrcodeUrl;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping("/xieZiLaiLai")
+    public String t() throws Exception {
+        System.out.println("用接口启动wechaty方便用户启动");
+
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("node", "/www/server/888/jqr_2/index.js");
+            // 创建日志文件并重定向标准输出和错误输出
+            File logFile = new File("/www/wwwlogs/nodejs/ren3.log");
+            processBuilder.redirectOutput(logFile);
+            processBuilder.redirectError(logFile);
+
+            Process process = processBuilder.start();
+
+            // 等待二维码URL出现在日志中
+            BufferedReader reader = new BufferedReader(new FileReader(logFile));
+            String line;
+            String qrcodeUrl = null;
+            boolean found = false;
+            while (!found) {
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("https://wechaty.js.org/qrcode/")) {
+                        qrcodeUrl = line;
+                        found = true;
+                        break;
+                    }
+                }
+                // 如果还没找到，等待一会儿再继续读取
+                if (!found) {
+                    Thread.sleep(1000);
+                }
+            }
+
+            reader.close();
+
+            return qrcodeUrl;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+
 
 
 
