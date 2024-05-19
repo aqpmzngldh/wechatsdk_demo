@@ -1622,6 +1622,7 @@ public class Xcx_2CategoryController {
         }
     }
 
+    //这种方式还没用几天就一直报错403了，估计是csdn限制了ip，换一种qq方式
     @PostMapping("/q")
     public String q() throws Exception{
         System.out.println("对csdn中的极客日报发的新闻热点进行解析获取");
@@ -1666,6 +1667,58 @@ public class Xcx_2CategoryController {
             e.printStackTrace();
         }
         return  "暂无今日新闻推荐";
+    }
+
+
+    @PostMapping("/qq")
+    public String qq() throws Exception{
+        System.out.println("对csdn中自己设置了自定义域名的文章进行解析获取");
+        try {
+
+            String url = "https://rss.csdn.net/weixin_46064585/rss/map?spm=1001.2014.3001.5494";
+
+            // 发送GET请求
+            HttpResponse response = HttpUtil.createGet(url).execute();
+
+            if (response.isOk()) {
+                String responseBody = response.body();
+//                System.out.println("尝试查看这个字符串："+responseBody);
+                int startIndex = responseBody.indexOf("<link>", responseBody.indexOf("<link>") + 1) + "<link>".length();
+                int endIndex = responseBody.indexOf("</link>", responseBody.indexOf("</link>")+1);
+                String firstLink = responseBody.substring(startIndex, endIndex);
+                System.out.println("尝试查看提取的链接："+firstLink);
+                String articleUrl = firstLink; // 替换为你感兴趣的文章链接
+                String articleId = articleUrl.substring(articleUrl.lastIndexOf("/") + 1);
+                System.out.println("提取的文章ID：" + articleId);
+
+                articleUrl = "https://qianye.blog.csdn.net/article/details/"+articleId; // 替换为你感兴趣的文章链接
+                System.out.println("尝试查看一下这个url对不对");
+
+                try {
+                    Document doc = Jsoup.connect(articleUrl).get();
+//                String htmlContent = doc.html(); // 获取网页的HTML内容
+//                System.out.println(htmlContent); // 打印HTML内容
+                    // 提取新闻热点
+                    StringBuilder sb = new StringBuilder();
+                    Elements hotNewsElements = doc.select("#content_views > p");
+                    System.out.println("新闻热点:");
+                    for (Element hotNewsElement : hotNewsElements) {
+//                    System.out.println(hotNewsElement.text());
+                        sb.append(hotNewsElement.text()).append(System.lineSeparator()); // 使用System.lineSeparator()获取当前系统换行符
+                    }
+                    System.out.println(sb.toString());
+                    return sb.toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                // 处理错误
+                System.err.println("Failed to 获取新闻热点csdn" + response.getStatus());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return  "";
     }
 
 
@@ -1819,7 +1872,42 @@ public class Xcx_2CategoryController {
         }
     }
 
-
+//    @PostMapping("/s")
+//    public void s() throws Exception{
+//        System.out.println("boss直聘");
+//
+//        // 设置 Chrome 驱动程序路径
+//        System.setProperty("webdriver.chrome.driver", "path_to_chromedriver.exe");
+//
+//        // 初始化 Chrome WebDriver
+//        WebDriver driver = new ChromeDriver();
+//
+//        // 打开 BOSS 直聘的消息页面
+//        driver.get("https://www.zhipin.com/web/geek/chat?ka=header-message");
+//
+//        // 等待页面加载，这里可以根据实际情况调整等待时间
+//        try {
+//            Thread.sleep(5000); // 等待 5 秒
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//
+//        // 查找消息元素
+//        List<WebElement> messages = driver.findElements(By.className("message_item"));
+//
+//        // 输出消息内容
+//        for (WebElement message : messages) {
+//            WebElement sender = message.findElement(By.className("name")); // 发送者姓名
+//            WebElement content = message.findElement(By.className("content")); // 消息内容
+//            System.out.println("发送者: " + sender.getText());
+//            System.out.println("消息内容: " + content.getText());
+//            System.out.println("-----------------------------");
+//        }
+//
+//        // 关闭浏览器
+//        driver.quit();
+//
+//    }
 
 
 
