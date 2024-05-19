@@ -30,6 +30,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.HashOperations;
@@ -1872,42 +1876,50 @@ public class Xcx_2CategoryController {
         }
     }
 
-//    @PostMapping("/s")
-//    public void s() throws Exception{
-//        System.out.println("boss直聘");
-//
-//        // 设置 Chrome 驱动程序路径
-//        System.setProperty("webdriver.chrome.driver", "path_to_chromedriver.exe");
-//
-//        // 初始化 Chrome WebDriver
-//        WebDriver driver = new ChromeDriver();
-//
-//        // 打开 BOSS 直聘的消息页面
-//        driver.get("https://www.zhipin.com/web/geek/chat?ka=header-message");
-//
-//        // 等待页面加载，这里可以根据实际情况调整等待时间
-//        try {
-//            Thread.sleep(5000); // 等待 5 秒
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        // 查找消息元素
-//        List<WebElement> messages = driver.findElements(By.className("message_item"));
-//
-//        // 输出消息内容
-//        for (WebElement message : messages) {
-//            WebElement sender = message.findElement(By.className("name")); // 发送者姓名
-//            WebElement content = message.findElement(By.className("content")); // 消息内容
-//            System.out.println("发送者: " + sender.getText());
-//            System.out.println("消息内容: " + content.getText());
-//            System.out.println("-----------------------------");
-//        }
-//
-//        // 关闭浏览器
+    @PostMapping("/u")
+    public void u() throws Exception{
+        System.out.println("boss直聘");
+
+        // 设置 Chrome 驱动程序路径
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
+
+        // 初始化 Chrome WebDriver
+        WebDriver driver = new ChromeDriver();
+
+
+        // 打开 BOSS 直聘的消息页面
+        driver.get("https://www.zhipin.com/web/geek/chat?ka=header-message");
+
+        // 找到微信扫码登录按钮并点击
+        WebElement wechatLoginButton = driver.findElement(By.xpath("//button[@class='login-type__item login-wechat']"));
+        wechatLoginButton.click();
+
+        // 等待用户扫描二维码并完成登录
+        System.out.println("请在微信中扫描二维码并完成登录...");
+
+        // 等待页面加载，这里可以根据实际情况调整等待时间
+        try {
+            Thread.sleep(5000); // 等待 5 秒
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // 查找消息元素
+        List<WebElement> messages = driver.findElements(By.className("message_item"));
+
+        // 输出消息内容
+        for (WebElement message : messages) {
+            WebElement sender = message.findElement(By.className("name")); // 发送者姓名
+            WebElement content = message.findElement(By.className("content")); // 消息内容
+            System.out.println("发送者: " + sender.getText());
+            System.out.println("消息内容: " + content.getText());
+            System.out.println("-----------------------------");
+        }
+
+        // 关闭浏览器
 //        driver.quit();
-//
-//    }
+
+    }
 
 
 
