@@ -1907,6 +1907,21 @@ public class Xcx_2CategoryController {
 
     }
 
+    @PostMapping("/t")
+    public String t(String topic) throws Exception {
+        System.out.println("查看当前机器人要给消息发送到哪个群中");
+        System.out.println("看一下传递过来的topic"+topic);
+        String prepayId = (String) redisTemplate.opsForHash().get("a_boss_bangding", topic);
+        return prepayId;
+    }
+
+    @PostMapping("/u")
+    public void u(String topic,String haha) throws Exception {
+        System.out.println("当咸王给消息发送到群后，然后给这个消息删除");
+        System.out.println("看一下传递过来的topic和haha"+topic+","+haha);
+        redisTemplate.opsForHash().delete("a_boss_"+topic,haha);
+    }
+
 
 
 
