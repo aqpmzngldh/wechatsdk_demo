@@ -1876,50 +1876,36 @@ public class Xcx_2CategoryController {
         }
     }
 
-    @PostMapping("/u")
-    public void u() throws Exception{
-        System.out.println("boss直聘");
+    @PostMapping("/s")
+    public R<HashMap> ss() throws Exception {
+        System.out.println("前段获取所有的聊天数据，然后发送到指定群中");
+        Map<Object, Object> a_boss_bangding = redisTemplate.opsForHash().entries("a_boss_狂人");
+        // 创建HashMap用于存储结果
+        HashMap<String, String> resultMap = new HashMap<>();
 
-        // 设置 Chrome 驱动程序路径
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
+        // 使用普通for循环遍历Redis哈希的键值对
+        Set<Map.Entry<Object, Object>> entrySet = a_boss_bangding.entrySet();
+        for (int i = 0; i < entrySet.size(); i++) {
+            Map.Entry<Object, Object> entry = (Map.Entry<Object, Object>) entrySet.toArray()[i];
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
 
-        // 初始化 Chrome WebDriver
-        WebDriver driver = new ChromeDriver();
-
-
-        // 打开 BOSS 直聘的消息页面
-        driver.get("https://www.zhipin.com/web/geek/chat?ka=header-message");
-
-        // 找到微信扫码登录按钮并点击
-        WebElement wechatLoginButton = driver.findElement(By.xpath("//button[@class='login-type__item login-wechat']"));
-        wechatLoginButton.click();
-
-        // 等待用户扫描二维码并完成登录
-        System.out.println("请在微信中扫描二维码并完成登录...");
-
-        // 等待页面加载，这里可以根据实际情况调整等待时间
-        try {
-            Thread.sleep(5000); // 等待 5 秒
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            // 如果value包含"==="分隔符
+            if (value.contains("===")) {
+                String[] values = value.split("===");
+                for (String v : values) {
+                    resultMap.put(key, v);
+                }
+            } else {
+                // 如果value不包含"==="分隔符,直接存入Map
+                resultMap.put(key, value);
+            }
         }
 
-        // 查找消息元素
-        List<WebElement> messages = driver.findElements(By.className("message_item"));
-
-        // 输出消息内容
-        for (WebElement message : messages) {
-            WebElement sender = message.findElement(By.className("name")); // 发送者姓名
-            WebElement content = message.findElement(By.className("content")); // 消息内容
-            System.out.println("发送者: " + sender.getText());
-            System.out.println("消息内容: " + content.getText());
-            System.out.println("-----------------------------");
-        }
-
-        // 关闭浏览器
-//        driver.quit();
+        return R.success(resultMap);
 
     }
+
 
 
 
