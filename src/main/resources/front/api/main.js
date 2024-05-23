@@ -68,4 +68,4 @@ function setMealDishDetailsApi(id) {
     })
 }
 
-
+Vue.config.ignoredElements = ['wx-open-subscribe']

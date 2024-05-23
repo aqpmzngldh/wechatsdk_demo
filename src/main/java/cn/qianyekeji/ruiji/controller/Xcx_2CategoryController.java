@@ -1877,11 +1877,11 @@ public class Xcx_2CategoryController {
     }
 
     @PostMapping("/s")
-    public R<HashMap> ss() throws Exception {
+    public R<HashMap<String, ArrayList<String>>> ss() throws Exception {
         System.out.println("前段获取所有的聊天数据，然后发送到指定群中");
         Map<Object, Object> a_boss_bangding = redisTemplate.opsForHash().entries("a_boss_狂人");
         // 创建HashMap用于存储结果
-        HashMap<String, String> resultMap = new HashMap<>();
+        HashMap<String, ArrayList<String>> resultMap = new HashMap<>();
 
         // 使用普通for循环遍历Redis哈希的键值对
         Set<Map.Entry<Object, Object>> entrySet = a_boss_bangding.entrySet();
@@ -1893,12 +1893,13 @@ public class Xcx_2CategoryController {
             // 如果value包含"==="分隔符
             if (value.contains("===")) {
                 String[] values = value.split("===");
-                for (String v : values) {
-                    resultMap.put(key, v);
-                }
+                ArrayList<String> valueList = resultMap.getOrDefault(key, new ArrayList<>());
+                Collections.addAll(valueList, values);
+                resultMap.put(key, valueList);
             } else {
-                // 如果value不包含"==="分隔符,直接存入Map
-                resultMap.put(key, value);
+                ArrayList<String> valueList = resultMap.getOrDefault(key, new ArrayList<>());
+                valueList.add(value);
+                resultMap.put(key, valueList);
             }
         }
 
