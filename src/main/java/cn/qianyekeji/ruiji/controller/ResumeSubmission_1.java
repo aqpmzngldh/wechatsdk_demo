@@ -177,7 +177,7 @@ public class ResumeSubmission_1 {
 
                             //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
                             // 获取所有的键值对
-                            Map<Object, Object> entries = redisTemplate.opsForHash().entries(messageKey);
+                            Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
                             // 判断entries是否不为空
                             if (!entries.isEmpty()) {
                                 // 遍历输出所有键值对
@@ -189,6 +189,9 @@ public class ResumeSubmission_1 {
                                         // 尝试查找发送按钮
                                         List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                         sendButtons.get(0).click();
+
+                                        //发送了消息后再给这行数据删掉
+                                        redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
                                     }
                                 }
                             }
@@ -196,7 +199,7 @@ public class ResumeSubmission_1 {
                             System.out.println("未找到发送简历按钮");
                             //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
                             // 获取所有的键值对
-                            Map<Object, Object> entries = redisTemplate.opsForHash().entries(messageKey);
+                            Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
                             // 判断entries是否不为空
                             if (!entries.isEmpty()) {
                                 // 遍历输出所有键值对
@@ -208,25 +211,32 @@ public class ResumeSubmission_1 {
                                         // 尝试查找发送按钮
                                         List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                         sendButtons.get(0).click();
+
+                                        //发送了消息后再给这行数据删掉
+                                        redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
                                     }
                                 }
                             }
                         }
-                    }
-
-                    //这里对消息进行处理
-                    System.out.println("当前登录用户是："+user);
-                    System.out.println(secondDivSecondSpanText+"的"+secondDivSecondSpanText3+secondDivFirstSpanText+
-                            ":"+thirdDivFirstSpanText);
-
-
-                    // 检查并存储消息到 map 中
-                    if (messageMap.containsKey(messageKey)) {
-                        if (!messageMap.get(messageKey).equals(thirdDivFirstSpanText)) {
-                            messageMap.put(messageKey, thirdDivFirstSpanText);  // 更新 value
+                        // 检查并存储消息到 map 中
+                        if (messageMap.containsKey(messageKey)) {
+                            if (!messageMap.get(messageKey).equals(thirdDivFirstSpanText)) {
+                                messageMap.put(messageKey, thirdDivFirstSpanText);  // 更新 value
+                                //这里再加入存入redis的操作
+                                String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
+                                if (msg== null){
+                                    redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
+                                }else{
+                                    //这时候发现已经存储有数据了，然后进行拼接
+                                    String pinjie=msg+"==="+thirdDivFirstSpanText;
+                                    redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
+                                }
+                            }
+                        } else {
+                            messageMap.put(messageKey, thirdDivFirstSpanText);  // 新增键值对
                             //这里再加入存入redis的操作
                             String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
-                            if (msg== null){
+                            if (msg==null){
                                 redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
                             }else{
                                 //这时候发现已经存储有数据了，然后进行拼接
@@ -234,17 +244,7 @@ public class ResumeSubmission_1 {
                                 redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
                             }
                         }
-                    } else {
-                        messageMap.put(messageKey, thirdDivFirstSpanText);  // 新增键值对
-                        //这里再加入存入redis的操作
-                        String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
-                        if (msg==null){
-                            redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
-                        }else{
-                            //这时候发现已经存储有数据了，然后进行拼接
-                            String pinjie=msg+"==="+thirdDivFirstSpanText;
-                            redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
-                        }
+
                     }
                 }
             }
@@ -256,7 +256,7 @@ public class ResumeSubmission_1 {
         System.out.println("已回复数量：" + nonEmptyThirdDivCount);
 
         // 在chat()方法的末尾添加对自身的递归调用
-//        chat();
+        chat();
     }
 }
 
