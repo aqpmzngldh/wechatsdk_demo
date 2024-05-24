@@ -103,7 +103,7 @@ public class ResumeSubmission_1 {
     //获取最新聊天记录
     @SneakyThrows
     private  void chat() {
-
+        try {
 
         driver.get(chatUser);
         wait15s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='username']")));
@@ -167,9 +167,13 @@ public class ResumeSubmission_1 {
 //                    如果聊天中对方要自己的简历，这种格式是我想要一份您的附件简历，您是否同意，这时候自动发送
 
                     if (processedCount<=13) {
+                        System.out.println("当前登录用户是："+user);
+                        System.out.println(secondDivSecondSpanText+"的"+secondDivSecondSpanText3+secondDivFirstSpanText+
+                                ":"+thirdDivFirstSpanText);
+
                         try {
-                            System.out.println("看一下这是大循环中第几次出错了"+i);
-                            System.out.println("看一下这是小的第几次出错了"+processedCount);
+//                            System.out.println("经过观察网页，发现<=13的时候不会出错");
+//                            System.out.println("看一下这是小的第几次出错了"+processedCount);
                             textElements.get(i).click();
                             WebElement btnAgree = wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn btn-agree']")));
                             btnAgree.click();
@@ -256,7 +260,11 @@ public class ResumeSubmission_1 {
         System.out.println("已回复数量：" + nonEmptyThirdDivCount);
 
         // 在chat()方法的末尾添加对自身的递归调用
-        chat();
+            chat();
+        } catch (Exception e) {
+            System.out.println("报错后继续执行下一次");
+            chat();
+        }
     }
 }
 
