@@ -176,22 +176,26 @@ public class ResumeSubmission_1 {
                             System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
 
 
-                            // 获取当前时间
-                            LocalTime currentTime = LocalTime.now();
-                            // 给定时间
-                            LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
-                            // 将LocalTime转换为LocalDateTime
-                            LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
-                            LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+                            try {
+                                // 获取当前时间
+                                LocalTime currentTime = LocalTime.now();
+                                // 给定时间
+                                LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
+                                // 将LocalTime转换为LocalDateTime
+                                LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+                                LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
 
-                            // 计算分钟差值的绝对值
-                            long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+                                // 计算分钟差值的绝对值
+                                long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
 
-                            // 输出分钟差值
-                            System.out.println("分钟差值: " + minutesDiff);
-                            if (minutesDiff > 2) {
-                                System.out.println(secondDivFirstSpanText+"你怎么已读不回"+"\n");
-                                System.out.println("此消息来自于狂人开发的boss直聘机器人自动回复");
+                                // 输出分钟差值
+                                System.out.println("分钟差值: " + minutesDiff);
+                                if (minutesDiff > 2) {
+                                    System.out.println(secondDivFirstSpanText+"你怎么已读不回"+"\n");
+                                    System.out.println("此消息来自于狂人开发的boss直聘机器人自动回复");
+                                }
+                            } catch (Exception e) {
+//                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
                             }
 
 
@@ -230,7 +234,7 @@ public class ResumeSubmission_1 {
                             if (!entries.isEmpty()) {
                                 // 遍历输出所有键值对
                                 for (Map.Entry<Object, Object> entry : entries.entrySet()) {
-                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
                                     if (entry.getKey().equals(messageKey)){
                                         WebElement chatInput = driver.findElement(By.className("chat-input"));
                                         chatInput.sendKeys((String)entry.getValue());
@@ -346,6 +350,7 @@ public class ResumeSubmission_1 {
             chat();
         } catch (Exception e) {
             System.out.println("报错后继续执行下一次");
+            System.out.println(e);
             chat();
         }
     }
