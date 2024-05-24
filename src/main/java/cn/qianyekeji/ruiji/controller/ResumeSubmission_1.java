@@ -192,7 +192,7 @@ public class ResumeSubmission_1 {
                                 System.out.println("分钟差值: " + minutesDiff);
                                 if (minutesDiff > 2) {
                                     System.out.println(secondDivFirstSpanText+"你怎么已读不回"+"\n");
-                                    System.out.println("此消息来自于狂人开发的boss直聘机器人自动回复");
+                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
                                 }
                             } catch (Exception e) {
 //                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
