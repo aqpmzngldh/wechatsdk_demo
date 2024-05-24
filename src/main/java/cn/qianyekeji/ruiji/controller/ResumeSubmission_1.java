@@ -173,7 +173,7 @@ public class ResumeSubmission_1 {
                         readCount++;
                         if (processedCount<=13) {
                             //先判断时间是否在二分钟后，如果是，就问他为什么已读不回？
-                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
+//                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
 
 
                             try {
@@ -191,7 +191,15 @@ public class ResumeSubmission_1 {
                                 // 输出分钟差值
                                 System.out.println("分钟差值: " + minutesDiff);
                                 if (minutesDiff > 2) {
-                                    System.out.println(secondDivFirstSpanText+"你怎么已读不回"+"\n");
+                                    // 定义字符串数组
+                                    String[] stringArray = {"，你怎么已读不回？", "，忘记回我了吗？", "，我们缺乏相互之间的沟通？"};
+                                    // 创建一个Random对象
+                                    Random random = new Random();
+                                    // 获取一个随机索引
+                                    int randomIndex = random.nextInt(stringArray.length);
+                                    // 获取随机字符串
+                                    String randomString = stringArray[randomIndex];
+                                    System.out.println(secondDivFirstSpanText+randomString+"\n");
                                     System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
                                 }
                             } catch (Exception e) {
@@ -205,7 +213,37 @@ public class ResumeSubmission_1 {
                         unreadCount++;
                         if (processedCount<=13) {
                             //先判断时间是否在二分钟后，如果是，就问他为什么未读不回？
-                            System.out.println("看一下未读的时间"+oneDivFirstSpanText);
+//                            System.out.println("看一下未读的时间"+oneDivFirstSpanText);
+
+                            try {
+                                // 获取当前时间
+                                LocalTime currentTime = LocalTime.now();
+                                // 给定时间
+                                LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
+                                // 将LocalTime转换为LocalDateTime
+                                LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+                                LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+
+                                // 计算分钟差值的绝对值
+                                long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+
+                                // 输出分钟差值
+                                System.out.println("分钟差值: " + minutesDiff);
+                                if (minutesDiff > 60) {
+                                    // 定义字符串数组
+                                    String[] stringArray = {"，在忙吗？", "，可以跟你成为同事吗？"};
+                                    // 创建一个Random对象
+                                    Random random = new Random();
+                                    // 获取一个随机索引
+                                    int randomIndex = random.nextInt(stringArray.length);
+                                    // 获取随机字符串
+                                    String randomString = stringArray[randomIndex];
+                                    System.out.println(secondDivFirstSpanText+randomString+"\n");
+                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对未读的自动回复");
+                                }
+                            } catch (Exception e) {
+//                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
+                            }
 
                         }
                     }
