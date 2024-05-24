@@ -199,6 +199,26 @@ public class ResumeSubmission_1 {
                                     }
                                 }
                             }
+
+                            //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
+                            // 获取所有的键值对
+                            Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
+                            // 判断entries是否不为空
+                            if (!entries1.isEmpty()) {
+                                // 遍历输出所有键值对
+                                for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
+                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                    if (entry.getKey().equals(thirdDivFirstSpanText)){
+                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                        chatInput.sendKeys((String)entry.getValue());
+                                        // 尝试查找发送按钮
+                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                        sendButtons.get(0).click();
+
+                                    }
+                                }
+                            }
+
                         } catch (TimeoutException e) {
                             System.out.println("未找到发送简历按钮");
                             //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
@@ -218,6 +238,25 @@ public class ResumeSubmission_1 {
 
                                         //发送了消息后再给这行数据删掉
                                         redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
+                                    }
+                                }
+                            }
+
+                            //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
+                            // 获取所有的键值对
+                            Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
+                            // 判断entries是否不为空
+                            if (!entries1.isEmpty()) {
+                                // 遍历输出所有键值对
+                                for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
+                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                    if (entry.getKey().equals(thirdDivFirstSpanText)){
+                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                        chatInput.sendKeys((String)entry.getValue());
+                                        // 尝试查找发送按钮
+                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                        sendButtons.get(0).click();
+
                                     }
                                 }
                             }
