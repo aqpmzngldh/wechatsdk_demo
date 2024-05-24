@@ -27,10 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -179,6 +176,25 @@ public class ceshi {
         String s="1,2";
         int length = s.split(",").length;
         System.out.println(length);
+    }
+
+    @Test
+    void  pttrr(){
+        // 获取当前时间
+        LocalTime currentTime = LocalTime.now();
+
+        // 给定时间
+        LocalTime givenTime = LocalTime.parse("2:45", DateTimeFormatter.ofPattern("H:mm"));
+
+        // 将LocalTime转换为LocalDateTime
+        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+        LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+
+        // 计算分钟差值的绝对值
+        long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+
+        // 输出分钟差值
+        System.out.println("分钟差值: " + minutesDiff);
     }
 
     @Test

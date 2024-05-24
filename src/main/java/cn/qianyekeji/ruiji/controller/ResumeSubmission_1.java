@@ -23,6 +23,13 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -128,6 +135,8 @@ public class ResumeSubmission_1 {
             if (divElements.size() >= 3) {
                 processedCount++;  // 增加已处理的消息计数器
 
+                // 第一个 <div> 标签
+                WebElement oneDivElement = divElements.get(0);
                 // 第二个 <div> 标签
                 WebElement secondDivElement = divElements.get(1);
                 // 第三个 <div> 标签
@@ -137,6 +146,8 @@ public class ResumeSubmission_1 {
                 List<WebElement> secondDivSpanElements = secondDivElement.findElements(By.tagName("span"));
                 // 获取第三个 <div> 标签中的所有 <span> 标签
                 List<WebElement> thirdDivSpanElements = thirdDivElement.findElements(By.tagName("span"));
+                // 获取第一个 <div> 标签中的所有 <span> 标签
+                List<WebElement> oneDivSpanElements = oneDivElement.findElements(By.tagName("span"));
 
                 // 获取第二个 <div> 标签中的第一个 <span> 标签的文本内容
                 String secondDivFirstSpanText = secondDivSpanElements.get(1).getText();
@@ -145,21 +156,54 @@ public class ResumeSubmission_1 {
                 String secondDivSecondSpanText3 = secondDivSpanElements.get(3).getText();
                 // 获取第三个 <div> 标签中的第一个 <span> 标签的文本内容
                 String thirdDivFirstSpanText = thirdDivSpanElements.get(0).getText();
+                // 获取第一个 <div> 标签中的第一个 <span> 标签的文本内容
+                String oneDivFirstSpanText = oneDivSpanElements.get(0).getText();
 
                 //相同消息只发送一次到redis
                 String messageKey = secondDivSecondSpanText + "的" + secondDivSecondSpanText3 + secondDivFirstSpanText;
 
                 // 检查 thirdDivFirstSpanText 是否为空
                 if ("".equals(thirdDivFirstSpanText)) {
-                    // 获取 thirdDivElement 的 class 属性值
-                    String thirdDivClass = thirdDivElement.getAttribute("class");
+                    WebElement webElement = thirdDivSpanElements.get(0);
+                    // 获取元素的class属性值
+                    String classValue = webElement.getAttribute("class");
                     // 检查 class 属性值是否包含 "status status-read"
-                    if (thirdDivClass.contains("status status-read")) {
+                    if (classValue.equals("status status-read")) {
                         //已读未回复，未回复的话问他为什么不回复，比如：杨女士你怎么不回复我
                         readCount++;
+                        if (processedCount<=13) {
+                            //先判断时间是否在二分钟后，如果是，就问他为什么已读不回？
+                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
+
+
+                            // 获取当前时间
+                            LocalTime currentTime = LocalTime.now();
+                            // 给定时间
+                            LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
+                            // 将LocalTime转换为LocalDateTime
+                            LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+                            LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+
+                            // 计算分钟差值的绝对值
+                            long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+
+                            // 输出分钟差值
+                            System.out.println("分钟差值: " + minutesDiff);
+                            if (minutesDiff > 2) {
+                                System.out.println(secondDivFirstSpanText+"你怎么已读不回"+"\n");
+                                System.out.println("此消息来自于狂人开发的boss直聘机器人自动回复");
+                            }
+
+
+                        }
                     } else {
                         //未读，未读的话5小时后进行一次重试
                         unreadCount++;
+                        if (processedCount<=13) {
+                            //先判断时间是否在二分钟后，如果是，就问他为什么未读不回？
+                            System.out.println("看一下未读的时间"+oneDivFirstSpanText);
+
+                        }
                     }
                 } else {
                     //已回复自己
