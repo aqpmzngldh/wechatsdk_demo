@@ -221,6 +221,7 @@ public class ResumeSubmission_1 {
                                     sendButtons.get(0).click();
                                 }
                             } catch (Exception e) {
+                                System.out.println("看一下错误是不是这发的");
 //                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
                             }
 
@@ -311,7 +312,7 @@ public class ResumeSubmission_1 {
                             if (!entries.isEmpty()) {
                                 // 遍历输出所有键值对
                                 for (Map.Entry<Object, Object> entry : entries.entrySet()) {
-                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
                                     if (entry.getKey().equals(messageKey)){
                                         WebElement chatInput = driver.findElement(By.className("chat-input"));
                                         chatInput.sendKeys((String)entry.getValue());
