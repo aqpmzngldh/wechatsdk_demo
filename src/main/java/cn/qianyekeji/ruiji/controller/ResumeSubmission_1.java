@@ -229,7 +229,7 @@ public class ResumeSubmission_1 {
                     } else {
                         //未读，未读的话5小时后进行一次重试
                         unreadCount++;
-                        System.out.println("对未读不做处理");
+//                        System.out.println("对未读不做处理");
                     }
                 } else {
                     //已回复自己
