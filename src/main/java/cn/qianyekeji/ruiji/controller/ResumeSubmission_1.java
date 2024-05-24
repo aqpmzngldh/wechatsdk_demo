@@ -351,7 +351,7 @@ public class ResumeSubmission_1 {
                             if (!entries1.isEmpty()) {
                                 // 遍历输出所有键值对
                                 for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
-                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
                                     if (entry.getKey().equals(thirdDivFirstSpanText)){
                                         WebElement chatInput = driver.findElement(By.className("chat-input"));
                                         chatInput.sendKeys((String)entry.getValue());
