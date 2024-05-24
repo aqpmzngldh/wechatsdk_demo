@@ -346,9 +346,13 @@ public class ResumeSubmission_1 {
 
                             boolean containsWord = thirdDivFirstSpanText.contains("简历");
                             if (containsWord&& thirdDivFirstSpanText.length() > 2){
-                                System.out.println("请问你是否想要我的简历，是的话请你直接发送索要申请，简历会自动发送\n" +
-                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复\n" +
+                                WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请，简历会自动发送." +
+                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复" +
                                         "如果你想要看我设置的更多预制回复，请发送:更多");
+                                // 尝试查找发送按钮
+                                List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                sendButtons.get(0).click();
                             }
 
 
