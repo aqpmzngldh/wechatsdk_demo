@@ -300,7 +300,7 @@ public class ResumeSubmission_1 {
                             if (!entries1.isEmpty()) {
                                 // 遍历输出所有键值对
                                 for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
-                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
                                     if (entry.getKey().equals(thirdDivFirstSpanText)){
                                         WebElement chatInput = driver.findElement(By.className("chat-input"));
                                         chatInput.sendKeys((String)entry.getValue());
@@ -311,6 +311,18 @@ public class ResumeSubmission_1 {
                                     }
                                 }
                             }
+
+                            boolean containsWord = thirdDivFirstSpanText.contains("简历");
+                            if (containsWord&& thirdDivFirstSpanText.length() > 2){
+                                System.out.println("请问你是否想要我的简历，是的话请你直接说：简历\n" +
+                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复\n" +
+                                        "如果你想要看我设置的更多预制回复，请发送:更多");
+                            }
+                            if ("简历".equals(thirdDivFirstSpanText)){
+                                //这时候给这个人发送简历
+
+                            }
+
 
                         } catch (TimeoutException e) {
                             System.out.println("未找到发送简历按钮");
@@ -353,6 +365,18 @@ public class ResumeSubmission_1 {
                                     }
                                 }
                             }
+
+                            boolean containsWord = thirdDivFirstSpanText.contains("简历");
+                            if (containsWord&& thirdDivFirstSpanText.length() > 2){
+                                System.out.println("请问你是否想要我的简历，是的话请你直接说：简历\n" +
+                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复\n" +
+                                        "如果你想要看我设置的更多预制回复，请发送:更多");
+                            }
+                            if ("简历".equals(thirdDivFirstSpanText)){
+                                //这时候给这个人发送简历
+
+                            }
+
                         }
                         // 检查并存储消息到 map 中
                         if (messageMap.containsKey(messageKey)) {
