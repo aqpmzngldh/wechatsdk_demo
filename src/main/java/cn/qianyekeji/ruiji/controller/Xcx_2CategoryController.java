@@ -1922,6 +1922,14 @@ public class Xcx_2CategoryController {
         redisTemplate.opsForHash().delete("a_boss_"+topic,haha);
     }
 
+    @PostMapping("/v")
+    public void v(String topic,String haha,String vv) throws Exception {
+        System.out.println("当咸王给消息发送到群后，然后用户进行回复");
+        System.out.println("看一下传递过来的topic和haha和vv"+topic+","+haha+","+vv);
+        redisTemplate.opsForHash().put(topic,haha,vv);
+
+    }
+
 
 
 
