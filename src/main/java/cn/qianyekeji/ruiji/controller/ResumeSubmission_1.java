@@ -1,6 +1,7 @@
 package cn.qianyekeji.ruiji.controller;
 
 
+import cn.qianyekeji.ruiji.utils.MailUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -43,6 +44,8 @@ import java.util.*;
 public class ResumeSubmission_1 {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @Autowired
+    private MailUtil mailUtil;
 
 
     static String loginUrl = "https://www.zhipin.com/web/user/?ka=header-login&r="+ Math.random();
@@ -74,7 +77,7 @@ public class ResumeSubmission_1 {
 
 
     @SneakyThrows
-    private static String login() {
+    private String login() {
         driver.get(loginUrl);
         // 等待登录按钮元素出现，但不抛出异常
         try {
@@ -98,6 +101,10 @@ public class ResumeSubmission_1 {
         String code="https://www.zhipin.com"+srcValue;
         System.out.println("当前登录的二维码是："+code);
         //这里到时候加一个给这个二维码通过邮件发送给用户的逻辑就好了，不能给二维码return回去，因为return的话就不在程序中走了
+        Set<String> a_boss_email = redisTemplate.opsForSet().members("a_boss_email");
+        for (String value : a_boss_email) {
+            mailUtil.send("",value,"【Boss直聘验证码下发】",code, Collections.singletonList(""));
+        }
         try {
             wait15s.until(ExpectedConditions.presenceOfElementLocated(By.className("nav-school-new")));
         } catch (Exception e) {
