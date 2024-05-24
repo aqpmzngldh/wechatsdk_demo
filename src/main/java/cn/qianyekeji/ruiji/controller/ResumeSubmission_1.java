@@ -5,9 +5,11 @@ import cn.qianyekeji.ruiji.utils.MailUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +55,23 @@ public class ResumeSubmission_1 {
     static String chatUser ="https://www.zhipin.com/web/geek/recommend";
     // 设置 ChromeDriver 的路径
     static {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
+//        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "/www/server/888/chrome/chrome_linux/chromedriver/chromedriver-linux64/chromedriver");
+        System.setProperty("DISPLAY", ":99");
     }
-    static ChromeDriver driver = new ChromeDriver();
+    // 创建ChromeDriver实例时添加ChromeOptions配置
+    static ChromeOptions options = new ChromeOptions();
+    static {
+        //启动时 最大化浏览器
+        options.addArguments("--start-maximized");
+        // 启用无头模式
+        options.addArguments("--headless");
+        // 禁用沙箱
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+
+    }
+    static ChromeDriver driver = new ChromeDriver(options);
     static WebDriverWait wait15s = new WebDriverWait(driver, 30);
     static WebDriverWait wait2s = new WebDriverWait(driver, 2);
     static List<String> returnList = new ArrayList<>();
@@ -83,8 +99,11 @@ public class ResumeSubmission_1 {
         try {
             System.out.println("第一次登录");
             wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn-sign-switch ewm-switch']")));
-            // 如果登录按钮存在，执行点击操作
-            driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']")).click();
+//            // 如果登录按钮存在，执行点击操作
+//            driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']")).click();
+            // 如果登录按钮存在，执行点击操作,因为要部署在linux中，所以改成无头模式的时候，点击方式也要发生变化，不然会出错
+            WebElement loginButton = driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']"));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", loginButton);
         } catch (TimeoutException e) {
             // 如果按钮元素不存在，说明不是第一次登录
             System.out.println("再次登录");
