@@ -183,6 +183,7 @@ public class ResumeSubmission_1 {
                     if (classValue.equals("status status-read")) {
                         //已读未回复，未回复的话问他为什么不回复，比如：杨女士你怎么不回复我
                         readCount++;
+                        System.out.println("看一下这个是多少次的："+processedCount);
                         if (processedCount<=13) {
                             //先判断时间是否在二分钟后，如果是，就问他为什么已读不回？
 //                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
@@ -214,7 +215,7 @@ public class ResumeSubmission_1 {
 //                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
                                     textElements.get(i).click();
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                    chatInput.sendKeys(secondDivFirstSpanText+randomString+"\n"+"此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
+                                    chatInput.sendKeys(secondDivFirstSpanText+randomString+"。"+"此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
                                     // 尝试查找发送按钮
                                     List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                     sendButtons.get(0).click();
@@ -228,46 +229,7 @@ public class ResumeSubmission_1 {
                     } else {
                         //未读，未读的话5小时后进行一次重试
                         unreadCount++;
-                        if (processedCount<=13) {
-                            //先判断时间是否在二分钟后，如果是，就问他为什么未读不回？
-//                            System.out.println("看一下未读的时间"+oneDivFirstSpanText);
-                            try {
-                                // 获取当前时间
-                                LocalTime currentTime = LocalTime.now();
-                                // 给定时间
-                                LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
-                                // 将LocalTime转换为LocalDateTime
-                                LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
-                                LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
-
-                                // 计算分钟差值的绝对值
-                                long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
-
-                                // 输出分钟差值
-                                System.out.println("分钟差值: " + minutesDiff);
-                                if (minutesDiff > 60) {
-                                    // 定义字符串数组
-                                    String[] stringArray = {"，在忙吗？", "，可以跟你成为同事吗？"};
-                                    // 创建一个Random对象
-                                    Random random = new Random();
-                                    // 获取一个随机索引
-                                    int randomIndex = random.nextInt(stringArray.length);
-                                    // 获取随机字符串
-                                    String randomString = stringArray[randomIndex];
-//                                    System.out.println(secondDivFirstSpanText+randomString+"\n");
-//                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对未读的自动回复");
-                                    textElements.get(i).click();
-                                    WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                    chatInput.sendKeys(secondDivFirstSpanText+randomString+"\n"+"此消息来自于狂人开发的boss直聘机器人针对未读的自动回复");
-                                    // 尝试查找发送按钮
-                                    List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                    sendButtons.get(0).click();
-                                }
-                            } catch (Exception e) {
-//                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
-                            }
-
-                        }
+                        System.out.println("对未读不做处理");
                     }
                 } else {
                     //已回复自己
