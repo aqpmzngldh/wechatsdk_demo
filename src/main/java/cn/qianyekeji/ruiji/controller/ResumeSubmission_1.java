@@ -59,19 +59,8 @@ public class ResumeSubmission_1 {
         System.setProperty("webdriver.chrome.driver", "/www/server/888/chrome/chrome_linux/chromedriver/chromedriver-linux64/chromedriver");
         System.setProperty("DISPLAY", ":99");
     }
-    // 创建ChromeDriver实例时添加ChromeOptions配置
-    static ChromeOptions options = new ChromeOptions();
-    static {
-        //启动时 最大化浏览器
-        options.addArguments("--start-maximized");
-        // 启用无头模式
-        options.addArguments("--headless");
-        // 禁用沙箱
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
 
-    }
-    static ChromeDriver driver = new ChromeDriver(options);
+    static ChromeDriver driver = new ChromeDriver();
     static WebDriverWait wait15s = new WebDriverWait(driver, 30);
     static WebDriverWait wait2s = new WebDriverWait(driver, 2);
     static List<String> returnList = new ArrayList<>();
@@ -98,7 +87,7 @@ public class ResumeSubmission_1 {
         // 等待登录按钮元素出现，但不抛出异常
         try {
             System.out.println("第一次登录");
-            wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn-sign-switch ewm-switch']")));
+            wait15s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn-sign-switch ewm-switch']")));
 //            // 如果登录按钮存在，执行点击操作
 //            driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']")).click();
             // 如果登录按钮存在，执行点击操作,因为要部署在linux中，所以改成无头模式的时候，点击方式也要发生变化，不然会出错
@@ -113,6 +102,7 @@ public class ResumeSubmission_1 {
 
         WebElement elementByName = driver.findElementByClassName("qr-img-box");
         String innerHTML = elementByName.getAttribute("innerHTML");
+        System.out.println("看一下网页"+innerHTML);
         int srcStartIndex = innerHTML.indexOf("src=\"") + 5; // 找到 src 属性的起始位置
         int srcEndIndex = innerHTML.indexOf("\"", srcStartIndex); // 找到 src 属性值的结束位置
         String srcValue = innerHTML.substring(srcStartIndex, srcEndIndex); // 提取 src 属性值
