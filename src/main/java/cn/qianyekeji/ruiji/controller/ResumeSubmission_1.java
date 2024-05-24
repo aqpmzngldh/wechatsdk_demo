@@ -55,9 +55,8 @@ public class ResumeSubmission_1 {
     static String chatUser ="https://www.zhipin.com/web/geek/recommend";
     // 设置 ChromeDriver 的路径
     static {
-//        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
-        System.setProperty("webdriver.chrome.driver", "/www/server/888/chrome/chrome_linux/chromedriver/chromedriver-linux64/chromedriver");
-        System.setProperty("DISPLAY", ":99");
+        System.setProperty("webdriver.chrome.driver", "C:\\Users\\qianye\\AppData\\Local\\Google\\Chrome\\Application\\chromedriver.exe");
+//        System.setProperty("webdriver.chrome.driver", "/www/server/888/chrome/chrome_linux/chromedriver/chromedriver-linux64/chromedriver");
     }
 
     static ChromeDriver driver = new ChromeDriver();
@@ -89,10 +88,7 @@ public class ResumeSubmission_1 {
             System.out.println("第一次登录");
             wait15s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn-sign-switch ewm-switch']")));
 //            // 如果登录按钮存在，执行点击操作
-//            driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']")).click();
-            // 如果登录按钮存在，执行点击操作,因为要部署在linux中，所以改成无头模式的时候，点击方式也要发生变化，不然会出错
-            WebElement loginButton = driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']"));
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", loginButton);
+            driver.findElement(By.cssSelector("[class*='btn-sign-switch ewm-switch']")).click();
         } catch (TimeoutException e) {
             // 如果按钮元素不存在，说明不是第一次登录
             System.out.println("再次登录");
