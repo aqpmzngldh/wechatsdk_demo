@@ -314,14 +314,11 @@ public class ResumeSubmission_1 {
 
                             boolean containsWord = thirdDivFirstSpanText.contains("简历");
                             if (containsWord&& thirdDivFirstSpanText.length() > 2){
-                                System.out.println("请问你是否想要我的简历，是的话请你直接说：简历\n" +
+                                System.out.println("请问你是否想要我的简历，是的话请你直接发送索要申请，简历会自动发送\n" +
                                         "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复\n" +
                                         "如果你想要看我设置的更多预制回复，请发送:更多");
                             }
-                            if ("简历".equals(thirdDivFirstSpanText)){
-                                //这时候给这个人发送简历
 
-                            }
 
 
                         } catch (TimeoutException e) {
@@ -368,14 +365,11 @@ public class ResumeSubmission_1 {
 
                             boolean containsWord = thirdDivFirstSpanText.contains("简历");
                             if (containsWord&& thirdDivFirstSpanText.length() > 2){
-                                System.out.println("请问你是否想要我的简历，是的话请你直接说：简历\n" +
+                                System.out.println("请问你是否想要我的简历，是的话请你直接发送索要申请，简历会自动发送\n" +
                                         "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复\n" +
                                         "如果你想要看我设置的更多预制回复，请发送:更多");
                             }
-                            if ("简历".equals(thirdDivFirstSpanText)){
-                                //这时候给这个人发送简历
 
-                            }
 
                         }
                         // 检查并存储消息到 map 中
