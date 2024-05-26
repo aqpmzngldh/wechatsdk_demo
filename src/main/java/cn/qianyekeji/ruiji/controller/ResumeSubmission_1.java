@@ -143,7 +143,7 @@ public class ResumeSubmission_1 {
             int unreadCount = 0;
             int nonEmptyThirdDivCount = 0;
             int processedCount = 0;
-
+            System.out.println("看一下这个的长度："+textElements.size());
 //        for (WebElement textElement : textElements) {
             for (int i = 0; i < textElements.size(); i++) {
                 // 获取所有的 <div> 标签
@@ -398,8 +398,9 @@ public class ResumeSubmission_1 {
             System.out.println("已回复数量：" + nonEmptyThirdDivCount);
 
             // 在chat()方法的末尾添加对自身的递归调用
-            chatOr(user,textElements);
+//            chatOr(user,textElements);
         } catch (Exception e) {
+            //如果界面结构发生变化的时候会进catch调用chat方法，这时候上面就不用递归了，也就是每次有人聊天的时候才会进chat方法刷新
             chat();
         }
     }
