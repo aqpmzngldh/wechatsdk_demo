@@ -138,6 +138,7 @@ public class ResumeSubmission_1 {
 
     @SneakyThrows
     private  void chatOr(String user,List<WebElement> textElements) {
+        String messageKey="";
         try {
             int readCount = 0;
             int unreadCount = 0;
@@ -178,7 +179,7 @@ public class ResumeSubmission_1 {
                     String oneDivFirstSpanText = oneDivSpanElements.get(0).getText();
 
                     //相同消息只发送一次到redis
-                    String messageKey = secondDivSecondSpanText + "的" + secondDivSecondSpanText3 + secondDivFirstSpanText;
+                    messageKey = secondDivSecondSpanText + "的" + secondDivSecondSpanText3 + secondDivFirstSpanText;
 
                     // 检查 thirdDivFirstSpanText 是否为空
                     if ("".equals(thirdDivFirstSpanText)) {
@@ -209,6 +210,9 @@ public class ResumeSubmission_1 {
                                     // 输出分钟差值
                                     System.out.println("分钟差值: " + minutesDiff);
                                     if (minutesDiff > 2) {
+                                        String a_boss_weidu = (String)redisTemplate.opsForHash().get("a_boss_weidu", messageKey);
+                                        if(a_boss_weidu==null){
+
                                         // 定义字符串数组
                                         String[] stringArray = {"，你怎么已读不回？"};
                                         // 创建一个Random对象
@@ -225,6 +229,9 @@ public class ResumeSubmission_1 {
                                         // 尝试查找发送按钮
                                         List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                         sendButtons.get(0).click();
+
+                                        redisTemplate.opsForHash().put("a_boss_weidu", messageKey, 1);
+                                        }
                                     }
                                 } catch (Exception e) {
                                     System.out.println("看一下错误是不是这发的");
@@ -402,7 +409,7 @@ public class ResumeSubmission_1 {
         } catch (Exception e) {
             System.out.println("看一下进入这里的时机");
             System.out.println("看一下进入这里的错误"+e);
-            //如果界面结构发生变化的时候会进catch调用chat方法，这时候上面就不用递归了，也就是每次有人聊天的时候才会进chat方法刷新
+            redisTemplate.opsForHash().delete("a_boss_weidu",messageKey);
             chat();
         }
     }
