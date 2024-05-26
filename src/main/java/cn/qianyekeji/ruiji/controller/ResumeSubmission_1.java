@@ -297,7 +297,7 @@ public class ResumeSubmission_1 {
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                                if (containsWord&& !thirdDivFirstSpanText.startsWith("您的附件简历")){
+                                if (containsWord&& !thirdDivFirstSpanText.startsWith("您的附件简历")&&!thirdDivFirstSpanText.startsWith("请问你是否想要")){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
                                     chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
@@ -350,7 +350,7 @@ public class ResumeSubmission_1 {
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                                if (containsWord&& !thirdDivFirstSpanText.startsWith("您的附件简历")){
+                                if (containsWord&&!thirdDivFirstSpanText.startsWith("您的附件简历")&&!thirdDivFirstSpanText.startsWith("请问你是否想要")){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
                                     chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
@@ -398,8 +398,10 @@ public class ResumeSubmission_1 {
             System.out.println("已回复数量：" + nonEmptyThirdDivCount);
 
             // 在chat()方法的末尾添加对自身的递归调用
-//            chatOr(user,textElements);
+            chatOr(user,textElements);
         } catch (Exception e) {
+            System.out.println("看一下进入这里的时机");
+            System.out.println("看一下进入这里的错误"+e);
             //如果界面结构发生变化的时候会进catch调用chat方法，这时候上面就不用递归了，也就是每次有人聊天的时候才会进chat方法刷新
             chat();
         }
