@@ -210,7 +210,7 @@ public class ResumeSubmission_1 {
                                     System.out.println("分钟差值: " + minutesDiff);
                                     if (minutesDiff > 2) {
                                         // 定义字符串数组
-                                        String[] stringArray = {"，你怎么已读不回？", "，忘记回我了吗？", "，我们缺乏相互之间的沟通？"};
+                                        String[] stringArray = {"，你怎么已读不回？"};
                                         // 创建一个Random对象
                                         Random random = new Random();
                                         // 获取一个随机索引
@@ -221,7 +221,7 @@ public class ResumeSubmission_1 {
     //                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
                                         textElements.get(i).click();
                                         WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                        chatInput.sendKeys(secondDivFirstSpanText+randomString+"此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
+                                        chatInput.sendKeys(secondDivFirstSpanText+randomString);
                                         // 尝试查找发送按钮
                                         List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                         sendButtons.get(0).click();
@@ -299,9 +299,7 @@ public class ResumeSubmission_1 {
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
                                 if (containsWord&& thirdDivFirstSpanText.length() > 2){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
-                                            "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
-                                            "如果你想要看我设置的更多预制回复，请发送:更多");
+                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
                                     List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                     sendButtons.get(0).click();
@@ -354,9 +352,7 @@ public class ResumeSubmission_1 {
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
                                 if (containsWord&& thirdDivFirstSpanText.length() > 2){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
-                                            "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
-                                            "如果你想要看我设置的更多预制回复，请发送:更多");
+                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
                                     List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                     sendButtons.get(0).click();
