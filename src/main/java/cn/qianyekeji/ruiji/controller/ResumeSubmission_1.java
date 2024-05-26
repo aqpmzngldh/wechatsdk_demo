@@ -297,7 +297,7 @@ public class ResumeSubmission_1 {
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                                if (containsWord&& thirdDivFirstSpanText.length() > 2){
+                                if (containsWord&& !thirdDivFirstSpanText.startsWith("您的附件简历")){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
                                     chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
@@ -350,7 +350,7 @@ public class ResumeSubmission_1 {
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                                if (containsWord&& thirdDivFirstSpanText.length() > 2){
+                                if (containsWord&& !thirdDivFirstSpanText.startsWith("您的附件简历")){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
                                     chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请");
                                     // 尝试查找发送按钮
