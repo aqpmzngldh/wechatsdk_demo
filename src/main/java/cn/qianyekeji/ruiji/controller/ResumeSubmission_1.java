@@ -122,7 +122,7 @@ public class ResumeSubmission_1 {
     //获取最新聊天记录
     @SneakyThrows
     private  void chat() {
-        try {
+
 
         driver.get(chatUser);
         wait15s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='username']")));
@@ -133,238 +133,256 @@ public class ResumeSubmission_1 {
         wait15s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='text']")));
         List<WebElement> textElements = driver.findElements(By.cssSelector("[class*='text']"));
 
-        int readCount = 0;
-        int unreadCount = 0;
-        int nonEmptyThirdDivCount = 0;
-        int processedCount = 0;
+        chatOr(user,textElements);
+    }
+
+    @SneakyThrows
+    private  void chatOr(String user,List<WebElement> textElements) {
+        try {
+            int readCount = 0;
+            int unreadCount = 0;
+            int nonEmptyThirdDivCount = 0;
+            int processedCount = 0;
 
 //        for (WebElement textElement : textElements) {
-        for (int i = 0; i < textElements.size(); i++) {
-            // 获取所有的 <div> 标签
-            List<WebElement> divElements = textElements.get(i).findElements(By.tagName("div"));
+            for (int i = 0; i < textElements.size(); i++) {
+                // 获取所有的 <div> 标签
+                List<WebElement> divElements = textElements.get(i).findElements(By.tagName("div"));
 
-            // 如果有足够的 <div> 标签
-            if (divElements.size() >= 3) {
-                processedCount++;  // 增加已处理的消息计数器
+                // 如果有足够的 <div> 标签
+                if (divElements.size() >= 3) {
+                    processedCount++;  // 增加已处理的消息计数器
 
-                // 第一个 <div> 标签
-                WebElement oneDivElement = divElements.get(0);
-                // 第二个 <div> 标签
-                WebElement secondDivElement = divElements.get(1);
-                // 第三个 <div> 标签
-                WebElement thirdDivElement = divElements.get(2);
+                    // 第一个 <div> 标签
+                    WebElement oneDivElement = divElements.get(0);
+                    // 第二个 <div> 标签
+                    WebElement secondDivElement = divElements.get(1);
+                    // 第三个 <div> 标签
+                    WebElement thirdDivElement = divElements.get(2);
 
-                // 获取第二个 <div> 标签中的所有 <span> 标签
-                List<WebElement> secondDivSpanElements = secondDivElement.findElements(By.tagName("span"));
-                // 获取第三个 <div> 标签中的所有 <span> 标签
-                List<WebElement> thirdDivSpanElements = thirdDivElement.findElements(By.tagName("span"));
-                // 获取第一个 <div> 标签中的所有 <span> 标签
-                List<WebElement> oneDivSpanElements = oneDivElement.findElements(By.tagName("span"));
+                    // 获取第二个 <div> 标签中的所有 <span> 标签
+                    List<WebElement> secondDivSpanElements = secondDivElement.findElements(By.tagName("span"));
+                    // 获取第三个 <div> 标签中的所有 <span> 标签
+                    List<WebElement> thirdDivSpanElements = thirdDivElement.findElements(By.tagName("span"));
+                    // 获取第一个 <div> 标签中的所有 <span> 标签
+                    List<WebElement> oneDivSpanElements = oneDivElement.findElements(By.tagName("span"));
 
-                // 获取第二个 <div> 标签中的第一个 <span> 标签的文本内容
-                String secondDivFirstSpanText = secondDivSpanElements.get(1).getText();
-                // 获取第二个 <div> 标签中的第二个 <span> 标签的文本内容
-                String secondDivSecondSpanText = secondDivSpanElements.get(2).getText();
-                String secondDivSecondSpanText3 = secondDivSpanElements.get(3).getText();
-                // 获取第三个 <div> 标签中的第一个 <span> 标签的文本内容
-                String thirdDivFirstSpanText = thirdDivSpanElements.get(0).getText();
-                // 获取第一个 <div> 标签中的第一个 <span> 标签的文本内容
-                String oneDivFirstSpanText = oneDivSpanElements.get(0).getText();
+                    // 获取第二个 <div> 标签中的第一个 <span> 标签的文本内容
+                    String secondDivFirstSpanText = secondDivSpanElements.get(1).getText();
+                    // 获取第二个 <div> 标签中的第二个 <span> 标签的文本内容
+                    String secondDivSecondSpanText = secondDivSpanElements.get(2).getText();
+                    String secondDivSecondSpanText3 = secondDivSpanElements.get(3).getText();
+                    // 获取第三个 <div> 标签中的第一个 <span> 标签的文本内容
+                    String thirdDivFirstSpanText = thirdDivSpanElements.get(0).getText();
+                    // 获取第一个 <div> 标签中的第一个 <span> 标签的文本内容
+                    String oneDivFirstSpanText = oneDivSpanElements.get(0).getText();
 
-                //相同消息只发送一次到redis
-                String messageKey = secondDivSecondSpanText + "的" + secondDivSecondSpanText3 + secondDivFirstSpanText;
+                    //相同消息只发送一次到redis
+                    String messageKey = secondDivSecondSpanText + "的" + secondDivSecondSpanText3 + secondDivFirstSpanText;
 
-                // 检查 thirdDivFirstSpanText 是否为空
-                if ("".equals(thirdDivFirstSpanText)) {
-                    WebElement webElement = thirdDivSpanElements.get(0);
-                    // 获取元素的class属性值
-                    String classValue = webElement.getAttribute("class");
-                    // 检查 class 属性值是否包含 "status status-read"
-                    if (classValue.equals("status status-read")) {
-                        //已读未回复，未回复的话问他为什么不回复，比如：杨女士你怎么不回复我
-                        readCount++;
-                        System.out.println("看一下这个是多少次的："+processedCount);
+                    // 检查 thirdDivFirstSpanText 是否为空
+                    if ("".equals(thirdDivFirstSpanText)) {
+                        WebElement webElement = thirdDivSpanElements.get(0);
+                        // 获取元素的class属性值
+                        String classValue = webElement.getAttribute("class");
+                        // 检查 class 属性值是否包含 "status status-read"
+                        if (classValue.equals("status status-read")) {
+                            //已读未回复，未回复的话问他为什么不回复，比如：杨女士你怎么不回复我
+                            readCount++;
+                            System.out.println("看一下这个是多少次的："+processedCount);
+                            if (processedCount<=13) {
+                                //先判断时间是否在二分钟后，如果是，就问他为什么已读不回？
+    //                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
+
+                                try {
+                                    // 获取当前时间
+                                    LocalTime currentTime = LocalTime.now();
+                                    // 给定时间
+                                    LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
+                                    // 将LocalTime转换为LocalDateTime
+                                    LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+                                    LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+
+                                    // 计算分钟差值的绝对值
+                                    long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+
+                                    // 输出分钟差值
+                                    System.out.println("分钟差值: " + minutesDiff);
+                                    if (minutesDiff > 2) {
+                                        // 定义字符串数组
+                                        String[] stringArray = {"，你怎么已读不回？", "，忘记回我了吗？", "，我们缺乏相互之间的沟通？"};
+                                        // 创建一个Random对象
+                                        Random random = new Random();
+                                        // 获取一个随机索引
+                                        int randomIndex = random.nextInt(stringArray.length);
+                                        // 获取随机字符串
+                                        String randomString = stringArray[randomIndex];
+    //                                    System.out.println(secondDivFirstSpanText+randomString+"\n");
+    //                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
+                                        textElements.get(i).click();
+                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                        chatInput.sendKeys(secondDivFirstSpanText+randomString+"此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
+                                        // 尝试查找发送按钮
+                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                        sendButtons.get(0).click();
+                                    }
+                                } catch (Exception e) {
+                                    System.out.println("看一下错误是不是这发的");
+    //                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
+                                }
+
+
+                            }
+                        } else {
+                            //未读，未读的话5小时后进行一次重试
+                            unreadCount++;
+    //                        System.out.println("对未读不做处理");
+                        }
+                    } else {
+                        //已回复自己
+                        nonEmptyThirdDivCount++;
+    //                    如果聊天中对方要自己的简历，这种格式是我想要一份您的附件简历，您是否同意，这时候自动发送
+
                         if (processedCount<=13) {
-                            //先判断时间是否在二分钟后，如果是，就问他为什么已读不回？
-//                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
+                            System.out.println("当前登录用户是："+user);
+                            System.out.println(secondDivSecondSpanText+"的"+secondDivSecondSpanText3+secondDivFirstSpanText+
+                                    ":"+thirdDivFirstSpanText);
 
                             try {
-                                // 获取当前时间
-                                LocalTime currentTime = LocalTime.now();
-                                // 给定时间
-                                LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
-                                // 将LocalTime转换为LocalDateTime
-                                LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
-                                LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+    //                            System.out.println("经过观察网页，发现<=13的时候不会出错");
+    //                            System.out.println("看一下这是小的第几次出错了"+processedCount);
+                                textElements.get(i).click();
+                                WebElement btnAgree = wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn btn-agree']")));
+                                btnAgree.click();
+                                System.out.println("只有找到了才会在这里继续执行，找不到会执行catch中代码");
 
-                                // 计算分钟差值的绝对值
-                                long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+                                //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
+                                // 获取所有的键值对
+                                Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
+                                // 判断entries是否不为空
+                                if (!entries.isEmpty()) {
+                                    // 遍历输出所有键值对
+                                    for (Map.Entry<Object, Object> entry : entries.entrySet()) {
+    //                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                        if (entry.getKey().equals(messageKey)){
+                                            WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                            chatInput.sendKeys((String)entry.getValue());
+                                            // 尝试查找发送按钮
+                                            List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                            sendButtons.get(0).click();
 
-                                // 输出分钟差值
-                                System.out.println("分钟差值: " + minutesDiff);
-                                if (minutesDiff > 2) {
-                                    // 定义字符串数组
-                                    String[] stringArray = {"，你怎么已读不回？", "，忘记回我了吗？", "，我们缺乏相互之间的沟通？"};
-                                    // 创建一个Random对象
-                                    Random random = new Random();
-                                    // 获取一个随机索引
-                                    int randomIndex = random.nextInt(stringArray.length);
-                                    // 获取随机字符串
-                                    String randomString = stringArray[randomIndex];
-//                                    System.out.println(secondDivFirstSpanText+randomString+"\n");
-//                                    System.out.println("此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
-                                    textElements.get(i).click();
+                                            //发送了消息后再给这行数据删掉
+                                            redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
+                                        }
+                                    }
+                                }
+
+                                //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
+                                // 获取所有的键值对
+                                Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
+                                // 判断entries是否不为空
+                                if (!entries1.isEmpty()) {
+                                    // 遍历输出所有键值对
+                                    for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
+    //                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                        if (entry.getKey().equals(thirdDivFirstSpanText)){
+                                            WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                            chatInput.sendKeys((String)entry.getValue());
+                                            // 尝试查找发送按钮
+                                            List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                            sendButtons.get(0).click();
+
+                                        }
+                                    }
+                                }
+
+                                boolean containsWord = thirdDivFirstSpanText.contains("简历");
+                                if (containsWord&& thirdDivFirstSpanText.length() > 2){
                                     WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                    chatInput.sendKeys(secondDivFirstSpanText+randomString+"此消息来自于狂人开发的boss直聘机器人针对已读不回的自动回复");
+                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
+                                            "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
+                                            "如果你想要看我设置的更多预制回复，请发送:更多");
                                     // 尝试查找发送按钮
                                     List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                     sendButtons.get(0).click();
                                 }
-                            } catch (Exception e) {
-                                System.out.println("看一下错误是不是这发的");
-//                                System.out.println("格式不是我想要的，而是昨天，或者05月23日这样格式，这种就不处理了");
-                            }
 
 
-                        }
-                    } else {
-                        //未读，未读的话5小时后进行一次重试
-                        unreadCount++;
-//                        System.out.println("对未读不做处理");
-                    }
-                } else {
-                    //已回复自己
-                    nonEmptyThirdDivCount++;
-//                    如果聊天中对方要自己的简历，这种格式是我想要一份您的附件简历，您是否同意，这时候自动发送
 
-                    if (processedCount<=13) {
-                        System.out.println("当前登录用户是："+user);
-                        System.out.println(secondDivSecondSpanText+"的"+secondDivSecondSpanText3+secondDivFirstSpanText+
-                                ":"+thirdDivFirstSpanText);
+                            } catch (TimeoutException e) {
+                                System.out.println("未找到发送简历按钮");
+                                //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
+                                // 获取所有的键值对
+                                Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
+                                // 判断entries是否不为空
+                                if (!entries.isEmpty()) {
+                                    // 遍历输出所有键值对
+                                    for (Map.Entry<Object, Object> entry : entries.entrySet()) {
+    //                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                        if (entry.getKey().equals(messageKey)){
+                                            WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                            chatInput.sendKeys((String)entry.getValue());
+                                            // 尝试查找发送按钮
+                                            List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                            sendButtons.get(0).click();
 
-                        try {
-//                            System.out.println("经过观察网页，发现<=13的时候不会出错");
-//                            System.out.println("看一下这是小的第几次出错了"+processedCount);
-                            textElements.get(i).click();
-                            WebElement btnAgree = wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn btn-agree']")));
-                            btnAgree.click();
-                            System.out.println("只有找到了才会在这里继续执行，找不到会执行catch中代码");
-
-                            //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
-                            // 获取所有的键值对
-                            Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
-                            // 判断entries是否不为空
-                            if (!entries.isEmpty()) {
-                                // 遍历输出所有键值对
-                                for (Map.Entry<Object, Object> entry : entries.entrySet()) {
-//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-                                    if (entry.getKey().equals(messageKey)){
-                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                        chatInput.sendKeys((String)entry.getValue());
-                                        // 尝试查找发送按钮
-                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                        sendButtons.get(0).click();
-
-                                        //发送了消息后再给这行数据删掉
-                                        redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
+                                            //发送了消息后再给这行数据删掉
+                                            redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
+                                        }
                                     }
                                 }
-                            }
 
-                            //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
-                            // 获取所有的键值对
-                            Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
-                            // 判断entries是否不为空
-                            if (!entries1.isEmpty()) {
-                                // 遍历输出所有键值对
-                                for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
-//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-                                    if (entry.getKey().equals(thirdDivFirstSpanText)){
-                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                        chatInput.sendKeys((String)entry.getValue());
-                                        // 尝试查找发送按钮
-                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                        sendButtons.get(0).click();
+                                //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
+                                // 获取所有的键值对
+                                Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
+                                // 判断entries是否不为空
+                                if (!entries1.isEmpty()) {
+                                    // 遍历输出所有键值对
+                                    for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
+    //                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+                                        if (entry.getKey().equals(thirdDivFirstSpanText)){
+                                            WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                            chatInput.sendKeys((String)entry.getValue());
+                                            // 尝试查找发送按钮
+                                            List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                            sendButtons.get(0).click();
 
+                                        }
                                     }
                                 }
+
+                                boolean containsWord = thirdDivFirstSpanText.contains("简历");
+                                if (containsWord&& thirdDivFirstSpanText.length() > 2){
+                                    WebElement chatInput = driver.findElement(By.className("chat-input"));
+                                    chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
+                                            "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
+                                            "如果你想要看我设置的更多预制回复，请发送:更多");
+                                    // 尝试查找发送按钮
+                                    List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
+                                    sendButtons.get(0).click();
+                                }
+
+
                             }
-
-                            boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                            if (containsWord&& thirdDivFirstSpanText.length() > 2){
-                                WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
-                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
-                                        "如果你想要看我设置的更多预制回复，请发送:更多");
-                                // 尝试查找发送按钮
-                                List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                sendButtons.get(0).click();
-                            }
-
-
-
-                        } catch (TimeoutException e) {
-                            System.out.println("未找到发送简历按钮");
-                            //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
-                            // 获取所有的键值对
-                            Map<Object, Object> entries = redisTemplate.opsForHash().entries("a_boss_狂人_huifu");
-                            // 判断entries是否不为空
-                            if (!entries.isEmpty()) {
-                                // 遍历输出所有键值对
-                                for (Map.Entry<Object, Object> entry : entries.entrySet()) {
-//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-                                    if (entry.getKey().equals(messageKey)){
-                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                        chatInput.sendKeys((String)entry.getValue());
-                                        // 尝试查找发送按钮
-                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                        sendButtons.get(0).click();
-
-                                        //发送了消息后再给这行数据删掉
-                                        redisTemplate.opsForHash().delete("a_boss_狂人_huifu",entry.getKey());
+                            // 检查并存储消息到 map 中
+                            if (messageMap.containsKey(messageKey)) {
+                                if (!messageMap.get(messageKey).equals(thirdDivFirstSpanText)) {
+                                    messageMap.put(messageKey, thirdDivFirstSpanText);  // 更新 value
+                                    //这里再加入存入redis的操作
+                                    String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
+                                    if (msg== null){
+                                        redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
+                                    }else{
+                                        //这时候发现已经存储有数据了，然后进行拼接
+                                        String pinjie=msg+"==="+thirdDivFirstSpanText;
+                                        redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
                                     }
                                 }
-                            }
-
-                            //还有一种情况会主动发送消息，就是触发了用户设置的关键字回复的时候
-                            // 获取所有的键值对
-                            Map<Object, Object> entries1 = redisTemplate.opsForHash().entries("a_boss_guanjianzi_狂人");
-                            // 判断entries是否不为空
-                            if (!entries1.isEmpty()) {
-                                // 遍历输出所有键值对
-                                for (Map.Entry<Object, Object> entry : entries1.entrySet()) {
-//                                    System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-                                    if (entry.getKey().equals(thirdDivFirstSpanText)){
-                                        WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                        chatInput.sendKeys((String)entry.getValue());
-                                        // 尝试查找发送按钮
-                                        List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                        sendButtons.get(0).click();
-
-                                    }
-                                }
-                            }
-
-                            boolean containsWord = thirdDivFirstSpanText.contains("简历");
-                            if (containsWord&& thirdDivFirstSpanText.length() > 2){
-                                WebElement chatInput = driver.findElement(By.className("chat-input"));
-                                chatInput.sendKeys("请问你是否想要我的简历，是的话请你直接发送索要申请。       " +
-                                        "此消息来自于狂人开发的boss直聘机器人针对boss文本中包含简历的自动回复，" +
-                                        "如果你想要看我设置的更多预制回复，请发送:更多");
-                                // 尝试查找发送按钮
-                                List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
-                                sendButtons.get(0).click();
-                            }
-
-
-                        }
-                        // 检查并存储消息到 map 中
-                        if (messageMap.containsKey(messageKey)) {
-                            if (!messageMap.get(messageKey).equals(thirdDivFirstSpanText)) {
-                                messageMap.put(messageKey, thirdDivFirstSpanText);  // 更新 value
+                            } else {
+                                messageMap.put(messageKey, thirdDivFirstSpanText);  // 新增键值对
                                 //这里再加入存入redis的操作
                                 String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
-                                if (msg== null){
+                                if (msg==null){
                                     redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
                                 }else{
                                     //这时候发现已经存储有数据了，然后进行拼接
@@ -372,34 +390,20 @@ public class ResumeSubmission_1 {
                                     redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
                                 }
                             }
-                        } else {
-                            messageMap.put(messageKey, thirdDivFirstSpanText);  // 新增键值对
-                            //这里再加入存入redis的操作
-                            String msg = (String)redisTemplate.opsForHash().get("a_boss_狂人", messageKey);
-                            if (msg==null){
-                                redisTemplate.opsForHash().put("a_boss_狂人", messageKey, thirdDivFirstSpanText);
-                            }else{
-                                //这时候发现已经存储有数据了，然后进行拼接
-                                String pinjie=msg+"==="+thirdDivFirstSpanText;
-                                redisTemplate.opsForHash().put("a_boss_狂人", messageKey, pinjie);
-                            }
-                        }
 
+                        }
                     }
                 }
             }
-        }
 
-        // 输出统计结果
-        System.out.println("已读未回复消息数量：" + readCount);
-        System.out.println("未读未回复消息数量：" + unreadCount);
-        System.out.println("已回复数量：" + nonEmptyThirdDivCount);
+            // 输出统计结果
+            System.out.println("已读未回复消息数量：" + readCount);
+            System.out.println("未读未回复消息数量：" + unreadCount);
+            System.out.println("已回复数量：" + nonEmptyThirdDivCount);
 
-        // 在chat()方法的末尾添加对自身的递归调用
-            chat();
+            // 在chat()方法的末尾添加对自身的递归调用
+            chatOr(user,textElements);
         } catch (Exception e) {
-            System.out.println("报错后继续执行下一次");
-            System.out.println(e);
             chat();
         }
     }
