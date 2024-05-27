@@ -318,7 +318,7 @@ public class ResumeSubmission_1 {
 
 
 
-                            } catch (TimeoutException e) {
+                            } catch (Exception e) {
                                 System.out.println("未找到发送简历按钮");
                                 //这里去判断一下微信中用户是否回复了该人，是的话，则给他再发送消息
                                 // 获取所有的键值对
