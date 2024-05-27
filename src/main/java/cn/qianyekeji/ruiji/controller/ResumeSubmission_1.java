@@ -298,11 +298,11 @@ public class ResumeSubmission_1 {
                                             // 尝试查找发送按钮
                                             List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                             sendButtons.get(0).click();
-
+//这里要再次调用，因为不调用有个后果，就是一直读取到之前的消息，导致boss消息中有说了关键字，但是界面不刷新，会一直认为上句话在说关键字
+                                            chat();
                                         }
                                     }
-//这里要再次调用，因为不调用有个后果，就是一直读取到之前的消息，导致boss消息中有说了关键字，但是界面不刷新，会一直认为上句话在说关键字
-                                    chat();
+
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
@@ -355,11 +355,10 @@ public class ResumeSubmission_1 {
                                             // 尝试查找发送按钮
                                             List<WebElement> sendButtons = driver.findElements(By.cssSelector("[class*='btn-v2 btn-sure-v2 btn-send']"));
                                             sendButtons.get(0).click();
-
+//这里要再次调用，因为不调用有个后果，就是一直读取到之前的消息，导致boss消息中有说了关键字，但是界面不刷新，会一直认为上句话在说关键字
+                                            chat();
                                         }
                                     }
-//这里要再次调用，因为不调用有个后果，就是一直读取到之前的消息，导致boss消息中有说了关键字，但是界面不刷新，会一直认为上句话在说关键字
-                                    chat();
                                 }
 
                                 boolean containsWord = thirdDivFirstSpanText.contains("简历");
