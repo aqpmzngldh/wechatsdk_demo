@@ -24,12 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -196,19 +194,22 @@ public class ResumeSubmission_1 {
     //                            System.out.println("看一下上次已读未回复的时间"+oneDivFirstSpanText);
 
                                 try {
-                                    // 获取当前时间
-                                    LocalTime currentTime = LocalTime.now();
+                                    URL url = new URL("http://www.baidu.com");
+                                    long networkTime = url.openConnection().getDate();
+                                    // 将网络时间转换为 UTC ZonedDateTime
+                                    Instant instant = Instant.ofEpochMilli(networkTime);
+                                    ZonedDateTime utcDateTime = instant.atZone(ZoneId.of("UTC"));
+                                    // 将 UTC ZonedDateTime 转换为中国时区
+                                    ZoneId shanghaiZone = ZoneId.of("Asia/Shanghai");
+                                    ZonedDateTime shanghaiTime = utcDateTime.withZoneSameInstant(shanghaiZone);
                                     // 给定时间
-                                    LocalTime givenTime = LocalTime.parse(oneDivFirstSpanText, DateTimeFormatter.ofPattern("H:mm"));
-                                    // 将LocalTime转换为LocalDateTime
-                                    LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
-                                    LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
-
+                                    String givenTimeStr = oneDivFirstSpanText;
+                                    LocalTime givenTime = LocalTime.parse(givenTimeStr, DateTimeFormatter.ofPattern("H:mm"));
+                                    ZonedDateTime givenDateTime = ZonedDateTime.of(shanghaiTime.toLocalDate(), givenTime, shanghaiZone);
                                     // 计算分钟差值的绝对值
-                                    long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+                                    long minutesDiff = Math.abs(ChronoUnit.MINUTES.between(shanghaiTime, givenDateTime));
+                                    System.out.println("分钟差值的绝对值: " + minutesDiff);
 
-                                    // 输出分钟差值
-                                    System.out.println("分钟差值: " + minutesDiff);
                                     if (minutesDiff > 2) {
                                         String a_boss_weidu = (String)redisTemplate.opsForHash().get("a_boss_weidu", messageKey);
                                         if(a_boss_weidu==null){
@@ -250,16 +251,19 @@ public class ResumeSubmission_1 {
                         nonEmptyThirdDivCount++;
     //                    如果聊天中对方要自己的简历，这种格式是我想要一份您的附件简历，您是否同意，这时候自动发送
 
-                        if (processedCount<=13) {
+                        if (processedCount<=13&&!thirdDivFirstSpanText.startsWith("您对本职位的求职过程满意吗")) {
                             System.out.println("当前登录用户是："+user);
                             System.out.println(secondDivSecondSpanText+"的"+secondDivSecondSpanText3+secondDivFirstSpanText+
                                     ":"+thirdDivFirstSpanText);
 
                             try {
+                                System.out.println("看一下每次停止到底是在哪里1");
     //                            System.out.println("经过观察网页，发现<=13的时候不会出错");
     //                            System.out.println("看一下这是小的第几次出错了"+processedCount);
                                 textElements.get(i).click();
+                                System.out.println("看一下每次停止到底是在哪里2");
                                 WebElement btnAgree = wait2s.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("[class*='btn btn-agree']")));
+                                System.out.println("看一下每次停止到底是在哪里3");
                                 btnAgree.click();
                                 System.out.println("只有找到了才会在这里继续执行，找不到会执行catch中代码");
 

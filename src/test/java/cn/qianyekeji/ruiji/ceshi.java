@@ -179,22 +179,42 @@ public class ceshi {
     }
 
     @Test
-    void  pttrr(){
-        // 获取当前时间
-        LocalTime currentTime = LocalTime.now();
+    void  pttrr()throws Exception{
+//        LocalTime currentTime = LocalTime.now();
+//        // 给定时间
+//        LocalTime givenTime = LocalTime.parse("21:58", DateTimeFormatter.ofPattern("H:mm"));
+//        // 将LocalTime转换为LocalDateTime
+//        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
+//        LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
+//
+//        // 计算分钟差值的绝对值
+//        long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
+//
+//        // 输出分钟差值
+//        System.out.println("分钟差值: " + minutesDiff);
+
+        // 因为自己电脑时间不准，就不用上面那种方式了，用获取网络时间这种方式
+        URL url = new URL("http://www.baidu.com");
+        long networkTime = url.openConnection().getDate();
+
+        // 将网络时间转换为 UTC ZonedDateTime
+        Instant instant = Instant.ofEpochMilli(networkTime);
+        ZonedDateTime utcDateTime = instant.atZone(ZoneId.of("UTC"));
+
+        // 将 UTC ZonedDateTime 转换为中国时区
+        ZoneId shanghaiZone = ZoneId.of("Asia/Shanghai");
+        ZonedDateTime shanghaiTime = utcDateTime.withZoneSameInstant(shanghaiZone);
+
+        System.out.println("中国时间: " + shanghaiTime);
 
         // 给定时间
-        LocalTime givenTime = LocalTime.parse("2:45", DateTimeFormatter.ofPattern("H:mm"));
-
-        // 将LocalTime转换为LocalDateTime
-        LocalDateTime currentDateTime = LocalDateTime.of(LocalDate.now(), currentTime);
-        LocalDateTime givenDateTime = LocalDateTime.of(LocalDate.now(), givenTime);
-
+        String givenTimeStr = "03:02";
+        LocalTime givenTime = LocalTime.parse(givenTimeStr, DateTimeFormatter.ofPattern("H:mm"));
+        ZonedDateTime givenDateTime = ZonedDateTime.of(shanghaiTime.toLocalDate(), givenTime, shanghaiZone);
+        System.out.println("给定时间: " + givenDateTime);
         // 计算分钟差值的绝对值
-        long minutesDiff = Math.abs(currentDateTime.until(givenDateTime, ChronoUnit.MINUTES));
-
-        // 输出分钟差值
-        System.out.println("分钟差值: " + minutesDiff);
+        long minutesDiff = Math.abs(ChronoUnit.MINUTES.between(shanghaiTime, givenDateTime));
+        System.out.println("分钟差值的绝对值: " + minutesDiff);
     }
 
     @Test
