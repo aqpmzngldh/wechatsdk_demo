@@ -35,7 +35,7 @@ import java.security.cert.X509Certificate;
 @Service
 public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest> implements ChatGptService {
 //    private final String OPENAI_API_KEY = "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";
-    private final String OPENAI_API_KEY = "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";
+    private final String OPENAI_API_KEY = "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";
     private final String OPENAI_API_URL = "https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions";
     private Map<String, List<String>> userSessions = new HashMap<>();
 
