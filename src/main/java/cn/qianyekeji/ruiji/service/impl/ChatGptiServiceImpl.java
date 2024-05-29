@@ -36,6 +36,7 @@ import java.security.cert.X509Certificate;
 public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest> implements ChatGptService {
 //    private final String OPENAI_API_KEY = "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";
     private final String OPENAI_API_KEY = "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";
+    private final String OPENAI_API_KEY_2 = "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";
     private final String OPENAI_API_URL = "https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions";
     private Map<String, List<String>> userSessions = new HashMap<>();
 
@@ -146,6 +147,82 @@ public class ChatGptiServiceImpl extends ServiceImpl<ChatGptMapper, ChatRequest>
         }
         return "当前访问人数过多，请稍后重试";
     }
+
+
+    @Override
+    public String chat_2(String userId,String message) {
+        // 先配置 SSL 上下文
+        configureSSLContext();
+
+        // 检查用户会话是否存在
+        if (!userSessions.containsKey(userId)) {
+            //第一次进来肯定不存在会话中，这时候我们放进去
+            userSessions.put(userId, new ArrayList<>());
+        }
+        //把发送的消息扔进这个人的list中
+        List<String> sessionMessages = userSessions.get(userId);
+        sessionMessages.add(message);
+
+        // 构建请求头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(OPENAI_API_KEY_2);
+
+        // 构建请求体
+        String requestBody = buildRequestBody2(userId, sessionMessages);
+
+        // 发送请求
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<String> response = null;
+
+        int maxRetries = 5;
+        int retries = 0;
+        while (retries < maxRetries) {
+            try {
+                response = restTemplate.postForEntity(OPENAI_API_URL, request, String.class);
+                HttpStatus statusCode = response.getStatusCode();
+                System.out.println("---------------------" + statusCode + "--------------------");
+                // 提取回复消息
+                String responseBody = response.getBody();
+                String reply = extractReplyFromResponse(responseBody);
+                System.out.println("-------------------" + reply + "--------------------");
+
+                // 如果成功收到回复，返回回复消息，并把回复消息也存进当前用户的的list中，方便上下文记忆
+                sessionMessages.add(reply);
+                return reply;
+            } catch (RestClientException e) {
+                // 发生异常时增加重试次数，并输出错误信息
+                retries++;
+                System.out.println("Retry attempt: " + retries);
+                e.printStackTrace();
+                try {
+                    // 延迟5秒后重试
+                    Thread.sleep(5000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+        return "当前访问人数过多，请稍后重试";
+    }
+    private String buildRequestBody2(String userId, List<String> sessionMessages) {
+        JSONArray messagesArray = new JSONArray();
+        for (String message : sessionMessages) {
+            JSONObject messageObj = new JSONObject();
+            messageObj.put("role", "user");
+            messageObj.put("content", message);
+            messagesArray.add(messageObj);
+        }
+
+        JSONObject requestBodyObj = new JSONObject();
+        requestBodyObj.put("model", "gpt-4o");
+        requestBodyObj.put("messages", messagesArray);
+
+        return requestBodyObj.toString();
+    }
+
     private String buildRequestBody(String userId, List<String> sessionMessages) {
         JSONArray messagesArray = new JSONArray();
         for (String message : sessionMessages) {
