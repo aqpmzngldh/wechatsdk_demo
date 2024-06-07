@@ -225,6 +225,14 @@ public class ceshi {
     }
 
     @Test
+    void  pppppp(){
+        Integer i=1;
+        System.out.println(i);
+        String ii=i+"";
+        System.out.println(ii);
+    }
+
+    @Test
 //    R<List<JiaXiao>> opop(){
     void opop(){
 

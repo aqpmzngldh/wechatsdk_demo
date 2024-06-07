@@ -25,15 +25,12 @@ public class AudioUtils {
 //    static String path = "F:\\project\\ruiji\\src\\main\\java\\cn\\qianyekeji\\ruiji\\silk\\";
     static String path = "src/main/java/cn/qianyekeji/ruiji/silk/";
 
-//    因为这silk文件夹底下的三个exe文件是windows的可执行文件，但是在linux下不可执行
-//    static String path = "/www/server/yuyin/silk/";
-
 
     public static void main(String[] args) {
         // TODO: mp3 转 silk
-        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\ce\\", "audio_1714785935768.mp3", false);
+//        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\ce\\", "audio_1714785935768.mp3", false);
         // TODO: wav 转 silk
-//        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\", "5270.wav", false);
+        transferAudioSilk("C:\\Users\\qianye\\Desktop\\2222\\", "9212.wav", false);
         // TODO: mp3转amr
 //        transferMp3Amr("路径\\文件名.mp3", "路径\\文件名.amr");
     }
@@ -82,21 +79,21 @@ public class AudioUtils {
 //            String silkPath = path + "SILK_" + time + ".silk";
 //            String silkPath = path + "SILK_" + time + ".sil";
             String fileName = name.substring(0, name.lastIndexOf("."));
-            String silkPath = path + fileName + ".sil";
+            String silkPath = path + fileName + ".silk";
             System.out.println("文件名：" + silkPath);
             // 转换成silk格式
             transferPcmSilk(pcmPath, silkPath);
             // 删除pcm文件
-//            File pcmFile = new File(pcmPath);
-//            if (pcmFile.exists()) {
-//                pcmFile.delete();
-//            }
-//            if (isSource) {
-//                File audioFile = new File(filePath);
-//                if (audioFile.exists()) {
-//                    audioFile.delete();
-//                }
-//            }
+            File pcmFile = new File(pcmPath);
+            if (pcmFile.exists()) {
+                pcmFile.delete();
+            }
+            if (isSource) {
+                File audioFile = new File(filePath);
+                if (audioFile.exists()) {
+                    audioFile.delete();
+                }
+            }
             return silkPath;
         } catch (Exception e) {
             e.printStackTrace();
@@ -203,18 +200,6 @@ public class AudioUtils {
         }
     }
 
-//    public static void transferPcmSilk(String pcmPath, String target) {
-//        try {
-//            ProcessBuilder pb = new ProcessBuilder(path + "silk_v3_encoder.exe", pcmPath, target, "-tencent");
-//            File logFile = new File("/www/server/yuyin/silk_encoder.log");
-//            pb.redirectOutput(ProcessBuilder.Redirect.appendTo(logFile));
-//            pb.redirectError(ProcessBuilder.Redirect.appendTo(logFile));
-//            Process process = pb.start();
-//            process.waitFor();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
     /**
@@ -251,29 +236,6 @@ public class AudioUtils {
         } catch (Exception e) {
             System.out.println("mp3转amr异常"+ e);
         }
-    }
-
-    /**
-     * 一个音频转byte类型的方法
-     * @param filePath
-     * @return
-     */
-    public static byte[] byteAudio(String filePath) {
-        try {
-            InputStream inStream = new FileInputStream(filePath);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = inStream.read(buffer)) > 0) {
-                baos.write(buffer, 0, bytesRead);
-            }
-            inStream.close();
-            baos.close();
-            return baos.toByteArray();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
 }
