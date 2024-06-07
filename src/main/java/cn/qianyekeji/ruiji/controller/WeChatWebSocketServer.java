@@ -1,5 +1,6 @@
 package cn.qianyekeji.ruiji.controller;
 
+import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -40,22 +44,14 @@ static {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data)throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-//        System.out.println("看一下这个data的数据"+data1);
+        System.out.println("看一下这个data的数据"+data1);
         String type = String.valueOf(data1.get("type"));
         System.out.println("这个值是："+type);
         //根据文档type是34的时候，是语音消息
         if ("34".equals(type)){
             System.out.println("这个是语音消息");
-            String from = data1.get("from");
-            System.out.println("这是谁发的语音消息"+from);
-            //收到语音消息的时候给他发送一条语音消息
-            String url = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("type", 10014);
-            hashMap.put("userName", from);
-            hashMap.put("filePath", "C:\\Users\\qianye\\Desktop\\2222\\9957.silk");
-            String jsonString = JSONUtil.toJsonStr(hashMap);
-            HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+            handleAudioMsg(data1);
+
         }else if("1".equals(type)){
             String from = data1.get("from");
             String to = data1.get("to");
@@ -153,5 +149,42 @@ static {
         Files.copy(inputStream, Paths.get(saveFilePath));
         inputStream.close();
         return saveFilePath;
+    }
+
+    private void handleAudioMsg(Map<String, String> data) throws Exception {
+        String xmlContent = data.get("content");
+        System.out.println("看一下值1："+xmlContent);
+        // 微信群发言是有前缀的，这里需要去掉
+        String[] split = xmlContent.split(":\n");
+        xmlContent = split.length > 1 ? split[1] : xmlContent;
+        System.out.println("看一下值2："+xmlContent);
+
+        // 使用Hutool的XmlUtil解析XML
+        Document doc = XmlUtil.parseXml(xmlContent);
+        Element msgElem = doc.getDocumentElement();  // 获取根元素
+        Node voicemsgNode = msgElem.getElementsByTagName("voicemsg").item(0);
+        if (voicemsgNode != null && voicemsgNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element voicemsgElem = (Element) voicemsgNode;
+            String aeskey = voicemsgElem.getAttribute("aeskey");
+            String fileid = voicemsgElem.getAttribute("voiceurl");
+            // 下载音频文件
+            downloadAudioFile(fileid, aeskey);
+        } else {
+            System.out.println("No voicemsg element found.");
+        }
+    }
+
+    private void downloadAudioFile(String fileid, String aeskey) {
+
+        String url = "http://127.0.0.1:8888/api/";
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("type", 66);
+        requestBody.put("fileid", fileid);
+        requestBody.put("aeskey", aeskey);
+        requestBody.put("fileType", 15);
+        requestBody.put("savePath", "F:\\yuyin\\zhuan\\" + aeskey + ".slik");
+        String jsonString = JSONUtil.toJsonStr(requestBody);
+        HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+
     }
 }
