@@ -225,11 +225,29 @@ public class ceshi {
     }
 
     @Test
+    void  pppppppppp(){
+        long timestamp = System.currentTimeMillis() / 1000;
+        System.out.println(timestamp);
+    }
+
+
+    @Test
     void  pppppp(){
-        Integer i=1;
-        System.out.println(i);
-        String ii=i+"";
-        System.out.println(ii);
+        //时间戳转换成当前时间
+        long timestamp = 1717764574;
+
+        // 转换为 UTC 时间
+        Instant instant = Instant.ofEpochSecond(timestamp);
+        ZonedDateTime utcTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+        // 转换为中国标准时间 (CST)
+        ZonedDateTime cstTime = utcTime.withZoneSameInstant(ZoneId.of("Asia/Shanghai"));
+
+        // 格式化时间
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
+        String cstTimeStr = cstTime.format(formatter);
+
+        System.out.println(cstTimeStr);
     }
 
     @Test

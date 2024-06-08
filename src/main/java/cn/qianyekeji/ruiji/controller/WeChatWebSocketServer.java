@@ -5,19 +5,17 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.qianyekeji.ruiji.entity.WxVoice;
+import cn.qianyekeji.ruiji.service.Wx_voiceService;
 import cn.qianyekeji.ruiji.utils.AudioUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -29,6 +27,8 @@ import static cn.qianyekeji.ruiji.utils.AudioUtils.transferAudioSilk;
 
 @Controller
 public class WeChatWebSocketServer {
+    @Autowired
+    private Wx_voiceService wx_voiceService;
 
 static {
     String url = "http://127.0.0.1:8888/api/";
@@ -50,7 +50,9 @@ static {
         //根据文档type是34的时候，是语音消息
         if ("34".equals(type)){
             System.out.println("这个是语音消息");
-            handleAudioMsg(data1);
+            String from = data1.get("from");
+            String to = data1.get("to");
+            handleAudioMsg(data1,from,to);
 
         }else if("1".equals(type)){
             String from = data1.get("from");
@@ -151,7 +153,7 @@ static {
         return saveFilePath;
     }
 
-    private void handleAudioMsg(Map<String, String> data) throws Exception {
+    private void handleAudioMsg(Map<String, String> data,String from,String to) throws Exception {
         String xmlContent = data.get("content");
         System.out.println("看一下值1："+xmlContent);
         // 微信群发言是有前缀的，这里需要去掉
@@ -168,13 +170,13 @@ static {
             String aeskey = voicemsgElem.getAttribute("aeskey");
             String fileid = voicemsgElem.getAttribute("voiceurl");
             // 下载音频文件
-            downloadAudioFile(fileid, aeskey);
+            downloadAudioFile(fileid, aeskey,from,to);
         } else {
             System.out.println("No voicemsg element found.");
         }
     }
 
-    private void downloadAudioFile(String fileid, String aeskey) {
+    private void downloadAudioFile(String fileid, String aeskey,String from,String to) {
 
         String url = "http://127.0.0.1:8888/api/";
         Map<String, Object> requestBody = new HashMap<>();
@@ -186,5 +188,14 @@ static {
         String jsonString = JSONUtil.toJsonStr(requestBody);
         HttpUtil.createPost(url).body(jsonString, "application/json").execute();
 
+        //为了方便语音转发，这时候给语音数据存储起来
+        System.out.println("谁发送的语音"+from);
+        System.out.println("谁接收的语音"+to);
+        WxVoice wx_voice = new WxVoice();
+        wx_voice.setFromWx(from);
+        wx_voice.setToWx(to);
+        wx_voice.setAddress("F:\\yuyin\\zhuan\\" + aeskey + ".slik");
+        wx_voice.setTimes(System.currentTimeMillis() / 1000+"");
+        wx_voiceService.save(wx_voice);
     }
 }
