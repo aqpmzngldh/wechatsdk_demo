@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cn.qianyekeji.ruiji.utils.AudioUtils.transferAudioSilk;
@@ -166,6 +167,24 @@ static {
                                 String jsonObject4 = entries4.getJSONObject("data").getJSONObject("data").getStr("encryptUserName");
                                 System.out.println("提取人微信号"+jsonObject);
                                 System.out.println("发送人微信号"+jsonObject4);
+                                QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
+                                objectQueryWrapper.eq("from_wx", jsonObject)
+                                        .eq("to_wx", jsonObject4)
+                                        .orderByDesc("times");
+
+                                List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
+                                WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
+                                String address = wxVoice.getAddress();
+                                System.out.println("当前的语音聊天数据是："+address);
+
+                                String url_2 = "http://127.0.0.1:8888/api/";
+                                HashMap<String, Object> map_2 = new HashMap<>();
+                                map_2.put("type",10014);
+                                map_2.put("userName",jsonObject4);
+                                map_2.put("filePath",address);
+                                String jsonString444 = JSONUtil.toJsonStr(map_2);
+                                // 发送POST请求
+                                HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
 
 
                             }
@@ -234,7 +253,7 @@ static {
         WxVoice wx_voice = new WxVoice();
         wx_voice.setFromWx(from);
         wx_voice.setToWx(to);
-        wx_voice.setAddress("F:\\yuyin\\zhuan\\" + aeskey + ".slik");
+        wx_voice.setAddress("F:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
         wx_voice.setTimes(System.currentTimeMillis() / 1000+"");
         wx_voiceService.save(wx_voice);
     }
