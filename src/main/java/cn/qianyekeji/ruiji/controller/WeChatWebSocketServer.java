@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.entity.WxVoice;
 import cn.qianyekeji.ruiji.service.Wx_voiceService;
 import cn.qianyekeji.ruiji.utils.AudioUtils;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -130,6 +132,44 @@ static {
                                 break;
                         }
 
+                    }
+                }else if (content.split("=").length == 4) {
+//                    语音转发=发送语音人的微信号=要发送到人的微信号=1
+                    String[] split = content.split("=");
+                    String biao=split[0];
+                    String from_wx=split[1];
+                    String to_wx=split[2];
+                    String number=split[3];
+                    if ("语音转发".equals(biao)){
+                        //确定要进行语音转发了，这时候我们根据传入的number判断要转发哪个语音，并取出silk文件，然后发送给to_wx
+                        String url = "http://127.0.0.1:8888/api/";
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("type",43);
+                        map.put("keyword",from_wx);
+                        String jsonString4 = JSONUtil.toJsonStr(map);
+                        // 发送POST请求
+                        HttpResponse response = HttpUtil.createPost(url).body(jsonString4, "application/json").execute();
+                        if (response.isOk()) {
+                            String body = response.body();
+                            JSONObject entries = JSONUtil.parseObj(body);
+                            String jsonObject = entries.getJSONObject("data").getJSONObject("data").getStr("encryptUserName");
+
+                            HashMap<String, Object> map_1 = new HashMap<>();
+                            map_1.put("type",43);
+                            map_1.put("keyword",to_wx);
+                            String jsonString44 = JSONUtil.toJsonStr(map_1);
+                            // 发送POST请求
+                            HttpResponse response4 = HttpUtil.createPost(url).body(jsonString44, "application/json").execute();
+                            if (response4.isOk()) {
+                                String body4 = response4.body();
+                                JSONObject entries4 = JSONUtil.parseObj(body4);
+                                String jsonObject4 = entries4.getJSONObject("data").getJSONObject("data").getStr("encryptUserName");
+                                System.out.println("提取人微信号"+jsonObject);
+                                System.out.println("发送人微信号"+jsonObject4);
+
+
+                            }
+                        }
                     }
                 }
             }
