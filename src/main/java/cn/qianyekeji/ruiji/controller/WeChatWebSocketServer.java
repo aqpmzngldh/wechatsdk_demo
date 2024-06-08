@@ -90,9 +90,47 @@ static {
                     String wenzi=split[2];
 
                     //按照自己设计的规则，1表示想发送到群聊中,2发送到某个人
-                    if (address.charAt(0)==1){
+                    if ("1".equals(address.charAt(0)+"")){
                         String substring = address.substring(1);
+                        switch (yinse){
+                            case "懒羊羊":
+                                String url="https://api.lolimi.cn/API/yyhc/lyy.php";
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("msg",wenzi);
+                                HttpResponse response = HttpUtil.createPost(url).form(hashMap).execute();
 
+                                if (response.isOk()) {
+                                    String responseBody = response.body();
+                                    Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                                    String music = (String)map.get("music");
+                                    System.out.println("文字转语音后的wav文件链接是："+music);
+                                    // 下载音乐文件到本地指定目录
+                                    String localFilePath  = downloadFile(music, "F:\\\\yuyin\\\\");
+                                    String fileName = localFilePath.substring(localFilePath.lastIndexOf("\\") + 1);
+                                    //这时候给wav转成silk，然后通过wechatsdk进行发送
+                                    String s = AudioUtils.transferAudioSilk("F:\\\\yuyin\\\\", fileName, false);
+                                    System.out.println("看一下这个s："+s);
+
+                                    String qunId = (String)redisTemplate.opsForHash().get("wx_voice", substring);
+                                    System.out.println("查询到的群id是：" + qunId);
+                                    String url_2 = "http://127.0.0.1:8888/api/";
+                                    HashMap<String, Object> hashMap_2 = new HashMap<>();
+                                    hashMap_2.put("type", 10014);
+                                    hashMap_2.put("userName", qunId);
+                                    hashMap_2.put("filePath", s);
+                                    String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
+                                    HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+
+
+                                }
+
+
+
+                                break;
+                            case "哈哈":
+
+                                break;
+                        }
                     }else if ("2".equals(address.charAt(0)+"")){
                         String substring = address.substring(1);
                         switch (yinse){
