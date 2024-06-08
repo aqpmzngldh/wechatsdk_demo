@@ -3,11 +3,13 @@ package cn.qianyekeji.ruiji.controller;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.ruiji.entity.WxVoice;
 import cn.qianyekeji.ruiji.service.Wx_voiceService;
 import cn.qianyekeji.ruiji.utils.AudioUtils;
+import cn.qianyekeji.ruiji.utils.BaiduMapGeocoding;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -316,6 +318,47 @@ static {
                             HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
                         }
 
+                    }
+                }else if (content.split("-").length == 2){
+                    // 位置名-数量
+                    String[] split = content.split("-");
+                    String address=split[0];
+                    Integer number=Integer.parseInt(split[1]);
+                    double[] doubles = BaiduMapGeocoding.addressToCoordinate(address);
+
+                    String url_2 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map_2 = new HashMap<>();
+                    map_2.put("type",19);
+                    map_2.put("longitude",doubles[0]);
+                    map_2.put("latitude",doubles[1]);
+                    map_2.put("userType",4);
+                    String jsonString444 = JSONUtil.toJsonStr(map_2);
+                    // 发送POST请求
+                    HttpResponse execute = HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
+                    if (execute.isOk()) {
+                        String responseBody = execute.body();
+                        // 解析JSON
+                        JSONObject root = JSONUtil.parseObj(responseBody);
+                        // 获取users数组
+                        JSONArray users = root.getJSONObject("data").getJSONObject("data").getJSONArray("users");
+
+                        // 遍历每个用户
+                        for (int i = 0; i < number; i++) {
+                            JSONObject user = users.getJSONObject(i);
+                            String ticket = user.getStr("ticket");
+                            String encryptUserName = user.getStr("encryptUserName");
+
+                            String url = "http://127.0.0.1:8888/api/";
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("type",10033);
+                            map.put("encryptUserName",encryptUserName);
+                            map.put("ticket",ticket);
+                            map.put("verifyType",18);
+                            String jsonString4 = JSONUtil.toJsonStr(map);
+                            // 发送POST请求
+                            HttpUtil.createPost(url).body(jsonString4, "application/json").execute();
+
+                        }
                     }
                 }
             }
