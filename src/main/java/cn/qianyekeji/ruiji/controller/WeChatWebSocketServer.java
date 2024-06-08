@@ -242,6 +242,41 @@ static {
 
                         }
                     }else if ("群人".equals(biao)){
+                        String qunId = (String)redisTemplate.opsForHash().get("wx_voice", from_wx);
+
+                        String url = "http://127.0.0.1:8888/api/";
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("type",43);
+                        map.put("keyword",to_wx);
+                        String jsonString4 = JSONUtil.toJsonStr(map);
+                        // 发送POST请求
+                        HttpResponse response = HttpUtil.createPost(url).body(jsonString4, "application/json").execute();
+                        if (response.isOk()) {
+                            String body = response.body();
+                            JSONObject entries = JSONUtil.parseObj(body);
+                            String jsonObject = entries.getJSONObject("data").getJSONObject("data").getStr("encryptUserName");
+                            System.out.println("提取人微信号"+jsonObject);
+
+                            QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
+                            objectQueryWrapper.eq("from_wx", qunId)
+                                    .eq("to_wx", "wxid_o42elvr0ggen22")
+                                    .orderByDesc("times");
+
+                            List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
+                            WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
+                            String address = wxVoice.getAddress();
+                            System.out.println("当前的语音聊天数据是："+address);
+
+
+                            String url_2 = "http://127.0.0.1:8888/api/";
+                            HashMap<String, Object> map_2 = new HashMap<>();
+                            map_2.put("type",10014);
+                            map_2.put("userName",jsonObject);
+                            map_2.put("filePath",address);
+                            String jsonString444 = JSONUtil.toJsonStr(map_2);
+                            // 发送POST请求
+                            HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
+                        }
 
                     }
                 }
