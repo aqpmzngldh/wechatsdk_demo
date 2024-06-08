@@ -10,6 +10,7 @@ import cn.qianyekeji.ruiji.service.Wx_voiceService;
 import cn.qianyekeji.ruiji.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,8 @@ import static cn.qianyekeji.ruiji.utils.AudioUtils.transferAudioSilk;
 public class WeChatWebSocketServer {
     @Autowired
     private Wx_voiceService wx_voiceService;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
 
 static {
     String url = "http://127.0.0.1:8888/api/";
@@ -50,6 +53,15 @@ static {
         System.out.println("看一下这个data的数据"+data1);
         String type = String.valueOf(data1.get("type"));
         System.out.println("这个值是："+type);
+
+        String from1 = data1.get("from");
+        String chatroomMemberInfoJson1 = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
+        // 将JSON字符串解析为Map
+        JSONObject chatroomMemberInfo1 = JSONUtil.parseObj(chatroomMemberInfoJson1);
+        String belongChatroomNickName1 = (String)chatroomMemberInfo1.get("belongChatroomNickName");
+        if (belongChatroomNickName1!=null){
+        redisTemplate.opsForHash().put("wx_voice",belongChatroomNickName1,from1);
+        }
         //根据文档type是34的时候，是语音消息
         if ("34".equals(type)){
             System.out.println("这个是语音消息");
@@ -194,6 +206,43 @@ static {
 
                             }
                         }
+                    }else if ("人群".equals(biao)){
+                        String url = "http://127.0.0.1:8888/api/";
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("type",43);
+                        map.put("keyword",from_wx);
+                        String jsonString4 = JSONUtil.toJsonStr(map);
+                        // 发送POST请求
+                        HttpResponse response = HttpUtil.createPost(url).body(jsonString4, "application/json").execute();
+                        if (response.isOk()) {
+                            String body = response.body();
+                            JSONObject entries = JSONUtil.parseObj(body);
+                            String jsonObject = entries.getJSONObject("data").getJSONObject("data").getStr("encryptUserName");
+                            System.out.println("提取人微信号"+jsonObject);
+
+                            QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
+                            objectQueryWrapper.eq("from_wx", jsonObject)
+                                    .eq("to_wx", "wxid_o42elvr0ggen22")
+                                    .orderByDesc("times");
+
+                            List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
+                            WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
+                            String address = wxVoice.getAddress();
+                            System.out.println("当前的语音聊天数据是："+address);
+
+                            String qunId = (String)redisTemplate.opsForHash().get("wx_voice", to_wx);
+                            String url_2 = "http://127.0.0.1:8888/api/";
+                            HashMap<String, Object> map_2 = new HashMap<>();
+                            map_2.put("type",10014);
+                            map_2.put("userName",qunId);
+                            map_2.put("filePath",address);
+                            String jsonString444 = JSONUtil.toJsonStr(map_2);
+                            // 发送POST请求
+                            HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
+
+                        }
+                    }else if ("群人".equals(biao)){
+
                     }
                 }
             }
@@ -262,5 +311,7 @@ static {
         wx_voice.setAddress("F:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
         wx_voice.setTimes(System.currentTimeMillis() / 1000+"");
         wx_voiceService.save(wx_voice);
+
+//        redisTemplate.opsForHash().put("wx_voice",belongChatroomNickName,from);
     }
 }
