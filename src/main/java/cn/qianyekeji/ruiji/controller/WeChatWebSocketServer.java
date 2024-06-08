@@ -55,7 +55,12 @@ static {
             System.out.println("这个是语音消息");
             String from = data1.get("from");
             String to = data1.get("to");
-            handleAudioMsg(data1,from,to);
+            // 获取chatroomMemberInfo字段，它是一个JSON字符串,就不能像上面那样获取了
+            String chatroomMemberInfoJson = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
+            // 将JSON字符串解析为Map
+            JSONObject chatroomMemberInfo = JSONUtil.parseObj(chatroomMemberInfoJson);
+            String belongChatroomNickName = (String)chatroomMemberInfo.get("belongChatroomNickName");
+            handleAudioMsg(data1,from,to,belongChatroomNickName);
 
         }else if("1".equals(type)){
             String from = data1.get("from");
@@ -212,7 +217,7 @@ static {
         return saveFilePath;
     }
 
-    private void handleAudioMsg(Map<String, String> data,String from,String to) throws Exception {
+    private void handleAudioMsg(Map<String, String> data,String from,String to,String belongChatroomNickName) throws Exception {
         String xmlContent = data.get("content");
         System.out.println("看一下值1："+xmlContent);
         // 微信群发言是有前缀的，这里需要去掉
@@ -229,13 +234,13 @@ static {
             String aeskey = voicemsgElem.getAttribute("aeskey");
             String fileid = voicemsgElem.getAttribute("voiceurl");
             // 下载音频文件
-            downloadAudioFile(fileid, aeskey,from,to);
+            downloadAudioFile(fileid, aeskey,from,to,belongChatroomNickName);
         } else {
             System.out.println("No voicemsg element found.");
         }
     }
 
-    private void downloadAudioFile(String fileid, String aeskey,String from,String to) {
+    private void downloadAudioFile(String fileid, String aeskey,String from,String to,String belongChatroomNickName) {
 
         String url = "http://127.0.0.1:8888/api/";
         Map<String, Object> requestBody = new HashMap<>();
@@ -253,6 +258,7 @@ static {
         WxVoice wx_voice = new WxVoice();
         wx_voice.setFromWx(from);
         wx_voice.setToWx(to);
+        wx_voice.setLiao(belongChatroomNickName);
         wx_voice.setAddress("F:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
         wx_voice.setTimes(System.currentTimeMillis() / 1000+"");
         wx_voiceService.save(wx_voice);

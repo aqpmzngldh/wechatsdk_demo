@@ -21,6 +21,7 @@ public class WxVoice implements Serializable {
     private String toWx;
     private String address;
     private String times;
+    private String liao;
 
 
 }
