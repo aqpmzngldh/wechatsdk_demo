@@ -226,7 +226,7 @@ static {
                                 System.out.println("发送人微信号"+jsonObject4);
                                 QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
                                 objectQueryWrapper.eq("from_wx", jsonObject)
-                                        .eq("to_wx", "wxid_o42elvr0ggen22")
+                                        .eq("to_wx", "wxid_mxx11pv88oj422")
                                         .orderByDesc("times");
 
                                 List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
