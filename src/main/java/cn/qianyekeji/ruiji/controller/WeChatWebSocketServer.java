@@ -52,7 +52,7 @@ static {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data)throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-//        System.out.println("看一下这个data的数据"+data1);
+        System.out.println("看一下这个data的数据"+data1);
         String type = String.valueOf(data1.get("type"));
 //        System.out.println("这个值是："+type);
 
@@ -63,6 +63,27 @@ static {
         String belongChatroomNickName1 = (String)chatroomMemberInfo1.get("belongChatroomNickName");
         if (belongChatroomNickName1!=null){
         redisTemplate.opsForHash().put("wx_voice",belongChatroomNickName1,from1);
+        }
+        //获取的数据有时候不能通过上面那种方式存入redis，所以这个if中再做补充
+        if(from1.endsWith("@chatroom")){
+            String url_1 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> hashMap_1 = new HashMap<>();
+            hashMap_1.put("type", 30);
+            hashMap_1.put("chatroomUserName", from1);
+            String jsonString_1 = JSONUtil.toJsonStr(hashMap_1);
+            HttpResponse response_1 = HttpUtil.createPost(url_1).body(jsonString_1, "application/json").execute();
+            if (response_1.isOk()) {
+                String responseBody_1 = response_1.body();
+                JSONObject entries = JSONUtil.parseObj(responseBody_1);
+                // 获取 encryptUserName
+                String encryptUserName = entries.getJSONObject("data")
+                        .getJSONObject("data")
+                        .getJSONObject("profile")
+                        .getJSONObject("data")
+                        .getStr("nickName");
+                redisTemplate.opsForHash().put("wx_voice",encryptUserName,from1);
+
+            }
         }
         //根据文档type是34的时候，是语音消息
         if ("34".equals(type)){
