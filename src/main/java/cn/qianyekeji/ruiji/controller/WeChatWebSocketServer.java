@@ -353,7 +353,7 @@ static {
                             map.put("type",10033);
                             map.put("encryptUserName",encryptUserName);
                             map.put("ticket",ticket);
-                            map.put("verifyType",18);
+                            map.put("verifyType",6);
                             String jsonString4 = JSONUtil.toJsonStr(map);
                             // 发送POST请求
                             HttpUtil.createPost(url).body(jsonString4, "application/json").execute();
