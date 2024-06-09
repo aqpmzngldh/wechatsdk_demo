@@ -52,9 +52,9 @@ static {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data)throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-        System.out.println("看一下这个data的数据"+data1);
+//        System.out.println("看一下这个data的数据"+data1);
         String type = String.valueOf(data1.get("type"));
-        System.out.println("这个值是："+type);
+//        System.out.println("这个值是："+type);
 
         String from1 = data1.get("from");
         String chatroomMemberInfoJson1 = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
