@@ -57,6 +57,7 @@ static {
 //        System.out.println("这个值是："+type);
 
         String from1 = data1.get("from");
+        String to1 = data1.get("to");
         String chatroomMemberInfoJson1 = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
         // 将JSON字符串解析为Map
         JSONObject chatroomMemberInfo1 = JSONUtil.parseObj(chatroomMemberInfoJson1);
@@ -82,6 +83,26 @@ static {
                         .getJSONObject("data")
                         .getStr("nickName");
                 redisTemplate.opsForHash().put("wx_voice",encryptUserName,from1);
+
+            }
+        }
+        if(to1.endsWith("@chatroom")){
+            String url_1 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> hashMap_1 = new HashMap<>();
+            hashMap_1.put("type", 30);
+            hashMap_1.put("chatroomUserName", to1);
+            String jsonString_1 = JSONUtil.toJsonStr(hashMap_1);
+            HttpResponse response_1 = HttpUtil.createPost(url_1).body(jsonString_1, "application/json").execute();
+            if (response_1.isOk()) {
+                String responseBody_1 = response_1.body();
+                JSONObject entries = JSONUtil.parseObj(responseBody_1);
+                // 获取 encryptUserName
+                String encryptUserName = entries.getJSONObject("data")
+                        .getJSONObject("data")
+                        .getJSONObject("profile")
+                        .getJSONObject("data")
+                        .getStr("nickName");
+                redisTemplate.opsForHash().put("wx_voice",encryptUserName,to1);
 
             }
         }
