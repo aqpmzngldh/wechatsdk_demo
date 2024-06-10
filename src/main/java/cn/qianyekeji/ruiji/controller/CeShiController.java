@@ -348,9 +348,10 @@ public class CeShiController {
             message1.setMsgType("text");
             message1.setToUserName(message.get("FromUserName"));
             str = Message.objectToXml(message1);
-        }else if(("CLICK".equals(message.get("Event")))&&("bossjiqiren".equals(message.get("EventKey")))){
+        }
+        else if(("CLICK".equals(message.get("Event")))&&("bossjiqiren".equals(message.get("EventKey")))){
 
-            String htmlContent = "目前功能主要有：\n"
+            String htmlContent = "目前功能主要有：\n\n"
                     + "1. 交互：boss直聘的消息会发送到微信，微信中的消息发送到boss直聘\n"
                     + "2. 当有boss说要自己的简历，电话，微信均会自动发送\n"
                     + "3. 如果boss是已读未回，会在10分钟后自动发送消息，比如沟通的是软通动力的hr黄珊珊，这时候会自动发送消息，黄珊珊，你怎么不回消息？\n"
@@ -362,9 +363,9 @@ public class CeShiController {
             message1.setMsgType("text");
             message1.setToUserName(message.get("FromUserName"));
             str = Message.objectToXml(message1);
-        }else if(("CLICK".equals(message.get("Event")))&&("weixinjiqiren".equals(message.get("EventKey")))){
+        }else if(("CLICK".equals(message.get("Event")))&&("wjiqiren".equals(message.get("EventKey")))){
 
-            String htmlContent = "目前功能主要有：\n"
+            String htmlContent = "目前功能主要有：\n\n"
                     + "1. 进群欢迎/普通提问解答\n"
                     + "2. 今日早报/今日星座运势\n"
                     + "3. 天气预报/定制称呼\n"
@@ -514,15 +515,6 @@ public class CeShiController {
 //            subButton2.put("appid", "wxf88c1f139cc9011a");
 //            subButton2.put("pagepath", "pages/index/index");
 
-            HashMap<String, Object> subButton2 = new HashMap<>();
-            subButton2.put("type", "click");
-            subButton2.put("name", "微信机器人");
-            subButton2.put("key", "weixinjiqiren");
-
-            HashMap<String, Object> subButton22 = new HashMap<>();
-            subButton22.put("type", "click");
-            subButton22.put("name", "Boss机器人");
-            subButton22.put("key", "bossjiqiren");
 
             HashMap<String, Object> subButton33 = new HashMap<>();
             subButton33.put("type", "miniprogram");
@@ -531,9 +523,20 @@ public class CeShiController {
             subButton33.put("appid", "wx902a8a53a4554f9a");
             subButton33.put("pagepath", "pages/index/index");
 
+
+            HashMap<String, Object> subButton2222 = new HashMap<>();
+            subButton2222.put("type", "click");
+            subButton2222.put("name", "微信机器人");
+            subButton2222.put("key", "wjiqiren");
+
+            HashMap<String, Object> subButton229 = new HashMap<>();
+            subButton229.put("type", "click");
+            subButton229.put("name", "Boss机器人");
+            subButton229.put("key", "bossjiqiren");
+
+            subButtons.add(subButton2222);
+            subButtons.add(subButton229);
             subButtons.add(subButton33);
-            subButtons.add(subButton2);
-            subButtons.add(subButton22);
             subButtons.add(subButton1);
 
             HashMap<String, Object> button3 = new HashMap<>();
