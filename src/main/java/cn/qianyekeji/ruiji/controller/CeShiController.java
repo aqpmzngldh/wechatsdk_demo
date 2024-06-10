@@ -348,6 +348,43 @@ public class CeShiController {
             message1.setMsgType("text");
             message1.setToUserName(message.get("FromUserName"));
             str = Message.objectToXml(message1);
+        }else if(("CLICK".equals(message.get("Event")))&&("bossjiqiren".equals(message.get("EventKey")))){
+
+            String htmlContent = "目前功能主要有：\n"
+                    + "1. 交互：boss直聘的消息会发送到微信，微信中的消息发送到boss直聘\n"
+                    + "2. 当有boss说要自己的简历，电话，微信均会自动发送\n"
+                    + "3. 如果boss是已读未回，会在10分钟后自动发送消息，比如沟通的是软通动力的hr黄珊珊，这时候会自动发送消息，黄珊珊，你怎么不回消息？\n"
+                    + "4. 全自动托管，根据设置的数据集自动回复来自boss的所有消息";
+
+            message1.setContent(htmlContent);
+            message1.setCreateTime(System.currentTimeMillis());
+            message1.setFromUserName(message.get("ToUserName"));
+            message1.setMsgType("text");
+            message1.setToUserName(message.get("FromUserName"));
+            str = Message.objectToXml(message1);
+        }else if(("CLICK".equals(message.get("Event")))&&("weixinjiqiren".equals(message.get("EventKey")))){
+
+            String htmlContent = "目前功能主要有：\n"
+                    + "1. 进群欢迎/普通提问解答\n"
+                    + "2. 今日早报/今日星座运势\n"
+                    + "3. 天气预报/定制称呼\n"
+                    + "4. 美女/视频\n"
+                    + "5. 活跃度查询/链接转二维码\n"
+                    + "6. 传话筒\n"
+                    + "7. 接码\n"
+                    + "8. 咸鱼之王宝箱计算(咸鱼之王群专属)，其他群无法使用\n"
+                    + "9. 群聊防撤回(高级:私聊防撤)\n"
+                    + "10. 在一个群中回复所有群的消息(高级)\n"
+                    + "11. 对微信中所有消息进行定制自动回复(高级)\n"
+                    + "12. 多种语音包发送语音(高级)\n"
+                    + "13. 语音转发";
+
+            message1.setContent(htmlContent);
+            message1.setCreateTime(System.currentTimeMillis());
+            message1.setFromUserName(message.get("ToUserName"));
+            message1.setMsgType("text");
+            message1.setToUserName(message.get("FromUserName"));
+            str = Message.objectToXml(message1);
         }
 
         response.setContentType("text/html;charset=utf-8");
@@ -477,6 +514,16 @@ public class CeShiController {
 //            subButton2.put("appid", "wxf88c1f139cc9011a");
 //            subButton2.put("pagepath", "pages/index/index");
 
+            HashMap<String, Object> subButton2 = new HashMap<>();
+            subButton2.put("type", "click");
+            subButton2.put("name", "微信机器人");
+            subButton2.put("key", "weixinjiqiren");
+
+            HashMap<String, Object> subButton22 = new HashMap<>();
+            subButton22.put("type", "click");
+            subButton22.put("name", "Boss机器人");
+            subButton22.put("key", "bossjiqiren");
+
             HashMap<String, Object> subButton33 = new HashMap<>();
             subButton33.put("type", "miniprogram");
             subButton33.put("name", "千小夜");
@@ -485,7 +532,8 @@ public class CeShiController {
             subButton33.put("pagepath", "pages/index/index");
 
             subButtons.add(subButton33);
-//            subButtons.add(subButton2);
+            subButtons.add(subButton2);
+            subButtons.add(subButton22);
             subButtons.add(subButton1);
 
             HashMap<String, Object> button3 = new HashMap<>();
