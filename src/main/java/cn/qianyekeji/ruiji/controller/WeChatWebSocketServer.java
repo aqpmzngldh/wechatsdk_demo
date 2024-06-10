@@ -52,7 +52,7 @@ static {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data)throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-        System.out.println("看一下这个data的数据"+data1);
+//        System.out.println("看一下这个data的数据"+data1);
         String type = String.valueOf(data1.get("type"));
 //        System.out.println("这个值是："+type);
 
