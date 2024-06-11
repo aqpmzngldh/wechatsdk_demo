@@ -19,13 +19,15 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static jdk.nashorn.internal.objects.NativeString.substring;
+
 
 /**
  * @author liangshuai
  * @date 2023/3/5
  */
 
-@SpringBootTest
+//@SpringBootTest
 public class ceshi {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
@@ -45,14 +47,17 @@ public class ceshi {
     }
 
     @Test
-    void def() {
-        String user = "120.2155118__30.25308298_111";
-        String userWithoutEnding = user.substring(0, user.lastIndexOf("_"));
-        String[] userCoordinates = userWithoutEnding.split("__");
-        String userLongitude = userCoordinates[0];
-        String userLatitude = userCoordinates[1];
-        System.out.println(userLongitude);
-        System.out.println(userLatitude);
+    void b() {
+        String str="wxid_o42elvr0ggen22:\n" +
+                "在吗";
+        int newlineIndex = str.indexOf('\n');
+        if (newlineIndex != -1) {
+            String substring = str.substring(0, newlineIndex);
+            int lastColonIndex = substring.lastIndexOf(':');
+            String newStr = str.substring(0, lastColonIndex);
+            System.out.println("当前群聊中是谁发送的消息："+newStr);
+            System.out.println("发送的消息是："+str.substring(newlineIndex + 1));
+        }
     }
 
 }

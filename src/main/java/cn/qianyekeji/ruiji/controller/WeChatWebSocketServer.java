@@ -10,6 +10,7 @@ import cn.qianyekeji.ruiji.service.Wx_voiceService;
 import cn.qianyekeji.ruiji.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,8 @@ public class WeChatWebSocketServer {
     private Wx_voiceService wx_voiceService;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
+    @Value("${wecahtsdk.name}")
+    private String name;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -364,6 +367,21 @@ public class WeChatWebSocketServer {
                         }
 
                     }
+                }
+            }else{
+                if (from.endsWith("@chatroom")){
+                    int newlineIndex = content.indexOf('\n');
+                    //按照格式，肯定存在一个换行符
+                    //并且在使用机器人的时候，必须@机器人名才可以,对这种消息我们才做处理
+                    if (newlineIndex != -1) {
+                        String substring = content.substring(0, newlineIndex);
+                        int lastColonIndex = substring.lastIndexOf(':');
+                        String newStr = content.substring(0, lastColonIndex);
+                        String substring1 = content.substring(newlineIndex + 1);
+                        System.out.println("在当前群聊中，用户："+newStr+"发送了消息，具体内容是："+substring1);
+                    }
+                }else{
+                    //到这里说明就是私聊消息了，暂时不对私聊消息做出处理，本项目专注于群聊机器人，后面对本项目感兴趣的伙伴可以自行在这基础上扩展
                 }
             }
         }else if ("10002".equals(type)) {

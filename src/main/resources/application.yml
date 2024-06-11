@@ -36,3 +36,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: assign_id
+wecahtsdk:
+  #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使用
+  name: 咸王
