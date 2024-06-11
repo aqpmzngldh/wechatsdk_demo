@@ -41,5 +41,5 @@ Class-Path: spring-expression-5.3.6.jar mchange-commons-java-0.2.15.ja
  r-1.1.23.jar jakarta.activation-1.2.2.jar commons-lang-2.6.jar tomcat
  -embed-core-9.0.45.jar druid-1.1.23.jar spring-boot-2.4.5.jar opentra
  cing-util-0.33.0.jar jaudiotagger-2.0.1.jar okhttp-3.14.9.jar
-Main-Class: cn.qianyekeji.ruiji.RuijiApplication
+Main-Class: cn.qianyekeji.ruiji.WechatSdkApplication
 

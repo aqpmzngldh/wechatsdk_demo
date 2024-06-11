@@ -8,6 +8,7 @@ import java.util.Map;
 
 /**
  * 通用返回结果，服务端响应的数据最终都会封装成此对象
+ *
  * @param <T>
  */
 @Data

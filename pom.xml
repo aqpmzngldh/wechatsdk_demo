@@ -11,23 +11,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.qianyekeji</groupId>
-    <artifactId>ruiji</artifactId>
+    <artifactId>wechatsdk_demo</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-
-    <repositories>
-        <repository>
-            <id>github-mzdluo123-silk4j</id>
-            <url>https://aqpmzngldh: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@maven.pkg.github.com/mzdluo123/silk4j</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-    </repositories>
-
 
 
     <dependencies>
@@ -58,25 +43,14 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.76</version>
-            <!--json转换使用-->
-        </dependency>
+       
 
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.7.17</version>
-            <!--包含json转换等更强功能-->
         </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
-            <!--工具包StringUti.isNotEmpty方法就会用到-->
-        </dependency>
+
 
 
         <dependency>
@@ -91,34 +65,8 @@
             <version>1.1.23</version>
             <!--数据库连接池，节省资源提高效率-->
         </dependency>
-        <!--腾讯云发短信的-->
-        <dependency>
-            <groupId>com.github.qcloudsms</groupId>
-            <artifactId>qcloudsms</artifactId>
-            <version>1.0.6</version>
-        </dependency>
-        <!--阿里云短信服务-->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-core</artifactId>
-            <version>4.5.16</version>
-        </dependency>
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
-            <version>2.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.18</version> <!-- 使用最新版本 -->
-        </dependency>
 
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version> <!-- 使用sha1加密 -->
-        </dependency>
+
 
 
 
@@ -155,79 +103,6 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.8</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-
-        <!--企业微信发邮件-->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>1.6.7</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-quartz</artifactId>
-        </dependency>
-
-        <!--完成面试测试-->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.14</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>3.14</version>
-        </dependency>
-
-        <!--微信支付SDK-->
-        <dependency>
-            <groupId>com.github.wechatpay-apiv3</groupId>
-            <artifactId>wechatpay-apache-httpclient</artifactId>
-            <version>0.3.0</version>
-        </dependency>
-
-        <!--七牛云存储图片-->
-        <dependency>
-            <groupId>com.qiniu</groupId>
-            <artifactId>qiniu-java-sdk</artifactId>
-            <version>[7.7.0, 7.7.99]</version>
-        </dependency>
-
-        <!--获取wav格式音频时长-->
-        <dependency>
-            <groupId>org</groupId>
-            <artifactId>jaudiotagger</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-        <!--爬取csdn中极客日报发的it新闻-->
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.14.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.rometools</groupId>
-            <artifactId>rome</artifactId>
-            <version>1.15.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.rometools</groupId>
-            <artifactId>rome-fetcher</artifactId>
-            <version>1.15.0</version>
-        </dependency>
-
-
-
-
 
 
 

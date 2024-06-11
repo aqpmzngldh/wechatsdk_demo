@@ -117,7 +117,7 @@
         el: '#app',
         data() {
             return {
-                iconfont:"",
+                iconfont: "",
                 defAct: '2',
                 menuActived: '2',
                 userInfo: {},
@@ -144,15 +144,15 @@
                                 name: '员工管理2',
                                 url: 'page/member/list.html',
                                 icon: 'icon-member'
-                            ,
-                            children: [
-                {
-                    id: '10',
-                    name: '员工管理3',
-                    url: 'page/member/list.html',
-                    icon: 'icon-member',
-                },
-            ]
+                                ,
+                                children: [
+                                    {
+                                        id: '10',
+                                        name: '员工管理3',
+                                        url: 'page/member/list.html',
+                                        icon: 'icon-member',
+                                    },
+                                ]
                             }
                         ]
                     },
@@ -207,16 +207,19 @@
         },
         methods: {
             logout() {
-                logoutApi().then((res) => {
-                    if (res.code === 1) {
-                        localStorage.removeItem('userInfo')
-                        window.location.href = '/backend/page/login/login.html'
-                    }
-                })
+                logoutApi().then((res) = > {
+                    if(res.code === 1
+            )
+                {
+                    localStorage.removeItem('userInfo')
+                    window.location.href = '/backend/page/login/login.html'
+                }
+            })
             },
             goBack() {
                 // window.location.href = 'javascript:history.go(-1)'
-                const menu = this.menuList.find(item => item.id === this.menuActived)
+                const menu = this.menuList.find(item = > item.id === this.menuActived
+            )
                 // this.goBackFlag = false
                 // this.headTitle = menu.name
                 this.menuHandle(menu, false)
@@ -231,9 +234,11 @@
             },
             closeLoading() {
                 this.timer = null
-                this.timer = setTimeout(() => {
+                this.timer = setTimeout(() = > {
                     this.loading = false
-                }, 1000)
+            },
+                1000
+            )
             }
         }
     })

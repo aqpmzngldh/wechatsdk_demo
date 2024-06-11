@@ -79,6 +79,7 @@
         #wc {
             width: 49%;
         }
+
         #nm {
             width: 46%;
         }
@@ -114,9 +115,11 @@
             float: left; /* 将用户头像框浮动到左侧 */
             margin-top: 5px; /* 稍微调整一下上边距，使其垂直居中 */
         }
+
         .message-content {
             overflow: hidden;
         }
+
         .avatar img {
             width: 46px;
             height: auto;
@@ -192,7 +195,7 @@
     </div>
 
     <form>
-        <el-button type="primary" v-show="isShow" id="nm" @click="open" >撤回消息选项</el-button>
+        <el-button type="primary" v-show="isShow" id="nm" @click="open">撤回消息选项</el-button>
         <el-button type="primary" v-show="isShow" id="wc" @click="copy">分享链接给好友</el-button>
 
         <p ref="firstParagraph" v-show="isShow">房间已创建，开启隐私对话吧</p>
@@ -233,8 +236,7 @@
         name: 'Chat',
         data() {
             return {
-                messages: [
-                ],
+                messages: [],
                 inputText: '',
                 rows: 1,
                 isShow: true,
@@ -251,7 +253,7 @@
         mounted() {
             // alert(getParameter("value"))
 
-            if (!getParameter("value")){
+            if (!getParameter("value")) {
                 this.$notify({type: 'warning', message: '聊天记录拉取失败，请返回重试'});
             }
 
@@ -268,9 +270,12 @@
                 localStorage.setItem('myName', name);
             }
 
-            setInterval(() => {
+            setInterval(() = > {
                 this.initData();
-            }, 1000);
+        },
+            1000
+        )
+            ;
             // 使用JavaScript获取两个p标签的DOM元素
             const firstParagraph = this.$refs.firstParagraph;
             const secondParagraph = this.$refs.secondParagraph;
@@ -293,232 +298,276 @@
             },
         },
         methods: {
-            async initData() {
-                let parameter = getParameter("value");
-                const message1 = {
-                    parameter: parameter
-                };
-                const res = await roomChatSee(message1)
-                if (res.code === 1) {
-                    this.messages = res.data
+            async initData()
+    {
+        let parameter = getParameter("value");
+        const message1 = {
+            parameter: parameter
+        };
+        const res = await
+        roomChatSee(message1)
+        if (res.code === 1) {
+            this.messages = res.data
+        } else {
+            this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
+        }
+    }
+    ,
+    async
+    sendMessage()
+    {
+
+        if (this.isButtonDisabled) {
+            return;  // 如果按钮已禁用，则忽略后续的点击事件
+        }
+        // 禁用按钮
+        this.isButtonDisabled = true;
+        // 在2秒后启用按钮
+        setTimeout(() = > {
+            this.isButtonDisabled = false;
+    },
+        2000
+    )
+        ;
+
+        if (((JSON.stringify(this.inputText).match(/\n/g) || []).length > 1) || (JSON.stringify(this.inputText) == JSON.stringify("\n"))) {
+            this.inputText = '';
+            this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
+            return false;
+        }
+        // 获取唯一标识符
+        let name = localStorage.getItem('myName');
+        let uuid = localStorage.getItem('uuid');
+        let parameter = getParameter("value");
+        const message = {
+            name: name,
+            uuid: uuid,
+            time: new Date().toLocaleString(),
+            body: this.inputText,
+            parameter: parameter
+        };
+        this.messages.push(message);
+        const res = await
+        chatName3(message)
+        this.inputText = '';
+        this.rows = 1;
+        // location.reload()
+        this.initData()
+    }
+    ,
+    scrollToEnd()
+    {
+        const element = document.getElementById('myElement');
+        element.scrollIntoView(false);
+    }
+    ,
+    diuShi()
+    {
+        let textareaEl = document.querySelector('.chat-input .el-textarea');
+        let width = textareaEl.offsetWidth;
+        textareaEl.style.width = '70%';
+        this.isShow = true
+    }
+    ,
+    hideParagraphs()
+    {
+        let textareaEl = document.querySelector('.chat-input .el-textarea');
+        let width = textareaEl.offsetWidth;
+        textareaEl.style.width = '100%';
+        this.isShow = false
+    }
+    ,
+    async
+    tiXing()
+    {
+        this.$notify({type: 'warning', message: '功能尚未开发'});
+    }
+    ,
+    selectImage()
+    {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        let name = localStorage.getItem('myName');
+        let parameter = getParameter("value");
+        let uuid = localStorage.getItem('uuid');
+        input.onchange = (event) =
+    >
+        {
+            const file = event.target.files[0];
+            // 创建一个新的FormData对象
+            const formData = new FormData();
+            //压缩前的文件对象
+            // console.log(file);
+            //压缩图片
+            this.imgCompress(file, 'image/webp', 0.5).then(res = > {
+                //压缩后的文件对象
+                // console.log(res.file);
+                // 将文件追加到FormData对象
+                formData.append('file', res.file);
+            formData.append('name', name);
+            formData.append('uuid', uuid);
+            formData.append('parameter', parameter);
+            // 附加任何其他表单数据到FormData对象;
+            // 使用AJAX请求将表单数据发送到后端
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/other');
+            xhr.send(formData);
+        })
+        }
+        ;
+        input.click();
+    }
+    ,
+    addLike(k, zan)
+    {
+        let uuid = localStorage.getItem('uuid');
+        $axios.post("/chat/zan/" + uuid + '/' + btoa(k))
+            .then(({data}) = > {}
+    )
+    .
+        catch(err = > {
+            this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+    })
+    }
+    ,
+    open()
+    {
+        this.$prompt('请复制时间标识进行删除', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^(0[1-9]|1[012])\/(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
+            inputErrorMessage: '格式不正确，请重新输入',
+        }).then(({value}) = > {
+            // 调用后端接口，传入 value 作为参数
+            let parameter = getParameter("value");
+        let params = parameter
+        $axios.post('/addressSee/delete1/' + params + '/' + btoa(value))
+            .then(response = > {
+            // 处理接口返回结果
+
+            this.$message({
+            type: 'success',
+            message: '已成功删除'
+        });
+    }).
+        catch(error = > {
+            this.$message({
+            type: 'error',
+            message: '删除失败，请稍后再试'
+        });
+    })
+        ;
+    }).
+        catch(() = > {
+            this.$message({
+            type: 'info',
+            message: '取消输入'
+        });
+    })
+        ;
+    }
+    ,
+    copy()
+    {
+        this.$confirm('此操作将复制链接, 是否继续?', '提示', {
+            confirmButtonText: '复制本房间链接',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() = > {
+            let parameter = getParameter("value");
+        let nmae = "https://qianyekeji.cn/front/page/room_chat.html?value=" + parameter
+        this.copyToClipboard(nmae);
+        this.$notify({type: 'success', message: '已复制本房间链接到剪切板'});
+    }).
+        catch(() = > {
+            this.$notify({type: 'success', message: '已取消'});
+    })
+        ;
+    }
+    ,
+    copyToClipboard(text)
+    {
+        var input = document.createElement('input');
+        input.setAttribute('value', text);
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+    }
+    ,
+    imgCompress(imgFile, imgType, quality)
+    {
+        if (!imgType) {
+            imgType = 'image/webp';//默认输出webp格式的图片
+        }
+        return new Promise((resolve, reject) = > {
+            let src = URL.createObjectURL(imgFile);
+        let img = new Image();//创建一个img标签
+        img.src = src;
+        img.onload = function () {
+            try {
+                URL.revokeObjectURL(src);//释放内存
+                let width = this.width;
+                let height = this.height;
+                let imgCanvas = document.createElement('canvas');//创建canvas元素
+                imgCanvas.width = width;
+                imgCanvas.height = height;
+                let ctx = imgCanvas.getContext('2d');//2d渲染
+                ctx.drawImage(this, 0, 0, width, height);//将图片以原有尺寸绘制到canvas中
+                //转换成base64并压缩，可以从0到1的区间内选择图片的质量。如果超出取值范围，将会使用默认值0.92。其他参数会被忽略
+                if (imgType === 'image/webp' || imgType === 'image/jpeg') {
+                    imgCanvas.toBlob(function (b) {
+                        let compressUrl = URL.createObjectURL(b);//压缩后的文件url
+                        let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];//重构文件名
+                        // let file=this.blobToFile(b,fileName,imgType);//Blob实例转成File实例
+                        let file = new window.File([b], fileName, {type: imgType})
+                        resolve({
+                            url: compressUrl,
+                            file: file,
+                        });
+                        imgCanvas = null;//释放内存
+                    }, imgType, quality);
                 } else {
-                    this.$notify({type: 'warning', message: '拉取聊天记录出错，请通知管理员'});
+                    imgCanvas.toBlob(function (b) {
+                        let compressUrl = URL.createObjectURL(b);
+                        let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];
+                        let file = this.blobToFile(b, fileName, imgType);
+                        resolve({
+                            url: compressUrl,
+                            file: file,
+                        }, imgType);
+                        imgCanvas = null;//释放内存
+                    }, imgType);
                 }
-            },
-            async sendMessage() {
-
-                if (this.isButtonDisabled) {
-                    return;  // 如果按钮已禁用，则忽略后续的点击事件
-                }
-                // 禁用按钮
-                this.isButtonDisabled = true;
-                // 在2秒后启用按钮
-                setTimeout(() => {
-                    this.isButtonDisabled = false;
-                }, 2000);
-
-                if (((JSON.stringify(this.inputText).match(/\n/g) || []).length > 1) || (JSON.stringify(this.inputText) == JSON.stringify("\n"))) {
-                    this.inputText = '';
-                    this.$notify({type: 'warning', message: '格式错误，请输入信息后回车键发送'});
-                    return false;
-                }
-                // 获取唯一标识符
-                let name = localStorage.getItem('myName');
-                let uuid = localStorage.getItem('uuid');
-                let parameter = getParameter("value");
-                const message = {
-                    name: name,
-                    uuid: uuid,
-                    time: new Date().toLocaleString(),
-                    body: this.inputText,
-                    parameter: parameter
-                };
-                this.messages.push(message);
-                const res = await chatName3(message)
-                this.inputText = '';
-                this.rows = 1;
-                // location.reload()
-                this.initData()
-            },
-            scrollToEnd() {
-                const element = document.getElementById('myElement');
-                element.scrollIntoView(false);
-            },
-            diuShi() {
-                let textareaEl = document.querySelector('.chat-input .el-textarea');
-                let width = textareaEl.offsetWidth;
-                textareaEl.style.width = '70%';
-                this.isShow = true
-            },
-            hideParagraphs() {
-                let textareaEl = document.querySelector('.chat-input .el-textarea');
-                let width = textareaEl.offsetWidth;
-                textareaEl.style.width = '100%';
-                this.isShow = false
-            },
-            async tiXing() {
-                this.$notify({type: 'warning', message: '功能尚未开发'});
-            },
-            selectImage() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                let name = localStorage.getItem('myName');
-                let parameter = getParameter("value");
-                let uuid = localStorage.getItem('uuid');
-                input.onchange = (event) => {
-                    const file = event.target.files[0];
-                    // 创建一个新的FormData对象
-                    const formData = new FormData();
-                    //压缩前的文件对象
-                    // console.log(file);
-                    //压缩图片
-                    this.imgCompress(file, 'image/webp', 0.5).then(res => {
-                        //压缩后的文件对象
-                        // console.log(res.file);
-                        // 将文件追加到FormData对象
-                        formData.append('file', res.file);
-                        formData.append('name', name);
-                        formData.append('uuid', uuid);
-                        formData.append('parameter', parameter);
-                        // 附加任何其他表单数据到FormData对象;
-                        // 使用AJAX请求将表单数据发送到后端
-                        const xhr = new XMLHttpRequest();
-                        xhr.open('POST', '/other');
-                        xhr.send(formData);
-                    })
-                };
-                input.click();
-            },
-            addLike(k, zan) {
-                let uuid = localStorage.getItem('uuid');
-                $axios.post("/chat/zan/" + uuid + '/' + btoa(k))
-                    .then(({data}) => {
-
-                    })
-                    .catch(err => {
-                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                    })
-            },
-            open() {
-                this.$prompt('请复制时间标识进行删除', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputPattern: /^(0[1-9]|1[012])\/(0[1-9]|[12]\d|3[01]) ([01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/,
-                    inputErrorMessage: '格式不正确，请重新输入',
-                }).then(({ value }) => {
-                    // 调用后端接口，传入 value 作为参数
-                    let parameter = getParameter("value");
-                    let params=parameter
-                    $axios.post('/addressSee/delete1/' + params+ '/' +btoa(value))
-                        .then(response => {
-                        // 处理接口返回结果
-
-                            this.$message({
-                            type: 'success',
-                            message: '已成功删除'
-                        });
-                    }).catch(error => {
-                        this.$message({
-                            type: 'error',
-                            message: '删除失败，请稍后再试'
-                        });
-                    });
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '取消输入'
-                    });
-                });
-            },
-            copy() {
-                this.$confirm('此操作将复制链接, 是否继续?', '提示', {
-                    confirmButtonText: '复制本房间链接',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                }).then(() => {
-                    let parameter = getParameter("value");
-                    let nmae="https://qianyekeji.cn/front/page/room_chat.html?value="+parameter
-                    this.copyToClipboard(nmae);
-                    this.$notify({type: 'success', message: '已复制本房间链接到剪切板'});
-                }).catch(() => {
-                    this.$notify({type: 'success', message: '已取消'});
-                });
-            },
-            copyToClipboard(text) {
-                var input = document.createElement('input');
-                input.setAttribute('value', text);
-                document.body.appendChild(input);
-                input.select();
-                document.execCommand('copy');
-                document.body.removeChild(input);
-            },
-            imgCompress(imgFile, imgType, quality) {
-                if (!imgType) {
-                    imgType = 'image/webp';//默认输出webp格式的图片
-                }
-                return new Promise((resolve, reject) => {
-                    let src = URL.createObjectURL(imgFile);
-                    let img = new Image();//创建一个img标签
-                    img.src = src;
-                    img.onload = function () {
-                        try {
-                            URL.revokeObjectURL(src);//释放内存
-                            let width = this.width;
-                            let height = this.height;
-                            let imgCanvas = document.createElement('canvas');//创建canvas元素
-                            imgCanvas.width = width;
-                            imgCanvas.height = height;
-                            let ctx = imgCanvas.getContext('2d');//2d渲染
-                            ctx.drawImage(this, 0, 0, width, height);//将图片以原有尺寸绘制到canvas中
-                            //转换成base64并压缩，可以从0到1的区间内选择图片的质量。如果超出取值范围，将会使用默认值0.92。其他参数会被忽略
-                            if (imgType === 'image/webp' || imgType === 'image/jpeg') {
-                                imgCanvas.toBlob(function (b) {
-                                    let compressUrl = URL.createObjectURL(b);//压缩后的文件url
-                                    let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];//重构文件名
-                                    // let file=this.blobToFile(b,fileName,imgType);//Blob实例转成File实例
-                                    let file = new window.File([b], fileName, {type: imgType})
-                                    resolve({
-                                        url: compressUrl,
-                                        file: file,
-                                    });
-                                    imgCanvas = null;//释放内存
-                                }, imgType, quality);
-                            } else {
-                                imgCanvas.toBlob(function (b) {
-                                    let compressUrl = URL.createObjectURL(b);
-                                    let fileName = imgFile.name.substring(0, imgFile.name.lastIndexOf('.')) + '.' + imgType.split('/')[1];
-                                    let file = this.blobToFile(b, fileName, imgType);
-                                    resolve({
-                                        url: compressUrl,
-                                        file: file,
-                                    }, imgType);
-                                    imgCanvas = null;//释放内存
-                                }, imgType);
-                            }
-                        } catch (e) {
-                            reject(e);
-                        }
-                    }
-                })
-            },
-
-            blobToFile(blob, fileName, type) {
-                return new window.File([blob], fileName, {type: type});
-            },
-            big(event){
-                let imgEl = event.target;
-                let width = imgEl.offsetWidth;
-                let height = imgEl.offsetHeight;
-                if (imgEl.style.width === '100%') {
-                    imgEl.style.width = '50%';
-                    imgEl.style.height = '50%';
-                }else{
-                    imgEl.style.width = '100%';
-                    imgEl.style.height = '100%';
-                }
+            } catch (e) {
+                reject(e);
             }
-        },
-    });
+        }
+    })
+    }
+    ,
+
+    blobToFile(blob, fileName, type)
+    {
+        return new window.File([blob], fileName, {type: type});
+    }
+    ,
+    big(event)
+    {
+        let imgEl = event.target;
+        let width = imgEl.offsetWidth;
+        let height = imgEl.offsetHeight;
+        if (imgEl.style.width === '100%') {
+            imgEl.style.width = '50%';
+            imgEl.style.height = '50%';
+        } else {
+            imgEl.style.width = '100%';
+            imgEl.style.height = '100%';
+        }
+    }
+    },
+    })
+    ;
 </script>
 </html>

@@ -1,47 +1,47 @@
 <!--<!DOCTYPE html>-->
 <!--<html>-->
 <!--<head>-->
-    <!--<meta charset="UTF-8">-->
-    <!--<title>eth实时价格计算</title>-->
-    <!--<meta name="viewport"-->
-          <!--content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">-->
-    <!--<link rel="icon" href="./../images/favico.ico">-->
-    <!--&lt;!&ndash;不同屏幕尺寸根字体设置&ndash;&gt;-->
-    <!--<script src="./../js/base.js"></script>-->
-    <!--&lt;!&ndash;element-ui的样式&ndash;&gt;-->
-    <!--<link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>-->
-    <!--&lt;!&ndash;引入vant样式&ndash;&gt;-->
-    <!--<link rel="stylesheet" href="../styles/vant.min.css"/>-->
-    <!--&lt;!&ndash; 引入样式  &ndash;&gt;-->
-    <!--&lt;!&ndash;<link rel="stylesheet" href="../styles/index.css"/>&ndash;&gt;-->
-    <!--&lt;!&ndash;本页面内容的样式&ndash;&gt;-->
-    <!--<link rel="stylesheet" href="./../styles/address.css"/>-->
-    <!--<style>-->
-        <!--body {-->
-            <!--padding: 15px;-->
-            <!--font-size: 20px;-->
-            <!--font-family: fangsong;-->
-            <!--text-align: center;-->
-        <!--}-->
-        <!--.about .el-input__inner{-->
-            <!--margin-top: 20px;-->
-        <!--}-->
-        <!--[v-cloak] {-->
-            <!--display: none;-->
-        <!--}-->
-        <!--#container{-->
-            <!--height: 300px;-->
-        <!--}-->
-    <!--</style>-->
+<!--<meta charset="UTF-8">-->
+<!--<title>eth实时价格计算</title>-->
+<!--<meta name="viewport"-->
+<!--content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no,minimal-ui">-->
+<!--<link rel="icon" href="./../images/favico.ico">-->
+<!--&lt;!&ndash;不同屏幕尺寸根字体设置&ndash;&gt;-->
+<!--<script src="./../js/base.js"></script>-->
+<!--&lt;!&ndash;element-ui的样式&ndash;&gt;-->
+<!--<link rel="stylesheet" href="../../backend/plugins/element-ui/index.css"/>-->
+<!--&lt;!&ndash;引入vant样式&ndash;&gt;-->
+<!--<link rel="stylesheet" href="../styles/vant.min.css"/>-->
+<!--&lt;!&ndash; 引入样式  &ndash;&gt;-->
+<!--&lt;!&ndash;<link rel="stylesheet" href="../styles/index.css"/>&ndash;&gt;-->
+<!--&lt;!&ndash;本页面内容的样式&ndash;&gt;-->
+<!--<link rel="stylesheet" href="./../styles/address.css"/>-->
+<!--<style>-->
+<!--body {-->
+<!--padding: 15px;-->
+<!--font-size: 20px;-->
+<!--font-family: fangsong;-->
+<!--text-align: center;-->
+<!--}-->
+<!--.about .el-input__inner{-->
+<!--margin-top: 20px;-->
+<!--}-->
+<!--[v-cloak] {-->
+<!--display: none;-->
+<!--}-->
+<!--#container{-->
+<!--height: 300px;-->
+<!--}-->
+<!--</style>-->
 <!--</head>-->
 
 <!--<body>-->
 <!--<div class="about" v-cloak>-->
-    <!--<div id="container"></div>-->
-    <!--<el-input v-model="value1" placeholder="请输入自己拥有的ETH数量" @input="handleInput"></el-input>-->
-    <!--<el-input v-model="value2" placeholder="显示计算结果" disabled></el-input>-->
-    <!--<p v-show="cnm">您距离退休还差{{number}}枚ETH</p>-->
-    <!--<p v-show="!cnm">可以不用努力了</p>-->
+<!--<div id="container"></div>-->
+<!--<el-input v-model="value1" placeholder="请输入自己拥有的ETH数量" @input="handleInput"></el-input>-->
+<!--<el-input v-model="value2" placeholder="显示计算结果" disabled></el-input>-->
+<!--<p v-show="cnm">您距离退休还差{{number}}枚ETH</p>-->
+<!--<p v-show="!cnm">可以不用努力了</p>-->
 <!--</div>-->
 
 <!--&lt;!&ndash; 开发环境版本,包含了有帮助的命令行警告 &ndash;&gt;-->
@@ -56,116 +56,116 @@
 <!--<script src="./../js/request.js"></script>-->
 <!--<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>-->
 <!--<script>-->
-    <!--new Vue({-->
-        <!--el: ".about",-->
-        <!--data() {-->
-            <!--return {-->
-                <!--value1: "",-->
-                <!--value2: "",-->
-                <!--number: 1000,-->
-                <!--cnm: true,-->
-                <!--price: "",-->
-                <!--X: [],-->
-                <!--Y: []-->
-            <!--};-->
-        <!--},-->
-        <!--mounted() {-->
-            <!--this.initData();-->
-        <!--},-->
-        <!--methods: {-->
-             <!--initData() {-->
-                 <!--let vm = this;-->
-                 <!--setTimeout(function() {-->
-                     <!--$axios.post("/other/ETH")-->
-                         <!--.then((res) => {-->
-                             <!--vm.price=res.data-->
-                         <!--})-->
-                 <!--}, 2000);-->
-                 <!--$axios.post("/other/eth")-->
-                     <!--.then((res) => {-->
-                         <!--let data = res.data;-->
-                         <!--for (let i = 0; i < data.length; i++) {-->
-                             <!--let item = data[i].split("&#45;&#45;");-->
-                             <!--this.Y.push(item[0]);-->
-                             <!--this.X.push(item[1].slice(-2));-->
-                         <!--}-->
-                         <!--this.initChart(); // 数据获取完毕后，手动调用初始化 echarts 图表方法-->
-                     <!--})-->
-                     <!--.catch(err => {-->
-                         <!--this.$notify({type: 'warning', message: '程序出错，请联系管理员'});-->
-                     <!--})-->
-            <!--},-->
-            <!--handleInput(value) {-->
-                <!--this.value2 = value * this.price+"USDT";-->
-                <!--this.number=(1000-value)-->
-                <!--if (this.number<0){-->
-                    <!--this.cnm=false-->
-                <!--}else {-->
-                    <!--this.cnm=true-->
-                <!--}-->
-            <!--},-->
-            <!--initChart() {-->
-                <!--var dom = document.getElementById('container');-->
-                <!--var myChart = echarts.init(dom, null, {-->
-                    <!--renderer: 'canvas',-->
-                    <!--useDirtyRect: false-->
-                <!--});-->
-                <!--var app = {};-->
-                <!--var option;-->
+<!--new Vue({-->
+<!--el: ".about",-->
+<!--data() {-->
+<!--return {-->
+<!--value1: "",-->
+<!--value2: "",-->
+<!--number: 1000,-->
+<!--cnm: true,-->
+<!--price: "",-->
+<!--X: [],-->
+<!--Y: []-->
+<!--};-->
+<!--},-->
+<!--mounted() {-->
+<!--this.initData();-->
+<!--},-->
+<!--methods: {-->
+<!--initData() {-->
+<!--let vm = this;-->
+<!--setTimeout(function() {-->
+<!--$axios.post("/other/ETH")-->
+<!--.then((res) => {-->
+<!--vm.price=res.data-->
+<!--})-->
+<!--}, 2000);-->
+<!--$axios.post("/other/eth")-->
+<!--.then((res) => {-->
+<!--let data = res.data;-->
+<!--for (let i = 0; i < data.length; i++) {-->
+<!--let item = data[i].split("&#45;&#45;");-->
+<!--this.Y.push(item[0]);-->
+<!--this.X.push(item[1].slice(-2));-->
+<!--}-->
+<!--this.initChart(); // 数据获取完毕后，手动调用初始化 echarts 图表方法-->
+<!--})-->
+<!--.catch(err => {-->
+<!--this.$notify({type: 'warning', message: '程序出错，请联系管理员'});-->
+<!--})-->
+<!--},-->
+<!--handleInput(value) {-->
+<!--this.value2 = value * this.price+"USDT";-->
+<!--this.number=(1000-value)-->
+<!--if (this.number<0){-->
+<!--this.cnm=false-->
+<!--}else {-->
+<!--this.cnm=true-->
+<!--}-->
+<!--},-->
+<!--initChart() {-->
+<!--var dom = document.getElementById('container');-->
+<!--var myChart = echarts.init(dom, null, {-->
+<!--renderer: 'canvas',-->
+<!--useDirtyRect: false-->
+<!--});-->
+<!--var app = {};-->
+<!--var option;-->
 
-                <!--option = {-->
-                    <!--xAxis: {-->
-                        <!--type: 'category',-->
-                        <!--data: this.X-->
-                    <!--},-->
-                    <!--yAxis: {-->
-                        <!--type: 'value'-->
-                    <!--},-->
-                    <!--//弹窗显示-->
-                    <!--tooltip: {-->
-                        <!--trigger: 'axis',-->
-                        <!--axisPointer: {-->
-                            <!--type: 'cross'-->
-                        <!--},-->
-                        <!--formatter: function(params) {-->
-                            <!--var yValue = params[0].data;-->
-                            <!--return 'Y 轴值：' + yValue;-->
-                        <!--}-->
-                    <!--},-->
-                    <!--dataZoom: [-->
-                        <!--//加滑动-->
-                        <!--{-->
-                            <!--type: 'slider',-->
-                            <!--start: 50,-->
-                            <!--end: 100-->
-                        <!--},-->
-                        <!--//折线图里面滑动-->
-                        <!--{-->
-                            <!--type: 'inside',-->
-                            <!--start: 50,-->
-                            <!--end: 100-->
-                        <!--}-->
-                    <!--],-->
-                    <!--series: [-->
-                        <!--{-->
-                            <!--data: this.Y,-->
-                            <!--type: 'line',-->
-                            <!--smooth: true-->
-                        <!--}-->
-                    <!--]-->
-                <!--};-->
-                <!--if (option && typeof option === 'object') {-->
-                    <!--myChart.setOption(option);-->
-                <!--}-->
-                <!--// myChart.on('click', function (params) {-->
-                <!--//     alert(params.value);-->
-                <!--//     alert(params.name);-->
-                <!--// });-->
-                <!--window.addEventListener('resize', myChart.resize);-->
-            <!--}-->
+<!--option = {-->
+<!--xAxis: {-->
+<!--type: 'category',-->
+<!--data: this.X-->
+<!--},-->
+<!--yAxis: {-->
+<!--type: 'value'-->
+<!--},-->
+<!--//弹窗显示-->
+<!--tooltip: {-->
+<!--trigger: 'axis',-->
+<!--axisPointer: {-->
+<!--type: 'cross'-->
+<!--},-->
+<!--formatter: function(params) {-->
+<!--var yValue = params[0].data;-->
+<!--return 'Y 轴值：' + yValue;-->
+<!--}-->
+<!--},-->
+<!--dataZoom: [-->
+<!--//加滑动-->
+<!--{-->
+<!--type: 'slider',-->
+<!--start: 50,-->
+<!--end: 100-->
+<!--},-->
+<!--//折线图里面滑动-->
+<!--{-->
+<!--type: 'inside',-->
+<!--start: 50,-->
+<!--end: 100-->
+<!--}-->
+<!--],-->
+<!--series: [-->
+<!--{-->
+<!--data: this.Y,-->
+<!--type: 'line',-->
+<!--smooth: true-->
+<!--}-->
+<!--]-->
+<!--};-->
+<!--if (option && typeof option === 'object') {-->
+<!--myChart.setOption(option);-->
+<!--}-->
+<!--// myChart.on('click', function (params) {-->
+<!--//     alert(params.value);-->
+<!--//     alert(params.name);-->
+<!--// });-->
+<!--window.addEventListener('resize', myChart.resize);-->
+<!--}-->
 
-        <!--}-->
-    <!--})-->
+<!--}-->
+<!--})-->
 <!--</script>-->
 <!--</body>-->
 <!--</html>-->

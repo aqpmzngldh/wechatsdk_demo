@@ -1,7 +1,6 @@
 package cn.qianyekeji.ruiji.utils;
 
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,11 +36,12 @@ public class AudioUtils {
 
     /**
      * MP3/WAV转SILk格式
+     *
      * @param filePath 例：D:\\file\\audio.mp3
      * @param isSource isSource 是否清空原文件
      * @return
      */
-    public static String transferAudioSilk(String filePath, boolean isSource){
+    public static String transferAudioSilk(String filePath, boolean isSource) {
         Integer index = filePath.lastIndexOf("\\") + 1;
         return transferAudioSilk(filePath.substring(0, index), filePath.substring(index, filePath.length()), isSource);
     }
@@ -49,8 +49,8 @@ public class AudioUtils {
     /**
      * MP3/WAV转SILk格式
      *
-     * @param path 文件路径 例：D:\\file\\
-     * @param name 文件名称 例：audio.mp3/audio.wav
+     * @param path     文件路径 例：D:\\file\\
+     * @param name     文件名称 例：audio.mp3/audio.wav
      * @param isSource 是否清空原文件
      * @return silk文件路径
      * @throws Exception
@@ -63,7 +63,7 @@ public class AudioUtils {
                 System.out.println("文件格式必须是mp3/wav");
             }
             String filePath = path + name;
-            System.out.println("文件全名是"+filePath);
+            System.out.println("文件全名是" + filePath);
             File file = new File(filePath);
             if (!file.exists()) {
                 throw new Exception("文件不存在！");
@@ -107,7 +107,7 @@ public class AudioUtils {
      * @param wavPath wav文件地址
      * @param target  转后文件地址
      */
-    public static void transferWavPcm (String wavPath, String target) {
+    public static void transferWavPcm(String wavPath, String target) {
         // ffmpeg -i input.wav -f s16le -ar 44100 -acodec pcm_s16le output.raw
         transferAudioPcm(wavPath, target);
     }
@@ -125,6 +125,7 @@ public class AudioUtils {
 
     /**
      * mp3/wav 通用
+     *
      * @param fpath
      * @param target
      */
@@ -154,20 +155,21 @@ public class AudioUtils {
 
     /**
      * silk_v3_encoder.exe，转成Silk格式
+     *
      * @param pcmPath pcm 文件地址
      * @param target  转换后的silk地址
-     * silk_v3_encoder.exe 路径
-     * pcm文件地址
-     * silk输出地址
-     * -Fs_API <Hz>            : API sampling rate in Hz, default: 24000
-     * -Fs_maxInternal <Hz>    : Maximum internal sampling rate in Hz, default: 24000
-     * -packetlength <ms>      : Packet interval in ms, default: 20
-     * -rate <bps>            : Target bitrate;   default: 25000
-     * -loss <perc>          : Uplink loss estimate, in percent (0-100);  default: 0
-     * -complexity <comp>   : Set complexity, 0: low, 1: medium, 2: high; default: 2
-     * -DTX <flag>          : Enable DTX (0/1); default: 0
-     * -quiet               : Print only some basic values
-     * -tencent             : Compatible with QQ/Wechat
+     *                silk_v3_encoder.exe 路径
+     *                pcm文件地址
+     *                silk输出地址
+     *                -Fs_API <Hz>            : API sampling rate in Hz, default: 24000
+     *                -Fs_maxInternal <Hz>    : Maximum internal sampling rate in Hz, default: 24000
+     *                -packetlength <ms>      : Packet interval in ms, default: 20
+     *                -rate <bps>            : Target bitrate;   default: 25000
+     *                -loss <perc>          : Uplink loss estimate, in percent (0-100);  default: 0
+     *                -complexity <comp>   : Set complexity, 0: low, 1: medium, 2: high; default: 2
+     *                -DTX <flag>          : Enable DTX (0/1); default: 0
+     *                -quiet               : Print only some basic values
+     *                -tencent             : Compatible with QQ/Wechat
      */
     public static void transferPcmSilk(String pcmPath, String target) {
         Process process = null;
@@ -187,8 +189,8 @@ public class AudioUtils {
              process = Runtime.getRuntime().exec("taskkill -f -t -im silk_v3_encoder.exe");
              */
             // 方法2，除了会弹出弹窗，没什么问题 cmd /c 极为重要，执行完毕后会自动关闭
-            process = Runtime.getRuntime().exec("cmd /c start " + path + "silk_v3_encoder.exe "  + pcmPath + " " + target + " -tencent");
-            process .waitFor();
+            process = Runtime.getRuntime().exec("cmd /c start " + path + "silk_v3_encoder.exe " + pcmPath + " " + target + " -tencent");
+            process.waitFor();
             Thread.sleep(1000);
             // 有更好的方法会后续慢慢更新..
         } catch (Exception e) {
@@ -201,12 +203,12 @@ public class AudioUtils {
     }
 
 
-
     /**
      * mp3转amr（低质量qq语音）
+     *
      * @param mp3Path MP3文件地址
-     * @param target 转换后文件地址
-     * return
+     * @param target  转换后文件地址
+     *                return
      */
     public static void transferMp3Amr(String mp3Path, String target) {
         // 被转换文件地址
@@ -234,7 +236,7 @@ public class AudioUtils {
                 e.printStackTrace();
             }
         } catch (Exception e) {
-            System.out.println("mp3转amr异常"+ e);
+            System.out.println("mp3转amr异常" + e);
         }
     }
 

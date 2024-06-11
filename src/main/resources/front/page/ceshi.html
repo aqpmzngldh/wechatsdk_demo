@@ -17,7 +17,7 @@
     <!--本页面内容的样式-->
     <link rel="stylesheet" href="./../styles/address.css"/>
     <style>
-        .about{
+        .about {
             font-size: 20px;
             padding-left: 5%;
             padding-right: 5%;
@@ -29,6 +29,7 @@
             overflow-y: scroll; /* 启用垂直滚动 */
             overflow-x: hidden; /* 禁用水平滚动 */
         }
+
         [v-cloak] {
             display: none;
         }
@@ -227,8 +228,8 @@
         },
         methods: {
             onSubmit(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
+                this.$refs[formName].validate((valid) = > {
+                    if(valid) {
                         console.log(this.form)
                         $axios.post("/ceShi", {
                             name: this.form.name,
@@ -249,34 +250,36 @@
                             number6: this.form.number6,
 
                         })
-                            .then((res) => {
-                                this.form = {};
-                                if (res.code === 1) {
-                                    this.$notify({type: 'warning', message: '已提交'});
-                                }
-                            })
-                            .catch(err => {
-                                this.$notify({type: 'warning', message: '程序出错'});
-                            })
+                            .then((res) = > {
+                            this.form = {};
+                        if (res.code === 1) {
+                            this.$notify({type: 'warning', message: '已提交'});
+                        }
+                    })
+                    .
+                        catch(err = > {
+                            this.$notify({type: 'warning', message: '程序出错'});
+                    })
                     } else {
                         this.$message({
-                            type: 'info',
-                            message: '校验失败，请检查'
-                        });
-                    }
-                });
+                        type: 'info',
+                        message: '校验失败，请检查'
+                    });
+            }
+            })
+                ;
             },
             excel() {
                 $axios.post("/ceShi/excel")
-                axios.get('/ceShi',{ responseType: 'blob' })
-                    .then(response => {
-                        const url = URL.createObjectURL(new Blob([response.data]))
-                        const link = document.createElement('a')
-                        link.href = url
-                        link.download = 'cn.qianyekeji.ruiji.ceshi.xlsx'
-                        link.click()
-                        URL.revokeObjectURL(url)
-                    })
+                axios.get('/ceShi', {responseType: 'blob'})
+                    .then(response = > {
+                    const url = URL.createObjectURL(new Blob([response.data]))
+                    const link = document.createElement('a')
+                    link.href = url
+                link.download = 'cn.qianyekeji.ruiji.ceshi.xlsx'
+                link.click()
+                URL.revokeObjectURL(url)
+            })
             }
         }
     })

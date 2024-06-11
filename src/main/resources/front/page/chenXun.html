@@ -94,7 +94,7 @@
     <el-button type="info" @click="arrest" plain>点击抓捕(黑屏即抓捕失败)</el-button>
     <div id="vue-component">
         <!--<el-collapse @change="handleChange" accordion>-->
-        <el-collapse  accordion>
+        <el-collapse accordion>
             <el-collapse-item>
                 <template slot="title">
                     使用简介：
@@ -110,14 +110,14 @@
                 <div>陈浔老祖生于莽荒天地，历尽世间沧桑仍对生活抱有热情，心态平稳深谋远虑，不争不抢安心修道，为吾辈楷模。长生虽寂寞如雪，有西门黑牛在足矣</div>
             </el-collapse-item>
             <el-collapse @change="handleChange" v-if="messages.length > 0">
-            <el-collapse-item name="4">
-                <template slot="title">
-                    附近的人：
-                </template>
-                <div v-for="(message, index) in messages" :key="message.id">
-                <div v-if="message!==''">当前在线人{{index+1}}距离您{{ message.distance.value }}m</div>
-                </div>
-            </el-collapse-item>
+                <el-collapse-item name="4">
+                    <template slot="title">
+                        附近的人：
+                    </template>
+                    <div v-for="(message, index) in messages" :key="message.id">
+                        <div v-if="message!==''">当前在线人{{index+1}}距离您{{ message.distance.value }}m</div>
+                    </div>
+                </el-collapse-item>
             </el-collapse>
         </el-collapse>
     </div>
@@ -139,7 +139,7 @@
 <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt"></script>
 <script src='//api.map.baidu.com/api?type=webgl&v=1.0&ak=DR8ITz2lk7BHYEwiar4tie7VEDBX7EVy'></script>
 <!--<script type="text/javascript"-->
-        <!--src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>-->
+<!--src="https://api.map.baidu.com/api?v=2.0&ak=ICfhZ9Tch0RicX8wLsTq3uuwC6pjxjwt&s=1"></script>-->
 
 <script>
     new Vue({
@@ -167,147 +167,166 @@
                     zoom: 5
                 },
                 isShow: true,
-                ls:true
+                ls: true
             }
         },
         mounted() {
             this.initData();
         },
         methods: {
-            async initData() {
+            async initData()
+    {
 
-                var geolocation = new BMap.Geolocation();
-                let self = this;
-                geolocation.getCurrentPosition(function (r) {
-                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                        let address = r.point.lng + "__" + r.point.lat
-                        let uuid = localStorage.getItem('uuid');
-                        $axios.post("/addressSee/address/" + address+ '/' +uuid)
-                            .then((res) => {
-                                if (res.code == 1) {
-                                    console.log(res)
-                                    self.messages=res.data;
-                                }
-                            }).catch(err => {
-                            this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                        });
-                    }
-                }, {enableHighAccuracy: true})
-
-                const res = await addressSee()
-                if (res.code === 1) {
-                    this.points = res.data
-                } else {
-                    this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
+        var geolocation = new BMap.Geolocation();
+        let self = this;
+        geolocation.getCurrentPosition(function (r) {
+            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                let address = r.point.lng + "__" + r.point.lat
+                let uuid = localStorage.getItem('uuid');
+                $axios.post("/addressSee/address/" + address + '/' + uuid)
+                    .then((res) = > {
+                    if(res.code == 1
+            )
+                {
+                    console.log(res)
+                    self.messages = res.data;
                 }
-                // 创建地图
-                const map = new BMapGL.Map('container')
-                // 设置地图中心点和缩放级别
-                map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
-                // 循环遍历所有点，创建点标记并添加到地图上
-                this.points.forEach(point => {
-                    // 创建点标记
-                    const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
-                    // 添加点标记到地图上
-                    map.addOverlay(marker)
-                    // 创建信息窗口
-                    const opts = {
-                        width: 30,
-                        height: 30,
-                        title: "陈浔座下："
-                    }
-                    const infoWindow = new BMapGL.InfoWindow(point.address, opts)
-                    // 点标记添加点击事件
-                    marker.addEventListener('click', function () {
-                        map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
-                        this.isShow = false
-                    })
-                })
-            },
-            sendMessage() {
-                const userInput = this.inputValue;
-                $axios.post("/addressSee/id/" + btoa(userInput))
-                    .then((res) => {
-                        if (res.code == 0) {
-                            this.inputValue = "";
-                            this.$notify({type: 'warning', message: '格式不正确，重新输入'});
-                            return;
-                        }
-                        this.inputValue = "";
-                        this.points = [];
-                        const [lng, lat] = res.data.split('__');
-                        this.mapCenter.lng = lng;
-                        this.mapCenter.lat = lat;
-                        this.mapCenter.zoom = 5;
-                        const map = new BMapGL.Map('container');
-                        map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom);
-                        map.clearOverlays();
-                        const centerMarker = new BMapGL.Marker(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
-                        map.addOverlay(centerMarker);
-                        const centerOpts = {
-                            width: 30,
-                            height: 30,
-                            title: "陈浔座下：",
-                            clickHandler: this.handleInfoWindowClick
-                        };
-                        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员", centerOpts);
-                        centerMarker.addEventListener('click', function () {
-                            map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
-                        });
-                        map.panTo(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
-                    })
-                    .catch(err => {
-                        this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
-                    });
-            },
-            arrest() {
-                this.panorama(this.mapCenter.lng, this.mapCenter.lat)
-            },
-            panorama(a, b) {
-                this.isShow = false;
-                var panorama = new BMapGL.Panorama('panorama');
-                //默认为显示导航控件
-                panorama.setPosition(new BMapGL.Point(a, b));
-            },
-            handleChange(val) {
-                if (val == 4) {
-                    this.isShow = true;
-                    this.points = [];
-                    const map = new BMapGL.Map('container')
-                    map.clearOverlays();
-                    // alert(JSON.stringify(this.messages[0].content))
-                    // 遍历 this.messages 数组，将经纬度信息添加到 this.points 数组中
-                    this.messages.forEach((message, index) => {
-                        var s = message.content.name.substring(0, message.content.name.lastIndexOf("_"));
-                        const [lng, lat] = s.split('__');
-                        this.points.push({ lng: Number(lng), lat: Number(lat) });
-                    });
-
-                    // 设置地图中心点和缩放级别
-                    map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
-                    // 循环遍历所有点，创建点标记并添加到地图上
-                    this.points.forEach(point => {
-                        // 创建点标记
-                        const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
-                        // 添加点标记到地图上
-                        map.addOverlay(marker)
-                        // 创建信息窗口
-                        const opts = {
-                            width: 30,
-                            height: 30,
-                            title: "陈浔座下："
-                        }
-                        const infoWindow = new BMapGL.InfoWindow("在线人员", opts)
-                        // 点标记添加点击事件
-                        marker.addEventListener('click', function () {
-                            map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
-                            this.isShow = false
-                        })
-                    })
-                }
+            }).
+                catch(err = > {
+                    this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+            })
+                ;
             }
+        }, {enableHighAccuracy: true})
 
-        },
+        const res = await
+        addressSee()
+        if (res.code === 1) {
+            this.points = res.data
+        } else {
+            this.$notify({type: 'warning', message: '拉取地图记录出错，请联系道祖'});
+        }
+        // 创建地图
+        const map = new BMapGL.Map('container')
+        // 设置地图中心点和缩放级别
+        map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
+        // 循环遍历所有点，创建点标记并添加到地图上
+        this.points.forEach(point = > {
+            // 创建点标记
+            const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
+            // 添加点标记到地图上
+            map.addOverlay(marker)
+        // 创建信息窗口
+        const opts = {
+            width: 30,
+            height: 30,
+            title: "陈浔座下："
+        }
+        const infoWindow = new BMapGL.InfoWindow(point.address, opts)
+        // 点标记添加点击事件
+        marker.addEventListener('click', function () {
+            map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
+            this.isShow = false
+        })
+    })
+    }
+    ,
+    sendMessage()
+    {
+        const userInput = this.inputValue;
+        $axios.post("/addressSee/id/" + btoa(userInput))
+            .then((res) = > {
+            if(res.code == 0
+    )
+        {
+            this.inputValue = "";
+            this.$notify({type: 'warning', message: '格式不正确，重新输入'});
+            return;
+        }
+        this.inputValue = "";
+        this.points = [];
+        const [lng, lat] = res.data.split('__');
+        this.mapCenter.lng = lng;
+        this.mapCenter.lat = lat;
+        this.mapCenter.zoom = 5;
+        const map = new BMapGL.Map('container');
+        map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom);
+        map.clearOverlays();
+        const centerMarker = new BMapGL.Marker(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
+        map.addOverlay(centerMarker);
+        const centerOpts = {
+            width: 30,
+            height: 30,
+            title: "陈浔座下：",
+            clickHandler: this.handleInfoWindowClick
+        };
+        const centerInfoWindow = new BMapGL.InfoWindow("在逃人员", centerOpts);
+        centerMarker.addEventListener('click', function () {
+            map.openInfoWindow(centerInfoWindow, centerMarker.getPosition());
+        });
+        map.panTo(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat));
+    })
+    .
+        catch(err = > {
+            this.$notify({type: 'warning', message: '程序出错，请联系管理员'});
+    })
+        ;
+    }
+    ,
+    arrest()
+    {
+        this.panorama(this.mapCenter.lng, this.mapCenter.lat)
+    }
+    ,
+    panorama(a, b)
+    {
+        this.isShow = false;
+        var panorama = new BMapGL.Panorama('panorama');
+        //默认为显示导航控件
+        panorama.setPosition(new BMapGL.Point(a, b));
+    }
+    ,
+    handleChange(val)
+    {
+        if (val == 4) {
+            this.isShow = true;
+            this.points = [];
+            const map = new BMapGL.Map('container')
+            map.clearOverlays();
+            // alert(JSON.stringify(this.messages[0].content))
+            // 遍历 this.messages 数组，将经纬度信息添加到 this.points 数组中
+            this.messages.forEach((message, index) = > {
+                var s = message.content.name.substring(0, message.content.name.lastIndexOf("_"));
+            const [lng, lat] = s.split('__');
+            this.points.push({lng: Number(lng), lat: Number(lat)});
+        })
+            ;
+
+            // 设置地图中心点和缩放级别
+            map.centerAndZoom(new BMapGL.Point(this.mapCenter.lng, this.mapCenter.lat), this.mapCenter.zoom)
+            // 循环遍历所有点，创建点标记并添加到地图上
+            this.points.forEach(point = > {
+                // 创建点标记
+                const marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat))
+                // 添加点标记到地图上
+                map.addOverlay(marker)
+            // 创建信息窗口
+            const opts = {
+                width: 30,
+                height: 30,
+                title: "陈浔座下："
+            }
+            const infoWindow = new BMapGL.InfoWindow("在线人员", opts)
+            // 点标记添加点击事件
+            marker.addEventListener('click', function () {
+                map.openInfoWindow(infoWindow, marker.getPosition()) // 开启信息窗口
+                this.isShow = false
+            })
+        })
+        }
+    }
+
+    },
     })
 </script>
 </body>

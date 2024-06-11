@@ -1,10 +1,11 @@
 function loginApi(data) {
     return $axios({
-      'url': '/user/login',
-      'method': 'post',
-      data
+        'url': '/user/login',
+        'method': 'post',
+        data
     })
 }
+
 // 短信接口
 function sms(data) {
     return $axios({
@@ -28,24 +29,29 @@ function chatName(data) {
     return $axios({
         'url': '/chat',
         'method': 'post',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
+
 //匿名私聊
 function chatName2(data) {
     return $axios({
         'url': '/privateChat',
         'method': 'post',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
+
 //匿名开房间
 function chatName3(data) {
     return $axios({
         'url': '/other',
         'method': 'post',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
 
 //小程序客服
@@ -53,8 +59,9 @@ function chatName4(data) {
     return $axios({
         'url': '/other1',
         'method': 'post',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
 
 
@@ -65,13 +72,15 @@ function chatSee() {
         'method': 'get'
     })
 }
+
 //查看私聊当天聊天记录
 function privateChatSee(data) {
     return $axios({
         'url': '/privateChat',
         'method': 'get',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
 
 //查看开房间当天聊天记录
@@ -79,8 +88,9 @@ function roomChatSee(data) {
     return $axios({
         'url': '/other',
         'method': 'get',
-        params:{...data}
-    })
+        params: {...data
+    }
+})
 }
 
 //查看本座地址
@@ -90,6 +100,7 @@ function addressSee() {
         'method': 'get'
     })
 }
+
 function sendMsgApi(data) {
     return $axios({
         'url': '/user/sendMsg',
@@ -99,10 +110,10 @@ function sendMsgApi(data) {
 }
 
 function loginoutApi() {
-  return $axios({
-    'url': '/user/loginout',
-    'method': 'post',
-  })
+    return $axios({
+        'url': '/user/loginout',
+        'method': 'post',
+    })
 }
 
   

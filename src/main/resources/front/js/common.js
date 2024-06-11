@@ -1,6 +1,6 @@
 var web_prefix = '/front'
 
-function imgPath(path){
+function imgPath(path) {
     return '/common/download?name=' + path
 }
 

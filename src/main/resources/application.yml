@@ -2,30 +2,27 @@ server:
   port: 8089
 spring:
   application:
-    name: ruiji
+    name: wecahtsdk_demo
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-#      本地数据库
-#      url: jdbc:mysql://localhost:3306/reggie
-#      云服务数据库
+      #      本地数据库
+      #      url: jdbc:mysql://localhost:3306/reggie
+      #      云服务数据库
       url: jdbc:mysql://124.222.221.77:3306/reggie
       username: root
-#      password: root
+      #      password: root
       password: MXMPbrxyc4t7sBje
-#      小程序2中上传的视频大小最大为10MB
-  servlet:
-    multipart:
-      max-file-size: 10MB
+
   redis:
-#    redis本地主机ip
-#    host: 127.0.0.1
-#    redis云服务ip
+    #    redis本地主机ip
+    #    host: 127.0.0.1
+    #    redis云服务ip
     host: 124.222.221.77
-#    port: 6379
-#    为了防止入侵，不用原端口号6379，生产用6378，密码也进行修改
+    #    port: 6379
+    #    为了防止入侵，不用原端口号6379，生产用6378，密码也进行修改
     port: 6378
-#    password:
+    #    password:
     password: MXMPbrxyc4t7sBjeredis
     database: 0
 #  cache:
@@ -33,48 +30,9 @@ spring:
 #      time-to-live: 1800000 #设置缓存数据的过期时间不写的话默认永久生效
 mybatis-plus:
   configuration:
-#    在数据库和实体类进行映射的时候，去掉数据库中的下划线或者字段中的下划线，按照驼峰命名法进行匹配
-    #不写这个也可以，尚硅谷环环支付里面就没写这个也能匹配
     map-underscore-to-camel-case: true
-#    想要打印sql配置这个
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     cache-enabled: false
-  #    结合实体类中的long类型的id，配置了后可以自动生成主键
-  #直接用自增id的话像环环直接在实体类定义这样就好
-  #//定义主键策略：跟随数据库的主键自增
-  #    @TableId(value = "id", type = IdType.AUTO)
   global-config:
     db-config:
       id-type: assign_id
-ruiji:
-#  图片本地存储位置
-#  path: D:\img\
-#  图片云服务器存储位置
-  path: /www/server/img/
-#  聊天图片存储路径
-#  path2: D:\img2\
-#  聊天图片云存储路径
-  path2: /www/server/img2/
-
-  #  面试测试excel路径
-#  path3: D:\img2\ceshi.xlsx
-  #  面试测试excel云路径
-  path3: /www/server/ceshi.xlsx
-
-#企业邮箱发邮件
-mail:
-  transport:
-    protocol: ssl
-  smtp:
-    host: smtp.exmail.qq.com # 企业微信的host
-    port: 465
-    auth: true
-    ssl:
-      enable : true
-  enable: true
-  account: ls@qianyekeji.cn
-  password: aMLWC9AvZfH4GmAk
-#  password: 123.oooooO
-
-
-#除了这些配置文件还有dishcontroller中的http://路径要改一下
