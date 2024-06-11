@@ -25,6 +25,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static cn.qianyekeji.ruiji.utils.AudioUtils.transferAudioSilk;
 
@@ -62,7 +64,7 @@ public class WeChatWebSocketServer {
         if (belongChatroomNickName1 != null) {
             redisTemplate.opsForHash().put("wx_voice", belongChatroomNickName1, from1);
         }
-        //获取的数据有时候不能通过上面那种方式存入redis，所以这个if中再做补充
+        //获取的数据根据格式来看有时候不能通过上面那种方式存入redis，所以这个if中再做补充，这种情况是别人在群里中发送消息，自己接收到
         if (from1.endsWith("@chatroom")) {
             String url_1 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> hashMap_1 = new HashMap<>();
@@ -79,10 +81,13 @@ public class WeChatWebSocketServer {
                         .getJSONObject("profile")
                         .getJSONObject("data")
                         .getStr("nickName");
+                if (encryptUserName!=null){
                 redisTemplate.opsForHash().put("wx_voice", encryptUserName, from1);
+                }
 
             }
         }
+        //这种情况是自己在群里中发送消息，自己接收到
         if (to1.endsWith("@chatroom")) {
             String url_1 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> hashMap_1 = new HashMap<>();
@@ -99,8 +104,9 @@ public class WeChatWebSocketServer {
                         .getJSONObject("profile")
                         .getJSONObject("data")
                         .getStr("nickName");
-                redisTemplate.opsForHash().put("wx_voice", encryptUserName, to1);
-
+                if (encryptUserName!=null) {
+                    redisTemplate.opsForHash().put("wx_voice", encryptUserName, to1);
+                }
             }
         }
         //根据文档type是34的时候，是语音消息
@@ -262,6 +268,7 @@ public class WeChatWebSocketServer {
                                 System.out.println("提取人微信号" + jsonObject);
                                 System.out.println("发送人微信号" + jsonObject4);
                                 QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
+                                //下面第二个eq主要是为了防止本机登录了多个微信，而他们有相同好友都给其发送了语音，这时候不加就不能区分
                                 objectQueryWrapper.eq("from_wx", jsonObject)
                                         .eq("to_wx", "wxid_mxx11pv88oj422")
                                         .orderByDesc("times");
@@ -298,6 +305,7 @@ public class WeChatWebSocketServer {
                             System.out.println("提取人微信号" + jsonObject);
 
                             QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
+                            //下面第二个eq主要是为了防止本机登录了多个微信，而他们有相同好友都给其发送了语音，这时候不加就不能区分
                             objectQueryWrapper.eq("from_wx", jsonObject)
                                     .eq("to_wx", "wxid_mxx11pv88oj422")
                                     .orderByDesc("times");
@@ -358,6 +366,20 @@ public class WeChatWebSocketServer {
                     }
                 }
             }
+        }else if ("10002".equals(type)) {
+            String user = handleTextMsg(data1);
+            if (!user.isEmpty()){
+                String[] split = user.split("=");
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("type", 10009);
+                map.put("userName", split[1]);
+                map.put("msgContent", "掌声欢迎："+split[0]+"加入本群聊!");
+                String jsonString = JSONUtil.toJsonStr(map);
+                // 发送POST请求
+                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+
+            }
         }
     }
 
@@ -379,6 +401,14 @@ public class WeChatWebSocketServer {
         return saveFilePath;
     }
 
+    /**
+     * 解析语音的xml提取信息
+     * @param data
+     * @param from
+     * @param to
+     * @param belongChatroomNickName
+     * @throws Exception
+     */
     private void handleAudioMsg(Map<String, String> data, String from, String to, String belongChatroomNickName) throws Exception {
         String xmlContent = data.get("content");
         System.out.println("看一下值1：" + xmlContent);
@@ -402,6 +432,14 @@ public class WeChatWebSocketServer {
         }
     }
 
+    /**
+     * 下载语音，存储语音
+     * @param fileid
+     * @param aeskey
+     * @param from
+     * @param to
+     * @param belongChatroomNickName
+     */
     private void downloadAudioFile(String fileid, String aeskey, String from, String to, String belongChatroomNickName) {
 
         String url = "http://127.0.0.1:8888/api/";
@@ -426,5 +464,40 @@ public class WeChatWebSocketServer {
         wx_voiceService.save(wx_voice);
 
 //        redisTemplate.opsForHash().put("wx_voice",belongChatroomNickName,from);
+    }
+
+    /**
+     * 解析新人入群的xml
+     * @param data
+     * @throws Exception
+     */
+    private String handleTextMsg(Map<String, String> data) throws Exception {
+        String xmlContent = data.get("content");
+        // 微信群发言是有前缀的,这里需要去掉
+        String[] split = xmlContent.split(":\n");
+        xmlContent = split.length > 1 ? split[1] : xmlContent;
+
+        // 使用Hutool的XmlUtil解析XML
+        Document doc = XmlUtil.parseXml(xmlContent);
+        Element msgElem = doc.getDocumentElement(); // 获取根元素
+        Node textNode = msgElem.getElementsByTagName("text").item(0);
+        String user="";
+        if (textNode != null && textNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element textElem = (Element) textNode;
+            String textContent = textElem.getTextContent();
+            System.out.println("新用户: " + textContent);
+//            你邀请"千夜"加入了群聊
+//            "千夜"通过扫描你分享的二维码加入群聊
+            if ((textContent.trim().endsWith("\"加入了群聊"))||(textContent.trim().endsWith("\"通过扫描你分享的二维码加入群聊"))){
+                // 定义正则表达式模式，匹配双引号包裹的内容
+                String regex = "\"(.*?)\"";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(textContent);
+                if (matcher.find()) {
+                    user=matcher.group(1)+"="+split[0];
+                }
+            }
+        }
+        return user;
     }
 }

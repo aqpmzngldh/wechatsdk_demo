@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -29,30 +31,16 @@ public class ceshi {
     private RedisTemplate<String, String> redisTemplate;
 
     @Test
-    public void abc() {
-        String str1 = "1234";
-        String str2 = "1";
-        String[] arr2 = str2.split(",");
-
-        Integer num = 0;
-        ArrayList<String> list = new ArrayList<>(Arrays.asList(arr2));
-        if (list.contains(str1)) {
-            num++;
-            list.remove(str1);
+    public void a() {
+        String input = "这是一个包含 \"双引号包裹的内容\"哈哈哈";
+        // 定义正则表达式模式，匹配双引号包裹的内容
+        String regex = "\"(.*?)\"";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.find()) {
+            System.out.println(matcher.group(1));
         } else {
-            list.add(str1);
-        }
-
-        String[] newArr2 = list.toArray(new String[0]);
-
-        String newStr2 = String.join(",", newArr2); // 将新数组转换成以逗号分隔的字符串
-
-        System.out.println("原字符串str2：" + str2);
-        System.out.println("新字符串newStr2：" + newStr2);
-        if (num == 0) {
-//            不包含，这时候新增number+1
-        } else {
-//            包含，number-1
+            System.out.println("没有找到匹配的内容");
         }
     }
 
