@@ -29,47 +29,27 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <scope>compile</scope>
-            <!--web应用包含的坐标，只要有controller，少不了这坐标-->
         </dependency>
-
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.4.2</version>
-            <!--数据库交互层用的技术，这里用的mybatis-plus-->
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
-       
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.7.17</version>
-        </dependency>
-
-
-
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
-            <!--数据库用的mysql，所以这里用mysql驱动包-->
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>1.1.23</version>
-            <!--数据库连接池，节省资源提高效率-->
         </dependency>
-
-
-
-
-
         <!--springboot的2.4.5版本对应redis版本不支持使用redis的geo，所以这里引入-->
         <!--两个条件：1.redis服务器版本大于3.2-->
                  <!--2.redis的依赖版本也要支持geo呢-->
@@ -103,8 +83,11 @@
             <artifactId>hutool-all</artifactId>
             <version>5.8.8</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.3</version>
+        </dependency>
 
 
 

@@ -95,7 +95,6 @@
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:3.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-jdbc:5.3.6" level="project" />
     <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.20" level="project" />
-    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.8" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: mysql:mysql-connector-java:8.0.23" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:druid-spring-boot-starter:1.1.23" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:druid:1.1.23" level="project" />
@@ -117,6 +116,8 @@
     <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.63.Final" level="project" />
     <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.8" level="project" />
+    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.14.3" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-configuration-processor:2.4.5" level="project" />
     <orderEntry type="library" name="Maven: com.github.dadiyang:jave:1.0.3" level="project" />
   </component>
