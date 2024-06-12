@@ -1,5 +1,6 @@
 package cn.qianyekeji.wechatsdk.controller;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -7,6 +8,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.wechatsdk.entity.WxVoice;
 import cn.qianyekeji.wechatsdk.service.ChatgptService;
+import cn.qianyekeji.wechatsdk.service.CsdnNewsService;
 import cn.qianyekeji.wechatsdk.service.Wx_voiceService;
 import cn.qianyekeji.wechatsdk.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -42,6 +44,8 @@ public class WechatSdkController {
     private String name;
     @Autowired
     private ChatgptService chatGptService;
+    @Autowired
+    private CsdnNewsService csdnNewsService;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -396,7 +400,8 @@ public class WechatSdkController {
 //                            // 发送POST请求
 //                            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
 
-                            String message = substring1.trim().replace("@"+name, "");
+
+                            String message = StrUtil.trim(substring1.replace("@" + name, "").replaceAll("\\s+", ""));
                             handleMessage(nickName,from,message);
 
                         }
@@ -543,10 +548,25 @@ public class WechatSdkController {
     }
 
     private void handleMessage(String name,String chatRoom,String message) throws Exception {
-//        System.out.println("看一下这个是谁发的消息"+name);
-//        System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
-//        System.out.println("看一下这个消息内容是"+message);
+        System.out.println("看一下这个是谁发的消息"+name);
+        System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
+        System.out.println("看一下这个消息内容是"+message);
 
+//      对@机器人的消息集中在这个方法中做出处理
+        if (message.contains("天气")){
+
+        }else if ("今日早报".equals(message)){
+            String s = csdnNewsService.csdn_to();
+            System.out.println(s);
+            String url_2 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("type", 10009);
+            map.put("userName", chatRoom);
+            map.put("msgContent", s);
+            String jsonString = JSONUtil.toJsonStr(map);
+            // 发送POST请求
+            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+        }
 
     }
 }

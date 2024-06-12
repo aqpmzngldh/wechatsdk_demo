@@ -1,5 +1,6 @@
 package cn.qianyekeji.wechatsdk;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import it.sauronsoftware.jave.AudioUtils;
@@ -8,7 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -58,6 +63,81 @@ public class ceshi {
             System.out.println("当前群聊中是谁发送的消息："+newStr);
             System.out.println("发送的消息是："+str.substring(newlineIndex + 1));
         }
+    }
+
+    @Test
+    void c() {
+        String substring1 = "@name 今日早报";
+        String name = "name";
+        // 将"@" + name 替换为空字符串，并且去除所有的空白字符
+        String message = substring1.replace("@" + name, "").replaceAll("\\s+", "");
+        System.out.println("看一下这个消息内容是" + message);
+        System.out.println("看一下这个消息内容是" + StrUtil.trim(message));
+    }
+
+    @Test
+    void d() {
+        // 文件路径
+        String filePath = "C:\\Users\\qianye\\Desktop\\csdn.txt";
+
+        // 初始化一个StringBuilder来拼接字符串
+        StringBuilder resultString = new StringBuilder();
+
+        // 使用try-with-resources语句确保BufferedReader在使用后被正确关闭
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            // 逐行读取文件内容
+            while ((line = br.readLine()) != null) {
+                // 将读取的行拼接到结果字符串中，并添加换行符
+                resultString.append(line).append("\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 输出结果字符串
+        System.out.println(resultString.toString());
+    }
+
+    @Test
+    void e() {
+        // 文件URL
+        String fileURL = "https://qianyekeji.cn/img2/csdn.txt";
+
+        // 初始化一个StringBuilder来拼接字符串
+        StringBuilder resultString = new StringBuilder();
+
+        try {
+            // 创建URL对象
+            URL url = new URL(fileURL);
+            // 打开连接
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // 设置请求方法
+            connection.setRequestMethod("GET");
+
+            // 检查响应代码
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 使用BufferedReader读取输入流
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    // 逐行读取文件内容
+                    while ((line = br.readLine()) != null) {
+                        // 将读取的行拼接到结果字符串中，并添加换行符
+                        resultString.append(line).append("\n");
+                    }
+                }
+            } else {
+                System.out.println("GET请求失败，响应代码：" + responseCode);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 输出结果字符串
+        System.out.println(resultString.toString());
+
     }
 
 }

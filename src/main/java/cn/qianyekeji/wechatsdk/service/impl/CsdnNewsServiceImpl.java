@@ -2,18 +2,22 @@ package cn.qianyekeji.wechatsdk.service.impl;
 
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
-import cn.qianyekeji.wechatsdk.service.CsdnNews;
+import cn.qianyekeji.wechatsdk.service.CsdnNewsService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 @Service
-public class CsdnNewsImpl implements CsdnNews {
+public class CsdnNewsServiceImpl implements CsdnNewsService {
     @Override
     public String csdn()throws Exception {
         System.out.println("对csdn中的极客日报用户发的it新闻热点进行解析获取");
@@ -57,42 +61,29 @@ public class CsdnNewsImpl implements CsdnNews {
 
 
     public String csdn_to() throws Exception{
-        System.out.println("对csdn中自己设置了自定义域名的文章进行解析获取");
+        String fileURL = "https://qianyekeji.cn/img2/csdn.txt";
+        StringBuilder resultString = new StringBuilder();
         try {
-
-            String url = "https://rss.csdn.net/weixin_46064585/rss/map?spm=1001.2014.3001.5494";
-
-            // 发送GET请求
-            HttpResponse response = HttpUtil.createGet(url).execute();
-
-            if (response.isOk()) {
-                String responseBody = response.body();
-                int startIndex = responseBody.indexOf("<link>", responseBody.indexOf("<link>") + 1) + "<link>".length();
-                int endIndex = responseBody.indexOf("</link>", responseBody.indexOf("</link>")+1);
-                String firstLink = responseBody.substring(startIndex, endIndex);
-                String articleUrl = firstLink;
-                String articleId = articleUrl.substring(articleUrl.lastIndexOf("/") + 1);
-                articleUrl = "https://qianye.blog.csdn.net/article/details/"+articleId;
-                try {
-                    Document doc = Jsoup.connect(articleUrl).get();
-                    // 提取新闻热点
-                    StringBuilder sb = new StringBuilder();
-                    Elements hotNewsElements = doc.select("#content_views > p");
-                    for (Element hotNewsElement : hotNewsElements) {
-                        sb.append(hotNewsElement.text()).append(System.lineSeparator());
+            URL url = new URL(fileURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 使用BufferedReader读取输入流
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    // 逐行读取文件内容
+                    while ((line = br.readLine()) != null) {
+                        // 将读取的行拼接到结果字符串中，并添加换行符
+                        resultString.append(line).append("\n\n");
                     }
-                    System.out.println(sb.toString());
-                    return sb.toString();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             } else {
-                // 处理错误
-                System.err.println("获取新闻热点csdn" + response.getStatus());
+                System.out.println("GET请求失败，响应代码：" + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return  "";
+        return resultString.toString();
     }
 }
