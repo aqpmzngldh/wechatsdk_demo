@@ -43,3 +43,5 @@ wecahtsdk:
   OPENAI_API_KEY: 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
 #  这个不必更改，反向代理直接调用gpt接口
   OPENAI_API_URL: https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions
+#微信对话平台token
+  token: tX0WlgYSJwGpv5vHf6N4iZHNfFq5g4

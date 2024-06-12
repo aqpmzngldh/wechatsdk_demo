@@ -45,6 +45,8 @@ public class WechatSdkController {
     private ChatgptService chatGptService;
     @Autowired
     private CsdnNewsService csdnNewsService;
+    @Value("${wecahtsdk.token}")
+    private String token;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -54,6 +56,17 @@ public class WechatSdkController {
         hashMap.put("url", "http://127.0.0.1:8089/api/setCallback");
         String jsonString = JSONUtil.toJsonStr(hashMap);
         HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+
+//        String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/"+token;
+//        HashMap<String, Object> hashMap1 = new HashMap<>();
+//        hashMap1.put("userid",1);
+//
+//        String jsonString1 = JSONUtil.toJsonStr(hashMap1);
+//        HttpResponse execute = HttpUtil.createPost(url_1).body(jsonString1, "application/json").execute();
+//        if (execute.isOk()) {
+//            System.out.println(execute+"++++"+execute.isOk());
+//        }
+
     }
 
 
@@ -401,7 +414,7 @@ public class WechatSdkController {
 
 
                             String message = StrUtil.trim(substring1.replace("@" + name, "").replaceAll("\\s+", ""));
-                            handleMessage(nickName,from,message);
+                            handleMessage(nickName,from,message,newStr);
 
                         }
 
@@ -546,7 +559,7 @@ public class WechatSdkController {
         return user;
     }
 
-    private void handleMessage(String name,String chatRoom,String message) throws Exception {
+    private void handleMessage(String name,String chatRoom,String message,String newStr) throws Exception {
         System.out.println("看一下这个是谁发的消息"+name);
         System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
         System.out.println("看一下这个消息内容是"+message);
@@ -614,6 +627,31 @@ public class WechatSdkController {
                 System.err.println("查询星座错误" + response.getStatus());
             }
 
+        }else if (message.startsWith("叫我")&&message.length()<7){
+            String result = message.substring(2);
+            redisTemplate.opsForHash().put(chatRoom, name, result);
+
+            String url_2 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("type", 10009);
+            map.put("userName", chatRoom);
+            map.put("msgContent", "收到");
+            String jsonString = JSONUtil.toJsonStr(map);
+            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+        }else{
+            String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
+            if (value==null){
+                value="";
+            }
+            String chat = chatGptService.chat(newStr, message);
+            String url_2 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("type", 10009);
+            map.put("userName", chatRoom);
+            map.put("msgContent", "@"+name+value+" "+chat);
+            String jsonString = JSONUtil.toJsonStr(map);
+            // 发送POST请求
+            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
         }
 
     }
