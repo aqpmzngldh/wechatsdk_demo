@@ -13,6 +13,7 @@ import cn.qianyekeji.wechatsdk.service.CsdnNewsService;
 import cn.qianyekeji.wechatsdk.service.Wx_voiceService;
 import cn.qianyekeji.wechatsdk.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,20 +59,9 @@ public class WechatSdkController {
         hashMap.put("url", "http://127.0.0.1:8089/api/setCallback");
         String jsonString = JSONUtil.toJsonStr(hashMap);
         HttpUtil.createPost(url).body(jsonString, "application/json").execute();
-
-//        String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/"+token;
-//        HashMap<String, Object> hashMap1 = new HashMap<>();
-//        hashMap1.put("userid",1);
-//
-//        String jsonString1 = JSONUtil.toJsonStr(hashMap1);
-//        HttpResponse execute = HttpUtil.createPost(url_1).body(jsonString1, "application/json").execute();
-//        if (execute.isOk()) {
-//            System.out.println(execute+"++++"+execute.isOk());
-//        }
-
     }
 
-
+    @SneakyThrows
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data) throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
@@ -575,7 +565,41 @@ public class WechatSdkController {
 
 //      对@机器人的消息集中在这个方法中做出处理
         if (message.contains("天气")){
+            String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/"+token;
+            HashMap<String, Object> hashMap1 = new HashMap<>();
+            hashMap1.put("userid",1);
+            String jsonString1 = JSONUtil.toJsonStr(hashMap1);
+            HttpResponse execute = HttpUtil.createPost(url_1).body(jsonString1, "application/json").execute();
+            if (execute.isOk()) {
+                String responseBody = execute.body();
+                Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                String signature = (String)map.get("signature");
 
+                String url_2 = "https://chatbot.weixin.qq.com/openapi/aibot/"+token;
+                HashMap<String, Object> hashMap2 = new HashMap<>();
+                hashMap2.put("signature",signature);
+                hashMap2.put("query",message);
+                String jsonString2 = JSONUtil.toJsonStr(hashMap2);
+                HttpResponse execute2 = HttpUtil.createPost(url_2).body(jsonString2, "application/json").execute();
+                if (execute2.isOk()) {
+                    System.out.println(execute2);
+                    String responseBody2 = execute2.body();
+                    Map<String, Object> map2 = JSONUtil.parseObj(responseBody2);
+                    String answer = (String)map2.get("answer");
+                    String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
+                    if (value==null){
+                        value="";
+                    }
+                    String url_3 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map3 = new HashMap<>();
+                    map3.put("type", 10009);
+                    map3.put("userName", chatRoom);
+                    map3.put("msgContent", "@"+name+value+" "+answer);
+                    String jsonString3 = JSONUtil.toJsonStr(map3);
+                    // 发送POST请求
+                    HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+                }
+            }
         }else if ("今日早报".equals(message)){
             String s = csdnNewsService.csdn_to();
             System.out.println(s);
@@ -675,6 +699,34 @@ public class WechatSdkController {
             } else {
                 // 处理错误
                 System.out.println("请求视频出错");
+            }
+        }else if (message.startsWith("http://")||message.startsWith("https://")){
+            System.out.println("能进来不");
+            String url = "https://www.qrgpt.io/api/generate";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("prompt","A beautiful glacier");
+            map.put("url", message);
+            String jsonString = JSONUtil.toJsonStr(map);
+            // 发送POST请求
+            HttpResponse response = HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+            if (response.isOk()) {
+                String responseBody = response.body();
+                Map<String, Object> map_1 = JSONUtil.parseObj(responseBody);
+                String image_url = (String)map_1.get("image_url");
+                System.out.println("看一下这个路径"+image_url);
+                String localFilePath = downloadFile(image_url, "F:\\\\yuyin\\\\pic\\\\");
+                System.out.println("看一下这个路ggg径"+localFilePath);
+
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map_2 = new HashMap<>();
+                map_2.put("type", 10010);
+                map_2.put("userName", chatRoom);
+                map_2.put("filePath", localFilePath);
+                String jsonString_2 = JSONUtil.toJsonStr(map_2);
+                HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+            } else {
+                // 处理错误
+                System.err.println("链接转二维码出错。。。");
             }
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
