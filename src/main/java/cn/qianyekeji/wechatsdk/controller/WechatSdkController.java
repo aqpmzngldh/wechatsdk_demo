@@ -26,7 +26,9 @@ import org.w3c.dom.Node;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -454,7 +456,14 @@ public class WechatSdkController {
         InputStream inputStream = url.openStream();
         String fileName = Paths.get(url.getPath()).getFileName().toString();
         String saveFilePath = saveDir + fileName;
-        Files.copy(inputStream, Paths.get(saveFilePath));
+        // 检查目录是否存在，如果不存在则创建
+        Path directory = Paths.get(saveDir);
+        if (!Files.exists(directory)) {
+            Files.createDirectories(directory);
+        }
+        Path filePath = Paths.get(saveFilePath);
+        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+//        Files.copy(inputStream, Paths.get(saveFilePath));
         inputStream.close();
         return saveFilePath;
     }
@@ -634,9 +643,7 @@ public class WechatSdkController {
                 String responseBody = response1.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String imgUrl = (String)map.get("data");
-                System.out.println("看一下这个路径"+imgUrl);
                 String localFilePath = downloadFile(imgUrl, "F:\\\\yuyin\\\\pic\\\\");
-                System.out.println("看一下本地路径"+localFilePath);
 
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map_1 = new HashMap<>();
@@ -650,7 +657,25 @@ public class WechatSdkController {
                 System.out.println("请求图片出错");
             }
         }else if ("视频".equals(message)){
+            String url = "https://api.qqsuu.cn/api/dm-xjj?type=json&apiKey=b4bd29e2d83ea412fa368e2747c8ef41";
+            HttpResponse response1 = HttpUtil.createGet(url).execute();
+            if (response1.isOk()) {
+                String responseBody = response1.body();
+                Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                String videoUrl = (String)map.get("video");
+                String localFilePath = downloadFile(videoUrl, "F:\\\\yuyin\\\\video\\\\");
 
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map_1 = new HashMap<>();
+                map_1.put("type", 10093);
+                map_1.put("userName", chatRoom);
+                map_1.put("filePath", localFilePath);
+                String jsonString = JSONUtil.toJsonStr(map_1);
+                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            } else {
+                // 处理错误
+                System.out.println("请求视频出错");
+            }
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);
