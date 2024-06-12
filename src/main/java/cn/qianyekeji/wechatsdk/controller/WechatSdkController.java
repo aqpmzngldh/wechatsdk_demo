@@ -6,6 +6,7 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.wechatsdk.entity.WxVoice;
+import cn.qianyekeji.wechatsdk.service.ChatgptService;
 import cn.qianyekeji.wechatsdk.service.Wx_voiceService;
 import cn.qianyekeji.wechatsdk.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -39,6 +40,8 @@ public class WechatSdkController {
     private RedisTemplate<String, String> redisTemplate;
     @Value("${wecahtsdk.name}")
     private String name;
+    @Autowired
+    private ChatgptService chatGptService;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -379,6 +382,23 @@ public class WechatSdkController {
                         String newStr = content.substring(0, lastColonIndex);
                         String substring1 = content.substring(newlineIndex + 1);
                         System.out.println("在当前群聊中，用户："+newStr+"发送了消息，具体内容是："+substring1);
+                        JSONObject entries = JSONUtil.parseObj(data1);
+                        String nickName = entries.getJSONObject("chatroomMemberInfo")
+                                .getStr("nickName");
+                        if (substring1.trim().contains("@"+name)){
+                            String chat = chatGptService.chat("1", substring1);
+                            String url_2 = "http://127.0.0.1:8888/api/";
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put("type", 10009);
+                            map.put("userName", from);
+                            map.put("msgContent", "@"+nickName+" "+chat);
+                            String jsonString = JSONUtil.toJsonStr(map);
+                            // 发送POST请求
+                            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+
+                        }
+
+
                     }
                 }else{
                     //到这里说明就是私聊消息了，暂时不对私聊消息做出处理，本项目专注于群聊机器人，后面对本项目感兴趣的伙伴可以自行在这基础上扩展
@@ -392,7 +412,7 @@ public class WechatSdkController {
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("type", 10009);
                 map.put("userName", split[1]);
-                map.put("msgContent", "掌声欢迎："+split[0]+"加入本群聊!");
+                map.put("msgContent", "掌声欢迎："+split[0]+" 加入本群聊!");
                 String jsonString = JSONUtil.toJsonStr(map);
                 // 发送POST请求
                 HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
