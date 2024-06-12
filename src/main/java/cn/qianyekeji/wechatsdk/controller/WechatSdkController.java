@@ -699,7 +699,6 @@ public class WechatSdkController {
                 System.out.println("请求视频出错");
             }
         }else if (message.startsWith("http://")||message.startsWith("https://")){
-            System.out.println("能进来不");
             String url = "https://www.qrgpt.io/api/generate";
             HashMap<String, Object> map = new HashMap<>();
             map.put("prompt","A beautiful glacier");
@@ -711,9 +710,7 @@ public class WechatSdkController {
                 String responseBody = response.body();
                 Map<String, Object> map_1 = JSONUtil.parseObj(responseBody);
                 String image_url = (String)map_1.get("image_url");
-                System.out.println("看一下这个路径"+image_url);
                 String localFilePath = downloadFile(image_url, "F:\\\\yuyin\\\\pic\\\\");
-                System.out.println("看一下这个路ggg径"+localFilePath);
 
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map_2 = new HashMap<>();
