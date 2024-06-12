@@ -7,8 +7,10 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.qianyekeji.wechatsdk.common.R;
 import cn.qianyekeji.wechatsdk.entity.WxVoice;
 import cn.qianyekeji.wechatsdk.service.ChatgptService;
+import cn.qianyekeji.wechatsdk.service.CountService;
 import cn.qianyekeji.wechatsdk.service.CsdnNewsService;
 import cn.qianyekeji.wechatsdk.service.Wx_voiceService;
 import cn.qianyekeji.wechatsdk.utils.AudioUtils;
@@ -50,6 +52,8 @@ public class WechatSdkController {
     private CsdnNewsService csdnNewsService;
     @Value("${wecahtsdk.token}")
     private String token;
+    @Autowired
+    private CountService countService;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -393,18 +397,9 @@ public class WechatSdkController {
                         JSONObject entries = JSONUtil.parseObj(data1);
                         String nickName = entries.getJSONObject("chatroomMemberInfo")
                                 .getStr("nickName");
+                        countService.addCount(from,nickName);
+
                         if (substring1.trim().contains("@"+name)){
-//                            String chat = chatGptService.chat(newStr, substring1);
-//                            String url_2 = "http://127.0.0.1:8888/api/";
-//                            HashMap<String, Object> map = new HashMap<>();
-//                            map.put("type", 10009);
-//                            map.put("userName", from);
-//                            map.put("msgContent", "@"+nickName+" "+chat);
-//                            String jsonString = JSONUtil.toJsonStr(map);
-//                            // 发送POST请求
-//                            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-
-
                             String message = StrUtil.trim(substring1.replace("@" + name, "").replaceAll("\\s+", ""));
                             handleMessage(nickName,from,message,newStr);
 
@@ -728,6 +723,26 @@ public class WechatSdkController {
                 // 处理错误
                 System.err.println("链接转二维码出错。。。");
             }
+        }else if ("活跃度查询".equals(message)){
+            HashMap hashMapR = countService.selectCount(chatRoom);
+            System.out.println("看一下这个活跃度："+hashMapR);
+            StringBuilder sb = new StringBuilder();
+            sb.append("该群聊的活跃度如下:\n\n");
+
+            for (Object obj : hashMapR.entrySet()) {
+                Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) obj;
+                sb.append(entry.getKey() + ":" + entry.getValue() + "\n");
+            }
+
+            String result = sb.toString();
+            System.out.println(result);
+            String url_2 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("type", 10009);
+            map.put("userName", chatRoom);
+            map.put("msgContent", result);
+            String jsonString = JSONUtil.toJsonStr(map);
+            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);
