@@ -627,6 +627,30 @@ public class WechatSdkController {
                 System.err.println("查询星座错误" + response.getStatus());
             }
 
+        }else if ("美女".equals(message)){
+            String url = "https://v2.api-m.com/api/heisi";
+            HttpResponse response1 = HttpUtil.createGet(url).execute();
+            if (response1.isOk()) {
+                String responseBody = response1.body();
+                Map<String, Object> map = JSONUtil.parseObj(responseBody);
+                String imgUrl = (String)map.get("data");
+                System.out.println("看一下这个路径"+imgUrl);
+                String localFilePath = downloadFile(imgUrl, "F:\\\\yuyin\\\\pic\\\\");
+                System.out.println("看一下本地路径"+localFilePath);
+
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map_1 = new HashMap<>();
+                map_1.put("type", 10010);
+                map_1.put("userName", chatRoom);
+                map_1.put("filePath", localFilePath);
+                String jsonString = JSONUtil.toJsonStr(map_1);
+                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            } else {
+                // 处理错误
+                System.out.println("请求图片出错");
+            }
+        }else if ("视频".equals(message)){
+
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);
