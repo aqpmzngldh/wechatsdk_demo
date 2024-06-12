@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -438,7 +439,9 @@ public class WechatSdkController {
      */
     public static String downloadFile(String fileURL, String saveDir) throws Exception {
         URL url = new URL(fileURL);
-        InputStream inputStream = url.openStream();
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        InputStream inputStream = con.getInputStream();
         String fileName = Paths.get(url.getPath()).getFileName().toString();
         String saveFilePath = saveDir + fileName;
         // 检查目录是否存在，如果不存在则创建
