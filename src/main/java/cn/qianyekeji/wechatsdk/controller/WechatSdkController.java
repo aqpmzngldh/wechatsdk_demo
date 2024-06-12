@@ -386,15 +386,18 @@ public class WechatSdkController {
                         String nickName = entries.getJSONObject("chatroomMemberInfo")
                                 .getStr("nickName");
                         if (substring1.trim().contains("@"+name)){
-                            String chat = chatGptService.chat("1", substring1);
-                            String url_2 = "http://127.0.0.1:8888/api/";
-                            HashMap<String, Object> map = new HashMap<>();
-                            map.put("type", 10009);
-                            map.put("userName", from);
-                            map.put("msgContent", "@"+nickName+" "+chat);
-                            String jsonString = JSONUtil.toJsonStr(map);
-                            // 发送POST请求
-                            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+//                            String chat = chatGptService.chat(newStr, substring1);
+//                            String url_2 = "http://127.0.0.1:8888/api/";
+//                            HashMap<String, Object> map = new HashMap<>();
+//                            map.put("type", 10009);
+//                            map.put("userName", from);
+//                            map.put("msgContent", "@"+nickName+" "+chat);
+//                            String jsonString = JSONUtil.toJsonStr(map);
+//                            // 发送POST请求
+//                            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+
+                            String message = substring1.trim().replace("@"+name, "");
+                            handleMessage(nickName,from,message);
 
                         }
 
@@ -537,5 +540,13 @@ public class WechatSdkController {
             }
         }
         return user;
+    }
+
+    private void handleMessage(String name,String chatRoom,String message) throws Exception {
+//        System.out.println("看一下这个是谁发的消息"+name);
+//        System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
+//        System.out.println("看一下这个消息内容是"+message);
+
+
     }
 }
