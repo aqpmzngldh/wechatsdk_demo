@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.wechatsdk.entity.WxVoice;
@@ -26,9 +27,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -566,6 +565,55 @@ public class WechatSdkController {
             String jsonString = JSONUtil.toJsonStr(map);
             // 发送POST请求
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+        }else if (
+                message.contains("白羊座")||
+                message.contains("金牛座")||
+                message.contains("双子座")||
+                message.contains("巨蟹座")||
+                message.contains("狮子座")||
+                message.contains("处女座")||
+                message.contains("天秤座")||
+                message.contains("天蝎座")||
+                message.contains("射手座")||
+                message.contains("摩羯座")||
+                message.contains("水瓶座")||
+                message.contains("双鱼座")
+        ){
+            String[] zodiacSigns = {"白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座"};
+            String foundSign = null;
+            for (String sign : zodiacSigns) {
+                if (message.contains(sign)) {
+                    foundSign = sign;
+                    break;
+                }
+            }
+            String url = "https://api.qqsuu.cn/api/dm-fortune?astro="+foundSign;
+            HttpResponse response = HttpUtil.createGet(url).execute();
+            if (response.isOk()) {
+                String responseBody = response.body();
+                // 解析响应数据
+                JSONObject jsonObject = JSONUtil.parseObj(responseBody);
+                JSONArray dataList = jsonObject.getJSONObject("data").getJSONArray("list");
+                StringBuilder sum = new StringBuilder();
+                for (int i = 0; i < dataList.size(); i++) {
+                    JSONObject item = dataList.getJSONObject(i);
+                    String type = item.getStr("type");
+                    String content = item.getStr("content");
+                    sum.append(type).append("：").append(content).append("\n");
+                }
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("type", 10009);
+                map.put("userName", chatRoom);
+                map.put("msgContent", sum.toString());
+                String jsonString = JSONUtil.toJsonStr(map);
+                // 发送POST请求
+                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            } else {
+                // 处理错误
+                System.err.println("查询星座错误" + response.getStatus());
+            }
+
         }
 
     }

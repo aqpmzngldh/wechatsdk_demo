@@ -79,11 +79,7 @@ public class ceshi {
     void d() {
         // 文件路径
         String filePath = "C:\\Users\\qianye\\Desktop\\csdn.txt";
-
-        // 初始化一个StringBuilder来拼接字符串
         StringBuilder resultString = new StringBuilder();
-
-        // 使用try-with-resources语句确保BufferedReader在使用后被正确关闭
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             // 逐行读取文件内容
@@ -103,19 +99,12 @@ public class ceshi {
     void e() {
         // 文件URL
         String fileURL = "https://qianyekeji.cn/img2/csdn.txt";
-
-        // 初始化一个StringBuilder来拼接字符串
         StringBuilder resultString = new StringBuilder();
-
         try {
-            // 创建URL对象
             URL url = new URL(fileURL);
-            // 打开连接
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            // 设置请求方法
             connection.setRequestMethod("GET");
 
-            // 检查响应代码
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // 使用BufferedReader读取输入流
