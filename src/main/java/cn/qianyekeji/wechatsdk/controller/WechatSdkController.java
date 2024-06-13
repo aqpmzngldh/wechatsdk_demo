@@ -429,6 +429,22 @@ public class WechatSdkController {
                 HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
 
             }
+        }else if ("37".equals(type)) {
+            Map<String, String> stringStringMap = handleFriendMsg(data1);
+            String encryptusername= stringStringMap.get("encryptusername");
+            String ticket= stringStringMap.get("ticket");
+            String scene= stringStringMap.get("scene");
+
+            String url_3 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map3 = new HashMap<>();
+            map3.put("type", 10035);
+            map3.put("encryptUserName", encryptusername);
+            map3.put("ticket", ticket);
+            map3.put("scene", Integer.parseInt(scene));
+            String jsonString3 = JSONUtil.toJsonStr(map3);
+            // 发送POST请求
+            HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+
         }
     }
 
@@ -557,6 +573,26 @@ public class WechatSdkController {
             }
         }
         return user;
+    }
+
+    /**
+     * 解析陌生人添加自己为好友的xml
+     * @param data
+     * @return
+     * @throws Exception
+     */
+    private Map<String, String> handleFriendMsg(Map<String, String> data) throws Exception {
+        String xmlContent = data.get("content");
+        Document doc = XmlUtil.parseXml(xmlContent);
+        Element msgElem = doc.getDocumentElement(); // 获取根元素
+        String encryptusername = msgElem.getAttribute("encryptusername");
+        String ticket = msgElem.getAttribute("ticket");
+        String scene = msgElem.getAttribute("scene");
+        Map<String, String> result = new HashMap<>();
+        result.put("encryptusername", encryptusername);
+        result.put("ticket", ticket);
+        result.put("scene", scene);
+        return result;
     }
 
     private void handleMessage(String name,String chatRoom,String message,String newStr) throws Exception {
