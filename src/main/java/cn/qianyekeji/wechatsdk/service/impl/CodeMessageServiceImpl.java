@@ -61,7 +61,7 @@ public class CodeMessageServiceImpl implements CodeMessageService {
                         Thread.sleep(20000);
                         if (response1.body().contains("尚未收到")||response1.body().contains("屏蔽")) {
                             retries++;
-                            if (retries == 3) {
+                            if (retries == 4) {
                                 String url_4 = "http://127.0.0.1:8888/api/";
                                 HashMap<String, Object> map4 = new HashMap<>();
                                 map4.put("type", 10009);
