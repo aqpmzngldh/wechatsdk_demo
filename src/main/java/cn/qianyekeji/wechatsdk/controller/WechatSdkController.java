@@ -9,10 +9,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.qianyekeji.wechatsdk.common.R;
 import cn.qianyekeji.wechatsdk.entity.WxVoice;
-import cn.qianyekeji.wechatsdk.service.ChatgptService;
-import cn.qianyekeji.wechatsdk.service.CountService;
-import cn.qianyekeji.wechatsdk.service.CsdnNewsService;
-import cn.qianyekeji.wechatsdk.service.Wx_voiceService;
+import cn.qianyekeji.wechatsdk.service.*;
 import cn.qianyekeji.wechatsdk.utils.AudioUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.SneakyThrows;
@@ -55,6 +52,10 @@ public class WechatSdkController {
     private String token;
     @Autowired
     private CountService countService;
+    @Value("${wecahtsdk.token_code}")
+    private String token_code;
+    @Autowired
+    private CodeMessageService codeMessageService;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -743,6 +744,15 @@ public class WechatSdkController {
             map.put("msgContent", result);
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+        }else if (message.contains("接码=")&&message.split("=").length==2){
+            String[] split = message.split("=");
+            String name_code=split[1];
+            String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
+            if (value==null){
+                value="";
+            }
+            codeMessageService.getCode(token_code,chatRoom,name_code,name,value);
+
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);

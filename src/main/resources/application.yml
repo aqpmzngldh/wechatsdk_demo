@@ -45,3 +45,5 @@ wecahtsdk:
   OPENAI_API_URL: https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions
 #微信对话平台token
   token: tX0WlgYSJwGpv5vHf6N4iZHNfFq5g4
+#  接码平台token，接口文档https://www.uomsg.com/api.html
+  token_code: 8edf17e439884545ba5a70314c634255
