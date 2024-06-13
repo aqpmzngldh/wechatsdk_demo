@@ -129,4 +129,31 @@ public class ceshi {
 
     }
 
+    @Test
+    void f() {
+        String input = "\"千夜\"邀请\"AAA龙胜通讯15191888660\"加入了群聊";
+
+        // 正则表达式模式,匹配双引号之间的内容
+        Pattern pattern = Pattern.compile("\"([^\"]*)\"");
+        Matcher matcher = pattern.matcher(input);
+
+        // 找到第二个匹配项
+        int count = 0;
+        String secondMatch = null;
+        while (matcher.find()) {
+            count++;
+            if (count == 2) {
+                secondMatch = matcher.group(1);
+                break;
+            }
+        }
+
+        if (secondMatch != null) {
+            System.out.println("第二个双引号之间的内容: " + secondMatch);
+        } else {
+            System.out.println("未找到第二个双引号之间的内容");
+        }
+
+    }
+
 }

@@ -427,6 +427,7 @@ public class WechatSdkController {
                 }
             }
         } else if ("10002".equals(type)) {
+            //扫描二维码进群
             String user = handleTextMsg(data1);
             if (!user.isEmpty()) {
                 String[] split = user.split("=");
@@ -440,6 +441,34 @@ public class WechatSdkController {
                 HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
 
             }
+        } else if ("10000".equals(type)) {
+            //邀请别人进群
+            String content = data1.get("content");
+            if (content.endsWith("\"加入了群聊")) {
+                Pattern pattern = Pattern.compile("\"([^\"]*)\"");
+                Matcher matcher = pattern.matcher(content);
+                int count = 0;
+                String secondMatch = null;
+                while (matcher.find()) {
+                    count++;
+                    if (count == 2) {
+                        secondMatch = matcher.group(1);
+                        break;
+                    }
+                }
+                if (secondMatch != null) {
+                    String url_2 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("type", 10009);
+                    map.put("userName", from1);
+                    map.put("msgContent", "掌声欢迎：" + secondMatch + " 加入本群聊!");
+                    String jsonString = JSONUtil.toJsonStr(map);
+                    // 发送POST请求
+                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                }
+            }
+
+
         } else if ("37".equals(type)) {
             Map<String, String> stringStringMap = handleFriendMsg(data1);
             String encryptusername = stringStringMap.get("encryptusername");
