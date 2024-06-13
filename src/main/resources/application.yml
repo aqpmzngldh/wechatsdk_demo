@@ -6,28 +6,16 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      #      本地数据库
-      #      url: jdbc:mysql://localhost:3306/reggie
-      #      云服务数据库
-      url: jdbc:mysql://124.222.221.77:3306/reggie
+      url: jdbc:mysql://124.222.222.77:3306/reggie
       username: root
-      #      password: root
       password: MXMPbrxyc4t7sBje
 
   redis:
-    #    redis本地主机ip
-    #    host: 127.0.0.1
-    #    redis云服务ip
-    host: 124.222.221.77
-    #    port: 6379
-    #    为了防止入侵，不用原端口号6379，生产用6378，密码也进行修改
-    port: 6378
-    #    password:
-    password: MXMPbrxyc4t7sBjeredis
+    host: 124.222.222.77
+    port: 6379
+    password: MXMPbrxyc44tsaeredis
     database: 0
-#  cache:
-#    redis:
-#      time-to-live: 1800000 #设置缓存数据的过期时间不写的话默认永久生效
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -40,10 +28,10 @@ wecahtsdk:
   #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使用
   name: 咸王
 #  写入自己的gpt的sk
-  OPENAI_API_KEY: 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
+  OPENAI_API_KEY: sk-DsMFscY6ZUztjj394WEdT9BlbkFJochgQPqRRP0SfQWg1zA4
 #  这个不必更改，反向代理直接调用gpt接口
   OPENAI_API_URL: https://ls.zhao9wan6.work/proxy/api.openai.com/v1/chat/completions
 #微信对话平台token
   token: tX0WlgYSJwGpv5vHf6N4iZHNfFq5g4
 #  接码平台token，接口文档https://www.uomsg.com/api.html
-  token_code: 8edf17e439884545ba5a70314c634255
+  token_code: 8edf17e439884545ba6a70914c634255
