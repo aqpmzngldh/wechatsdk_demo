@@ -56,6 +56,8 @@ public class WechatSdkController {
     private String token_code;
     @Autowired
     private CodeMessageService codeMessageService;
+    @Autowired
+    private AirfoneService airfoneService;
 
     static {
         String url = "http://127.0.0.1:8888/api/";
@@ -561,7 +563,10 @@ public class WechatSdkController {
         System.out.println("看一下这个是谁发的消息"+name);
         System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
         System.out.println("看一下这个消息内容是"+message);
-
+        String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
+        if (value==null){
+            value="";
+        }
 //      对@机器人的消息集中在这个方法中做出处理
         if (message.contains("天气")){
             String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/"+token;
@@ -585,10 +590,6 @@ public class WechatSdkController {
                     String responseBody2 = execute2.body();
                     Map<String, Object> map2 = JSONUtil.parseObj(responseBody2);
                     String answer = (String)map2.get("answer");
-                    String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
-                    if (value==null){
-                        value="";
-                    }
                     String url_3 = "http://127.0.0.1:8888/api/";
                     HashMap<String, Object> map3 = new HashMap<>();
                     map3.put("type", 10009);
@@ -747,11 +748,11 @@ public class WechatSdkController {
         }else if (message.contains("接码=")&&message.split("=").length==2){
             String[] split = message.split("=");
             String name_code=split[1];
-            String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
-            if (value==null){
-                value="";
-            }
             codeMessageService.getCode(token_code,chatRoom,name_code,name,value);
+
+        }else if (message.contains("传话筒=")&&message.split("=").length==3){
+            String[] split = message.split("=");
+            airfoneService.airfoneChat(split[1],split[2],chatRoom,name,value);
 
         }else if (message.startsWith("叫我")&&message.length()<7){
             String result = message.substring(2);
@@ -765,10 +766,6 @@ public class WechatSdkController {
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
         }else{
-            String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
-            if (value==null){
-                value="";
-            }
             String chat = chatGptService.chat(newStr, message);
             String url_2 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> map = new HashMap<>();
