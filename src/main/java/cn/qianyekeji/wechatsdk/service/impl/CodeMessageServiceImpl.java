@@ -57,10 +57,10 @@ public class CodeMessageServiceImpl implements CodeMessageService {
                         formData1.put("token", token_code);
                         formData1.put("keyWord", name_code);
                         HttpResponse response1 = HttpUtil.createPost(url_2).form(formData1).execute();
-                        System.out.println("看一下能不能获取到："+response1.body());
+                        System.out.println("响应："+response1.body());
+                        Thread.sleep(20000);
                         if (response1.body().contains("尚未收到")||response1.body().contains("屏蔽")) {
                             retries++;
-                            Thread.sleep(20000);
                             if (retries == 3) {
                                 String url_4 = "http://127.0.0.1:8888/api/";
                                 HashMap<String, Object> map4 = new HashMap<>();
@@ -71,6 +71,16 @@ public class CodeMessageServiceImpl implements CodeMessageService {
                                 HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
                             }
                         }else{
+                            String body = response1.body();
+                            String[] parts = body.split("/");
+                            String msg = parts[parts.length - 1];
+                            String url_5 = "http://127.0.0.1:8888/api/";
+                            HashMap<String, Object> map4 = new HashMap<>();
+                            map4.put("type", 10009);
+                            map4.put("userName", chatRoom);
+                            map4.put("msgContent", "@" + name + value + " " + msg);
+                            String jsonString4 = JSONUtil.toJsonStr(map4);
+                            HttpUtil.createPost(url_5).body(jsonString4, "application/json").execute();
                             break;
                         }
                     }
