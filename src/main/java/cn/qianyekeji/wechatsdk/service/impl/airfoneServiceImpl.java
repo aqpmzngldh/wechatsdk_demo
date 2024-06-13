@@ -44,6 +44,7 @@ public class airfoneServiceImpl implements AirfoneService {
                     map2.put("msgContent", msg);
                     String jsonString2 = JSONUtil.toJsonStr(map2);
                     HttpUtil.createPost(url_2).body(jsonString2, "application/json").execute();
+                    redisTemplate.opsForHash().put("a_route", UserName, chatRoom);
                     break;
                 }
             }
@@ -56,25 +57,6 @@ public class airfoneServiceImpl implements AirfoneService {
                 map2.put("msgContent", "@" + name + value + " " + "没有找到当前好友,请先添加当前机器人为好友");
                 String jsonString2 = JSONUtil.toJsonStr(map2);
                 HttpUtil.createPost(url_2).body(jsonString2, "application/json").execute();
-            } else {
-                String url_1 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> hashMap_1 = new HashMap<>();
-                hashMap_1.put("type", 30);
-                hashMap_1.put("chatroomUserName", chatRoom);
-                String jsonString_1 = JSONUtil.toJsonStr(hashMap_1);
-                HttpResponse response_1 = HttpUtil.createPost(url_1).body(jsonString_1, "application/json").execute();
-                if (response_1.isOk()) {
-                    String responseBody_1 = response_1.body();
-                    JSONObject entries = JSONUtil.parseObj(responseBody_1);
-                    // 获取 encryptUserName
-                    String encryptUserName = entries.getJSONObject("data")
-                            .getJSONObject("data")
-                            .getJSONObject("profile")
-                            .getJSONObject("data")
-                            .getStr("nickName");
-                    redisTemplate.opsForHash().put("a_route", nickName, encryptUserName);
-
-                }
             }
         } else {
             // 处理错误

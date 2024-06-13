@@ -412,7 +412,16 @@ public class WechatSdkController {
 
                     }
                 }else{
-                    //到这里说明就是私聊消息了，暂时不对私聊消息做出处理，本项目专注于群聊机器人，后面对本项目感兴趣的伙伴可以自行在这基础上扩展
+                    String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
+                    String chatRoom = (String)redisTemplate.opsForHash().get("a_route", from);
+                    String url_2 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("type", 10009);
+                    map.put("userName", chatRoom);
+                    map.put("msgContent", str+"对"+name+"说："+content);
+                    String jsonString = JSONUtil.toJsonStr(map);
+                    // 发送POST请求
+                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
                 }
             }
         }else if ("10002".equals(type)) {
@@ -444,6 +453,22 @@ public class WechatSdkController {
             String jsonString3 = JSONUtil.toJsonStr(map3);
             // 发送POST请求
             HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+
+        }else if ("3".equals(type)) {
+//            Map<String, String> stringStringMap = handleFriendMsg(data1);
+//            String encryptusername= stringStringMap.get("encryptusername");
+//            String ticket= stringStringMap.get("ticket");
+//            String scene= stringStringMap.get("scene");
+//
+//            String url_3 = "http://127.0.0.1:8888/api/";
+//            HashMap<String, Object> map3 = new HashMap<>();
+//            map3.put("type", 10035);
+//            map3.put("encryptUserName", encryptusername);
+//            map3.put("ticket", ticket);
+//            map3.put("scene", Integer.parseInt(scene));
+//            String jsonString3 = JSONUtil.toJsonStr(map3);
+//            // 发送POST请求
+//            HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
 
         }
     }
