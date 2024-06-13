@@ -47,7 +47,7 @@ public class CodeMessageServiceImpl implements CodeMessageService {
             new Thread(() -> {
                 try {
                     //获取到验证码后自动发送到当前群聊
-                    int maxRetries = 5;
+                    int maxRetries = 4;
                     int retries = 0;
                     while (retries < maxRetries) {
 
@@ -58,15 +58,15 @@ public class CodeMessageServiceImpl implements CodeMessageService {
                         formData1.put("keyWord", name_code);
                         HttpResponse response1 = HttpUtil.createPost(url_2).form(formData1).execute();
                         System.out.println("看一下能不能获取到："+response1.body());
-                        if (response1.body().contains("尚未收到")) {
+                        if (response1.body().contains("尚未收到")||response1.body().contains("屏蔽")) {
                             retries++;
-                            Thread.sleep(30000);
-                            if (retries == 4) {
+                            Thread.sleep(20000);
+                            if (retries == 3) {
                                 String url_4 = "http://127.0.0.1:8888/api/";
                                 HashMap<String, Object> map4 = new HashMap<>();
                                 map4.put("type", 10009);
                                 map4.put("userName", chatRoom);
-                                map4.put("msgContent", "@" + name + value + " " + "未获取到验证码，请检查短信关键词");
+                                map4.put("msgContent", "@" + name + value + " " + "未获取到验证码，请检查短信关键词或稍后重试。");
                                 String jsonString4 = JSONUtil.toJsonStr(map4);
                                 HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
                             }
