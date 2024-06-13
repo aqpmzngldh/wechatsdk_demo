@@ -73,9 +73,9 @@ public class WechatSdkController {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data) throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-        System.out.println("看一下这个data的数据"+data1);
+        System.out.println("看一下这个data的数据" + data1);
         String type = String.valueOf(data1.get("type"));
-        System.out.println("这个值是："+type);
+        System.out.println("这个值是：" + type);
 
         String from1 = data1.get("from");
         String to1 = data1.get("to");
@@ -103,8 +103,8 @@ public class WechatSdkController {
                         .getJSONObject("profile")
                         .getJSONObject("data")
                         .getStr("nickName");
-                if (encryptUserName!=null){
-                redisTemplate.opsForHash().put("wx_voice", encryptUserName, from1);
+                if (encryptUserName != null) {
+                    redisTemplate.opsForHash().put("wx_voice", encryptUserName, from1);
                 }
 
             }
@@ -126,7 +126,7 @@ public class WechatSdkController {
                         .getJSONObject("profile")
                         .getJSONObject("data")
                         .getStr("nickName");
-                if (encryptUserName!=null) {
+                if (encryptUserName != null) {
                     redisTemplate.opsForHash().put("wx_voice", encryptUserName, to1);
                 }
             }
@@ -387,8 +387,8 @@ public class WechatSdkController {
 
                     }
                 }
-            }else{
-                if (from.endsWith("@chatroom")){
+            } else {
+                if (from.endsWith("@chatroom")) {
                     int newlineIndex = content.indexOf('\n');
                     //按照格式，肯定存在一个换行符
                     //并且在使用机器人的时候，必须@机器人名才可以,对这种消息我们才做处理
@@ -397,52 +397,54 @@ public class WechatSdkController {
                         int lastColonIndex = substring.lastIndexOf(':');
                         String newStr = content.substring(0, lastColonIndex);
                         String substring1 = content.substring(newlineIndex + 1);
-                        System.out.println("在当前群聊中，用户："+newStr+"发送了消息，具体内容是："+substring1);
+                        System.out.println("在当前群聊中，用户：" + newStr + "发送了消息，具体内容是：" + substring1);
                         JSONObject entries = JSONUtil.parseObj(data1);
                         String nickName = entries.getJSONObject("chatroomMemberInfo")
                                 .getStr("nickName");
-                        countService.addCount(from,nickName);
+                        countService.addCount(from, nickName);
 
-                        if (substring1.trim().contains("@"+name)){
+                        if (substring1.trim().contains("@" + name)) {
                             String message = StrUtil.trim(substring1.replace("@" + name, "").replaceAll("\\s+", ""));
-                            handleMessage(nickName,from,message,newStr);
+                            handleMessage(nickName, from, message, newStr);
 
                         }
 
 
                     }
-                }else{
-                    String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
-                    String chatRoom = (String)redisTemplate.opsForHash().get("a_route", from);
-                    String url_2 = "http://127.0.0.1:8888/api/";
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("type", 10009);
-                    map.put("userName", chatRoom);
-                    map.put("msgContent", str+"对"+name+"说："+content);
-                    String jsonString = JSONUtil.toJsonStr(map);
-                    // 发送POST请求
-                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                } else {
+                    String chatRoom = (String) redisTemplate.opsForHash().get("a_route", from);
+                    if (chatRoom != null) {
+                        String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
+                        String url_2 = "http://127.0.0.1:8888/api/";
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("type", 10009);
+                        map.put("userName", chatRoom);
+                        map.put("msgContent", str + "对" + name + "说：" + content);
+                        String jsonString = JSONUtil.toJsonStr(map);
+                        // 发送POST请求
+                        HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                    }
                 }
             }
-        }else if ("10002".equals(type)) {
+        } else if ("10002".equals(type)) {
             String user = handleTextMsg(data1);
-            if (!user.isEmpty()){
+            if (!user.isEmpty()) {
                 String[] split = user.split("=");
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("type", 10009);
                 map.put("userName", split[1]);
-                map.put("msgContent", "掌声欢迎："+split[0]+" 加入本群聊!");
+                map.put("msgContent", "掌声欢迎：" + split[0] + " 加入本群聊!");
                 String jsonString = JSONUtil.toJsonStr(map);
                 // 发送POST请求
                 HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
 
             }
-        }else if ("37".equals(type)) {
+        } else if ("37".equals(type)) {
             Map<String, String> stringStringMap = handleFriendMsg(data1);
-            String encryptusername= stringStringMap.get("encryptusername");
-            String ticket= stringStringMap.get("ticket");
-            String scene= stringStringMap.get("scene");
+            String encryptusername = stringStringMap.get("encryptusername");
+            String ticket = stringStringMap.get("ticket");
+            String scene = stringStringMap.get("scene");
 
             String url_3 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> map3 = new HashMap<>();
@@ -454,44 +456,44 @@ public class WechatSdkController {
             // 发送POST请求
             HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
 
-        }else if ("3".equals(type)) {
-            String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
-            String chatRoom = (String)redisTemplate.opsForHash().get("a_route", data1.get("from"));
+        } else if ("3".equals(type)) {
+            String chatRoom = (String) redisTemplate.opsForHash().get("a_route", data1.get("from"));
+            if (chatRoom != null) {
+                String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
+                Map<String, String> stringStringMap = handleImgMsg(data1);
+                String aeskey = stringStringMap.get("aeskey");
+                String cdnthumburl = stringStringMap.get("cdnthumburl");
 
-            Map<String, String> stringStringMap = handleImgMsg(data1);
-            String aeskey= stringStringMap.get("aeskey");
-            String cdnthumburl= stringStringMap.get("cdnthumburl");
+                String url_3 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map3 = new HashMap<>();
+                map3.put("type", 66);
+                map3.put("aeskey", aeskey);
+                map3.put("fileid", cdnthumburl);
+                map3.put("fileType", 2);
+                map3.put("savePath", "F:\\yuyin\\pic\\1.png");
+                String jsonString3 = JSONUtil.toJsonStr(map3);
+                // 发送POST请求
+                HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
 
-            String url_3 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map3 = new HashMap<>();
-            map3.put("type", 66);
-            map3.put("aeskey", aeskey);
-            map3.put("fileid", cdnthumburl);
-            map3.put("fileType", 2);
-            map3.put("savePath", "F:\\yuyin\\pic\\1.png");
-            String jsonString3 = JSONUtil.toJsonStr(map3);
-            // 发送POST请求
-            HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+                String url_2 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("type", 10009);
+                map.put("userName", chatRoom);
+                map.put("msgContent", str + "给" + name + "发了一张图片：");
+                String jsonString = JSONUtil.toJsonStr(map);
+                // 发送POST请求
+                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
 
-            String url_2 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("type", 10009);
-            map.put("userName", chatRoom);
-            map.put("msgContent", str+"给"+name+"发了一张图片：");
-            String jsonString = JSONUtil.toJsonStr(map);
-            // 发送POST请求
-            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                String url_4 = "http://127.0.0.1:8888/api/";
+                HashMap<String, Object> map4 = new HashMap<>();
+                map4.put("type", 10010);
+                map4.put("userName", chatRoom);
+                map4.put("filePath", "F:\\yuyin\\pic\\1.png");
+                String jsonString4 = JSONUtil.toJsonStr(map4);
+                // 发送POST请求
+                HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
 
-            String url_4 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map4 = new HashMap<>();
-            map4.put("type", 10010);
-            map4.put("userName", chatRoom);
-            map4.put("filePath", "F:\\yuyin\\pic\\1.png");
-            String jsonString4 = JSONUtil.toJsonStr(map4);
-            // 发送POST请求
-            HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
-
-
+            }
         }
     }
 
@@ -524,6 +526,7 @@ public class WechatSdkController {
 
     /**
      * 解析语音的xml提取信息
+     *
      * @param data
      * @param from
      * @param to
@@ -555,6 +558,7 @@ public class WechatSdkController {
 
     /**
      * 下载语音，存储语音
+     *
      * @param fileid
      * @param aeskey
      * @param from
@@ -589,6 +593,7 @@ public class WechatSdkController {
 
     /**
      * 解析新人入群的xml
+     *
      * @param data
      * @throws Exception
      */
@@ -602,20 +607,20 @@ public class WechatSdkController {
         Document doc = XmlUtil.parseXml(xmlContent);
         Element msgElem = doc.getDocumentElement(); // 获取根元素
         Node textNode = msgElem.getElementsByTagName("text").item(0);
-        String user="";
+        String user = "";
         if (textNode != null && textNode.getNodeType() == Node.ELEMENT_NODE) {
             Element textElem = (Element) textNode;
             String textContent = textElem.getTextContent();
             System.out.println("新用户: " + textContent);
 //            你邀请"千夜"加入了群聊
 //            "千夜"通过扫描你分享的二维码加入群聊
-            if ((textContent.trim().endsWith("\"加入了群聊"))||(textContent.trim().endsWith("\"通过扫描你分享的二维码加入群聊"))){
+            if ((textContent.trim().endsWith("\"加入了群聊")) || (textContent.trim().endsWith("\"通过扫描你分享的二维码加入群聊"))) {
                 // 定义正则表达式模式，匹配双引号包裹的内容
                 String regex = "\"(.*?)\"";
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(textContent);
                 if (matcher.find()) {
-                    user=matcher.group(1)+"="+split[0];
+                    user = matcher.group(1) + "=" + split[0];
                 }
             }
         }
@@ -624,6 +629,7 @@ public class WechatSdkController {
 
     /**
      * 解析陌生人添加自己为好友的xml
+     *
      * @param data
      * @return
      * @throws Exception
@@ -660,48 +666,48 @@ public class WechatSdkController {
 
     }
 
-    private void handleMessage(String name,String chatRoom,String message,String newStr) throws Exception {
-        System.out.println("看一下这个是谁发的消息"+name);
-        System.out.println("看一下在哪个群聊中发的消息"+chatRoom);
-        System.out.println("看一下这个消息内容是"+message);
+    private void handleMessage(String name, String chatRoom, String message, String newStr) throws Exception {
+        System.out.println("看一下这个是谁发的消息" + name);
+        System.out.println("看一下在哪个群聊中发的消息" + chatRoom);
+        System.out.println("看一下这个消息内容是" + message);
         String value = (String) redisTemplate.opsForHash().get(chatRoom, name);
-        if (value==null){
-            value="";
+        if (value == null) {
+            value = "";
         }
 //      对@机器人的消息集中在这个方法中做出处理
-        if (message.contains("天气")){
-            String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/"+token;
+        if (message.contains("天气")) {
+            String url_1 = "https://chatbot.weixin.qq.com/openapi/sign/" + token;
             HashMap<String, Object> hashMap1 = new HashMap<>();
-            hashMap1.put("userid",1);
+            hashMap1.put("userid", 1);
             String jsonString1 = JSONUtil.toJsonStr(hashMap1);
             HttpResponse execute = HttpUtil.createPost(url_1).body(jsonString1, "application/json").execute();
             if (execute.isOk()) {
                 String responseBody = execute.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
-                String signature = (String)map.get("signature");
+                String signature = (String) map.get("signature");
 
-                String url_2 = "https://chatbot.weixin.qq.com/openapi/aibot/"+token;
+                String url_2 = "https://chatbot.weixin.qq.com/openapi/aibot/" + token;
                 HashMap<String, Object> hashMap2 = new HashMap<>();
-                hashMap2.put("signature",signature);
-                hashMap2.put("query",message);
+                hashMap2.put("signature", signature);
+                hashMap2.put("query", message);
                 String jsonString2 = JSONUtil.toJsonStr(hashMap2);
                 HttpResponse execute2 = HttpUtil.createPost(url_2).body(jsonString2, "application/json").execute();
                 if (execute2.isOk()) {
                     System.out.println(execute2);
                     String responseBody2 = execute2.body();
                     Map<String, Object> map2 = JSONUtil.parseObj(responseBody2);
-                    String answer = (String)map2.get("answer");
+                    String answer = (String) map2.get("answer");
                     String url_3 = "http://127.0.0.1:8888/api/";
                     HashMap<String, Object> map3 = new HashMap<>();
                     map3.put("type", 10009);
                     map3.put("userName", chatRoom);
-                    map3.put("msgContent", "@"+name+value+" "+answer);
+                    map3.put("msgContent", "@" + name + value + " " + answer);
                     String jsonString3 = JSONUtil.toJsonStr(map3);
                     // 发送POST请求
                     HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
                 }
             }
-        }else if ("今日早报".equals(message)){
+        } else if ("今日早报".equals(message)) {
             String s = csdnNewsService.csdn_to();
             System.out.println(s);
             String url_2 = "http://127.0.0.1:8888/api/";
@@ -712,20 +718,20 @@ public class WechatSdkController {
             String jsonString = JSONUtil.toJsonStr(map);
             // 发送POST请求
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-        }else if (
-                message.contains("白羊座")||
-                message.contains("金牛座")||
-                message.contains("双子座")||
-                message.contains("巨蟹座")||
-                message.contains("狮子座")||
-                message.contains("处女座")||
-                message.contains("天秤座")||
-                message.contains("天蝎座")||
-                message.contains("射手座")||
-                message.contains("摩羯座")||
-                message.contains("水瓶座")||
-                message.contains("双鱼座")
-        ){
+        } else if (
+                message.contains("白羊座") ||
+                        message.contains("金牛座") ||
+                        message.contains("双子座") ||
+                        message.contains("巨蟹座") ||
+                        message.contains("狮子座") ||
+                        message.contains("处女座") ||
+                        message.contains("天秤座") ||
+                        message.contains("天蝎座") ||
+                        message.contains("射手座") ||
+                        message.contains("摩羯座") ||
+                        message.contains("水瓶座") ||
+                        message.contains("双鱼座")
+        ) {
             String[] zodiacSigns = {"白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座", "天秤座", "天蝎座", "射手座", "摩羯座", "水瓶座", "双鱼座"};
             String foundSign = null;
             for (String sign : zodiacSigns) {
@@ -734,7 +740,7 @@ public class WechatSdkController {
                     break;
                 }
             }
-            String url = "https://api.qqsuu.cn/api/dm-fortune?astro="+foundSign;
+            String url = "https://api.qqsuu.cn/api/dm-fortune?astro=" + foundSign;
             HttpResponse response = HttpUtil.createGet(url).execute();
             if (response.isOk()) {
                 String responseBody = response.body();
@@ -761,13 +767,13 @@ public class WechatSdkController {
                 System.err.println("查询星座错误" + response.getStatus());
             }
 
-        }else if ("美女".equals(message)){
+        } else if ("美女".equals(message)) {
             String url = "https://v2.api-m.com/api/heisi";
             HttpResponse response1 = HttpUtil.createGet(url).execute();
             if (response1.isOk()) {
                 String responseBody = response1.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
-                String imgUrl = (String)map.get("data");
+                String imgUrl = (String) map.get("data");
                 String localFilePath = downloadFile(imgUrl, "F:\\\\yuyin\\\\pic\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
@@ -781,13 +787,13 @@ public class WechatSdkController {
                 // 处理错误
                 System.out.println("请求图片出错");
             }
-        }else if ("视频".equals(message)){
+        } else if ("视频".equals(message)) {
             String url = "https://api.qqsuu.cn/api/dm-xjj?type=json&apiKey=b4bd29e2d83ea412fa368e2747c8ef41";
             HttpResponse response1 = HttpUtil.createGet(url).execute();
             if (response1.isOk()) {
                 String responseBody = response1.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
-                String videoUrl = (String)map.get("video");
+                String videoUrl = (String) map.get("video");
                 String localFilePath = downloadFile(videoUrl, "F:\\\\yuyin\\\\video\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
@@ -801,10 +807,10 @@ public class WechatSdkController {
                 // 处理错误
                 System.out.println("请求视频出错");
             }
-        }else if (message.startsWith("http://")||message.startsWith("https://")){
+        } else if (message.startsWith("http://") || message.startsWith("https://")) {
             String url = "https://www.qrgpt.io/api/generate";
             HashMap<String, Object> map = new HashMap<>();
-            map.put("prompt","A beautiful glacier");
+            map.put("prompt", "A beautiful glacier");
             map.put("url", message);
             String jsonString = JSONUtil.toJsonStr(map);
             // 发送POST请求
@@ -812,7 +818,7 @@ public class WechatSdkController {
             if (response.isOk()) {
                 String responseBody = response.body();
                 Map<String, Object> map_1 = JSONUtil.parseObj(responseBody);
-                String image_url = (String)map_1.get("image_url");
+                String image_url = (String) map_1.get("image_url");
                 String localFilePath = downloadFile(image_url, "F:\\\\yuyin\\\\pic\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
@@ -826,9 +832,9 @@ public class WechatSdkController {
                 // 处理错误
                 System.err.println("链接转二维码出错。。。");
             }
-        }else if ("活跃度查询".equals(message)){
+        } else if ("活跃度查询".equals(message)) {
             HashMap hashMapR = countService.selectCount(chatRoom);
-            System.out.println("看一下这个活跃度："+hashMapR);
+            System.out.println("看一下这个活跃度：" + hashMapR);
             StringBuilder sb = new StringBuilder();
             sb.append("该群聊的活跃度如下:\n\n");
 
@@ -846,16 +852,16 @@ public class WechatSdkController {
             map.put("msgContent", result);
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-        }else if (message.contains("接码=")&&message.split("=").length==2){
+        } else if (message.contains("接码=") && message.split("=").length == 2) {
             String[] split = message.split("=");
-            String name_code=split[1];
-            codeMessageService.getCode(token_code,chatRoom,name_code,name,value);
+            String name_code = split[1];
+            codeMessageService.getCode(token_code, chatRoom, name_code, name, value);
 
-        }else if (message.contains("传话筒=")&&message.split("=").length==3){
+        } else if (message.contains("传话筒=") && message.split("=").length == 3) {
             String[] split = message.split("=");
-            airfoneService.airfoneChat(split[1],split[2],chatRoom,name,value);
+            airfoneService.airfoneChat(split[1], split[2], chatRoom, name, value);
 
-        }else if (message.startsWith("叫我")&&message.length()<7){
+        } else if (message.startsWith("叫我") && message.length() < 7) {
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);
 
@@ -866,13 +872,13 @@ public class WechatSdkController {
             map.put("msgContent", "收到");
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-        }else{
+        } else {
             String chat = chatGptService.chat(newStr, message);
             String url_2 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> map = new HashMap<>();
             map.put("type", 10009);
             map.put("userName", chatRoom);
-            map.put("msgContent", "@"+name+value+" "+chat);
+            map.put("msgContent", "@" + name + value + " " + chat);
             String jsonString = JSONUtil.toJsonStr(map);
             // 发送POST请求
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
