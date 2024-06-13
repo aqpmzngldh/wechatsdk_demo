@@ -455,20 +455,42 @@ public class WechatSdkController {
             HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
 
         }else if ("3".equals(type)) {
-//            Map<String, String> stringStringMap = handleFriendMsg(data1);
-//            String encryptusername= stringStringMap.get("encryptusername");
-//            String ticket= stringStringMap.get("ticket");
-//            String scene= stringStringMap.get("scene");
-//
-//            String url_3 = "http://127.0.0.1:8888/api/";
-//            HashMap<String, Object> map3 = new HashMap<>();
-//            map3.put("type", 10035);
-//            map3.put("encryptUserName", encryptusername);
-//            map3.put("ticket", ticket);
-//            map3.put("scene", Integer.parseInt(scene));
-//            String jsonString3 = JSONUtil.toJsonStr(map3);
-//            // 发送POST请求
-//            HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+            String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
+            String chatRoom = (String)redisTemplate.opsForHash().get("a_route", data1.get("from"));
+
+            Map<String, String> stringStringMap = handleImgMsg(data1);
+            String aeskey= stringStringMap.get("aeskey");
+            String cdnthumburl= stringStringMap.get("cdnthumburl");
+
+            String url_3 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map3 = new HashMap<>();
+            map3.put("type", 66);
+            map3.put("aeskey", aeskey);
+            map3.put("fileid", cdnthumburl);
+            map3.put("fileType", 2);
+            map3.put("savePath", "F:\\yuyin\\pic\\1.png");
+            String jsonString3 = JSONUtil.toJsonStr(map3);
+            // 发送POST请求
+            HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+
+            String url_2 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("type", 10009);
+            map.put("userName", chatRoom);
+            map.put("msgContent", str+"给"+name+"发了一张图片：");
+            String jsonString = JSONUtil.toJsonStr(map);
+            // 发送POST请求
+            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+
+            String url_4 = "http://127.0.0.1:8888/api/";
+            HashMap<String, Object> map4 = new HashMap<>();
+            map4.put("type", 10010);
+            map4.put("userName", chatRoom);
+            map4.put("filePath", "F:\\yuyin\\pic\\1.png");
+            String jsonString4 = JSONUtil.toJsonStr(map4);
+            // 发送POST请求
+            HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
+
 
         }
     }
@@ -618,6 +640,24 @@ public class WechatSdkController {
         result.put("ticket", ticket);
         result.put("scene", scene);
         return result;
+    }
+
+    private Map<String, String> handleImgMsg(Map<String, String> data) throws Exception {
+        String xmlContent = data.get("content");
+        String[] split = xmlContent.split("<?xml version=\"1.0\"?>");
+        xmlContent = split.length > 1 ? split[1] : xmlContent;
+
+        Document doc = XmlUtil.parseXml(xmlContent);
+        Element msgElem = doc.getDocumentElement();
+        Node voicemsgNode = msgElem.getElementsByTagName("img").item(0);
+        Element voicemsgElem = (Element) voicemsgNode;
+        String aeskey = voicemsgElem.getAttribute("aeskey");
+        String cdnthumburl = voicemsgElem.getAttribute("cdnthumburl");
+        Map<String, String> result = new HashMap<>();
+        result.put("aeskey", aeskey);
+        result.put("cdnthumburl", cdnthumburl);
+        return result;
+
     }
 
     private void handleMessage(String name,String chatRoom,String message,String newStr) throws Exception {
