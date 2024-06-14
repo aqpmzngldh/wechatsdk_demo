@@ -1,5 +1,5 @@
 # wechatsdk_demo🤖
-微信机器人wecaht_demo是一个创新的基于wechatsdk开发的项目，主要针对微信群聊中使用，使用java实现，wechatsdk官网：https://www.wechatsdk.com/
+微信机器人wecaht_demo是一个创新的基于wechatsdk开发的项目，主要针对微信群聊中使用，使用java实现，[wechatsdk接口文档](https://github.com/WeChatAPIs/WeChatApi)
 <details>
 <summary>免责声明【必读】</summary>  
   
@@ -24,20 +24,20 @@
 * **美女/视频**：发送美女或者视频每次响应美女图或者美女视频发送到群里
 * **活跃度查询/链接转二维码**：每次调用不同服务时消耗不同的活跃度，一天最多获取10点
 * **传话筒**：群里所有人一起跟某个人聊天，实现多人vs：1，给女朋友狠狠地拿下
-* **接码**：浏览某些平台，不太想用自己手机号
 * **多种语音包发送语音**：目前只接了个懒羊羊的，后面可能会根据openvoice或者其他实现更多
 * **语音转发**：这个和发送语音一样，对着微信文件助手发送指定格式的文字即可实现这两个功能
   
 <h2>效果展示</h2>
 
-<img src="https://github.com/aqpmzngldh/wechatsdk_demo/assets/124235388/2f6db9e3-4ba0-4863-bb01-aceb640f024d" alt="示例图片" width="500">
-https://github.com/aqpmzngldh/wechatsdk_demo/assets/124235388/38be832a-c538-4650-a727-a6dca560bc4c
+<img src="https://github.com/aqpmzngldh/wechatsdk_demo/assets/124235388/da379479-2b16-4567-a046-d4f3f185c0cf" alt="示例图片" width="500">
+
 <h2>多种语音包发送/语音转发</h2>
 
- 1. 看上面链接第一个表示：给某人发给自己的倒数第一条语音转发到某群中
- 2. 看上面链接第二个表示：给某群中的倒数第一条语音转发给某人
- 3. 看上面链接第三个表示：给某人发给自己的倒数第一条语音转发给某人，想转发倒数第二条，后面改成2就好，以此类推，上面也一样
- 4. 看上面链接第四个和第五个表示：通过懒羊羊音色发送语音，1代表群聊2代表某人拼接群聊名或微信号，发送的语音内容是最后面书写的文字
+ 1. [点击查看如何使用](https://github.com/aqpmzngldh/wechatsdk_demo/assets/124235388/38be832a-c538-4650-a727-a6dca560bc4c)
+ 2. 第一个表示：给某人发给自己的倒数第一条语音转发到某群中
+ 3. 第二个表示：给某群中的倒数第一条语音转发给某人
+ 4. 第三个表示：给某人发给自己的倒数第一条语音转发给某人，想转发倒数第二条，后面改成2就好，以此类推，上面也一样
+ 5. 第四个和第五个表示：通过懒羊羊音色发送语音，1代表群聊2代表某人拼接群聊名或微信号，发送的语音内容是最后面书写的文字
 
 <h2>系统要求 💻</h2>
 
@@ -46,5 +46,5 @@ https://github.com/aqpmzngldh/wechatsdk_demo/assets/124235388/38be832a-c538-4650
 
 <h2>启动运行：</h2>
 
-* <a href="https://www.wechatsdk.com/zh/docs/%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8.md">1.前置条件</a>
+* <a href="https://github.com/WeChatAPIs/WeChatApi">1.前置条件</a>
 * 2.克隆项目，修改application.yml文件，注释我已经写好了
