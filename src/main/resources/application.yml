@@ -36,7 +36,7 @@ wecahtsdk:
 #  接码平台token，接口文档https://www.uomsg.com/api.html
   token_code: 8edf17e439884545ba6a70914c634255
 
-#  mysql中就使用了这一张表，其他用的都是redis
+#  mysql中就使用了这一张表，其他1用的都是redis
 #  CREATE TABLE `wx_voice` (
 #  `id` int(11) NOT NULL AUTO_INCREMENT,
 #  `from_wx` varchar(255) DEFAULT NULL,
