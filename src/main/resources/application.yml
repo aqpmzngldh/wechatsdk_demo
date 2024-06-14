@@ -8,12 +8,12 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://124.222.222.77:3306/demo
       username: root
-      password: MXMPbrxyc4t9sBje
+      password: yXMPbex9yc4t9tBje
 
   redis:
     host: 124.222.222.77
     port: 6379
-    password: MXMPbrxyc44tsaeredis
+    password: Mtopbrc44tsaeredis
     database: 0
 
 mybatis-plus:
@@ -25,7 +25,7 @@ mybatis-plus:
     db-config:
       id-type: assign_id
 wecahtsdk:
-  #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使1用
+  #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使用
   name: 咸王
 #  写入自己的gpt的sk
   OPENAI_API_KEY: sk-DsMFscY6ZUztjj394WEdT9BlbkFJochgQPqRRP0SfQWg1zA4
