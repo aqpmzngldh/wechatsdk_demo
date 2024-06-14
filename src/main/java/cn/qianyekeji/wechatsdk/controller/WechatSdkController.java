@@ -55,8 +55,6 @@ public class WechatSdkController {
     @Value("${wecahtsdk.token_code}")
     private String token_code;
     @Autowired
-    private CodeMessageService codeMessageService;
-    @Autowired
     private AirfoneService airfoneService;
 
     static {
@@ -881,11 +879,6 @@ public class WechatSdkController {
             map.put("msgContent", result);
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-        } else if (message.contains("接码=") && message.split("=").length == 2) {
-            String[] split = message.split("=");
-            String name_code = split[1];
-            codeMessageService.getCode(token_code, chatRoom, name_code, name, value);
-
         } else if (message.contains("传话筒=") && message.split("=").length == 3) {
             String[] split = message.split("=");
             airfoneService.airfoneChat(split[1], split[2], chatRoom, name, value);
