@@ -35,3 +35,14 @@ wecahtsdk:
   token: tX0WlgYSJwGpv5vHf6N4iZHNfFq5g4
 #  接码平台token，接口文档https://www.uomsg.com/api.html
   token_code: 8edf17e439884545ba6a70914c634255
+
+#  mysql中就使用了这一张表，其他用的都是redis
+#  CREATE TABLE `wx_voice` (
+#  `id` int(11) NOT NULL AUTO_INCREMENT,
+#  `from_wx` varchar(255) DEFAULT NULL,
+#  `to_wx` varchar(255) DEFAULT NULL,
+#  `address` varchar(255) DEFAULT NULL,
+#  `times` varchar(255) DEFAULT NULL,
+#  `liao` varchar(255) DEFAULT NULL,
+#  PRIMARY KEY (`id`)
+#  ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4
