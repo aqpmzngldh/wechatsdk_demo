@@ -8,7 +8,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       url: jdbc:mysql://124.222.222.77:3306/reggie
       username: root
-      password: MXMPbrxyc4t7sBje
+      password: MXMPbrxyc4t9sBje
 
   redis:
     host: 124.222.222.77
