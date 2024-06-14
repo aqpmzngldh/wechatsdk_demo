@@ -6,7 +6,7 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://124.222.222.77:3306/reggie
+      url: jdbc:mysql://124.222.222.77:3306/demo
       username: root
       password: MXMPbrxyc4t9sBje
 
