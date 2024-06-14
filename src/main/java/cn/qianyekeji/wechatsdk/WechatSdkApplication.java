@@ -5,10 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-/**
- * @author liangshuai
- * @date 2023/1/183
- */
+
 @Slf4j
 @SpringBootApplication
 public class WechatSdkApplication {
