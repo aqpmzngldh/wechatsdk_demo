@@ -52,8 +52,6 @@ public class WechatSdkController {
     private String token;
     @Autowired
     private CountService countService;
-    @Value("${wecahtsdk.token_code}")
-    private String token_code;
     @Autowired
     private AirfoneService airfoneService;
 
