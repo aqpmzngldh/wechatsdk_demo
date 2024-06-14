@@ -25,7 +25,7 @@ mybatis-plus:
     db-config:
       id-type: assign_id
 wecahtsdk:
-  #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使用
+  #  群机器人名字，建议跟自己微信昵称保持一致，方便@直接使1用
   name: 咸王
 #  写入自己的gpt的sk
   OPENAI_API_KEY: sk-DsMFscY6ZUztjj394WEdT9BlbkFJochgQPqRRP0SfQWg1zA4
