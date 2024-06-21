@@ -893,7 +893,7 @@ public class WechatSdkController {
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
         } else {
-            String chat = chatGptService.chat(newStr, message);
+            String chat = chatGptService.chat(newStr, message,"0");
             String url_2 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> map = new HashMap<>();
             map.put("type", 10009);
