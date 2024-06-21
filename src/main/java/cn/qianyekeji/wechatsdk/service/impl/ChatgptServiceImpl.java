@@ -26,29 +26,34 @@ import java.util.Map;
 public class ChatgptServiceImpl extends ServiceImpl<ChatgptMapper, ChatgptRequest> implements ChatgptService {
 
     @Value("${wecahtsdk.OPENAI_API_KEY}")
-    private String OPENAI_API_KEY;
+    private String OPENAI_API_KEY_2;
     @Value("${wecahtsdk.OPENAI_API_URL}")
     private String OPENAI_API_URL;
-    private Map<String, List<String>> userSessions = new HashMap<>();
+    private Map<String, List<JSONObject>> userSessions3 = new HashMap<>();
+
 
     @Override
-    public String chat(String userId,String message) {
+    public String chat(String userId,String message, String tag) {
         // 检查用户会话是否存在
-        if (!userSessions.containsKey(userId)) {
+        if (!userSessions3.containsKey(userId)) {
             //第一次进来肯定不存在会话中，这时候我们放进去
-            userSessions.put(userId, new ArrayList<>());
+            userSessions3.put(userId, new ArrayList<>());
         }
-        //把发送的消息扔进这个人的list中
-        List<String> sessionMessages = userSessions.get(userId);
-        sessionMessages.add(message);
+        // 将用户发送的消息添加到会话中
+        List<JSONObject> sessionMessages3 = userSessions3.get(userId);
+        JSONObject userMessage = new JSONObject();
+        userMessage.put("content", message);
+        userMessage.put("role", "user");
+        sessionMessages3.add(userMessage);
 
         // 构建请求头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(OPENAI_API_KEY);
+        headers.setBearerAuth(OPENAI_API_KEY_2);
 
         // 构建请求体
-        String requestBody = buildRequestBody(userId, sessionMessages);
+        String requestBody = buildRequestBody3(sessionMessages3, tag);
+        System.out.println("看一下这个：" + requestBody);
 
         // 发送请求
         RestTemplate restTemplate = new RestTemplate();
@@ -56,19 +61,24 @@ public class ChatgptServiceImpl extends ServiceImpl<ChatgptMapper, ChatgptReques
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = null;
 
-        //gpt3.5频率1分钟三次，所以这里加入重试
         int maxRetries = 5;
         int retries = 0;
         while (retries < maxRetries) {
             try {
                 response = restTemplate.postForEntity(OPENAI_API_URL, request, String.class);
                 HttpStatus statusCode = response.getStatusCode();
+                System.out.println("---------------------" + statusCode + "--------------------");
                 // 提取回复消息
                 String responseBody = response.getBody();
                 String reply = extractReplyFromResponse(responseBody);
                 System.out.println("-------------------" + reply + "--------------------");
-                // 如果成功收到回复，返回回复消息，并把回复消息也存进当前用户的的list中，方便上下文记忆
-                sessionMessages.add(reply);
+
+                // 将ChatGPT的回复添加到会话中
+                JSONObject replyMessage = new JSONObject();
+                replyMessage.put("content", reply);
+                replyMessage.put("role", "assistant");
+                sessionMessages3.add(replyMessage);
+                System.out.println("看一下sessionMessages：" + sessionMessages3);
                 return reply;
             } catch (RestClientException e) {
                 // 发生异常时增加重试次数，并输出错误信息
@@ -87,22 +97,6 @@ public class ChatgptServiceImpl extends ServiceImpl<ChatgptMapper, ChatgptReques
     }
 
 
-    private String buildRequestBody(String userId, List<String> sessionMessages) {
-        JSONArray messagesArray = new JSONArray();
-        for (String message : sessionMessages) {
-            JSONObject messageObj = new JSONObject();
-            messageObj.put("role", "user");
-            messageObj.put("content", message);
-            messagesArray.add(messageObj);
-        }
-
-        JSONObject requestBodyObj = new JSONObject();
-        requestBodyObj.put("model", "gpt-3.5-turbo");
-        requestBodyObj.put("messages", messagesArray);
-
-        return requestBodyObj.toString();
-    }
-
     private String extractReplyFromResponse(String response) {
         JSONObject jsonObject = JSONUtil.parseObj(response);
         JSONArray choices = jsonObject.getJSONArray("choices");
@@ -114,27 +108,27 @@ public class ChatgptServiceImpl extends ServiceImpl<ChatgptMapper, ChatgptReques
     }
 
 
-    // 设置定时任务，每小时执行一次
+    //通用
+    private String buildRequestBody3(List<JSONObject> sessionMessages, String tag) {
+        JSONArray messagesArray = new JSONArray();
+        for (JSONObject message : sessionMessages) {
+            messagesArray.add(message);
+        }
+        JSONObject requestBodyObj = new JSONObject();
+        if ("0".equals(tag)) {
+            requestBodyObj.put("model", "gpt-3.5-turbo");
+        } else {
+            requestBodyObj.put("model", "gpt-4o");
+        }
+        requestBodyObj.put("messages", messagesArray);
+        return requestBodyObj.toString();
+    }
+
+
+    // 设置定时任务,每小时执行一次
     @Scheduled(cron = "0 0 * * * *")
     public void cleanUserSessions() {
-//        System.out.println("不清理的话，随着聊天数据变多会出错");
-
-        // 获取当前时间
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        // 遍历用户会话数据，清理过期数据
-        for (String userId : userSessions.keySet()) {
-            List<String> sessionMessages = userSessions.get(userId);
-            // 判断会话数据是否过期，这里假设会话数据过期时间为1小时
-            if (sessionMessages != null && !sessionMessages.isEmpty()) {
-                LocalDateTime lastMessageTime = LocalDateTime.parse(sessionMessages.get(sessionMessages.size() - 1));
-                if (lastMessageTime.plusHours(1).isBefore(currentTime)) {
-                    // 如果会话数据过期，清理该用户会话数据
-                    userSessions.remove(userId);
-                }
-            }
-        }
-
-        System.out.println("清理完成");
+        userSessions3.clear();
+        System.out.println("会话数据已清理");
     }
 }
