@@ -69,43 +69,18 @@ public class WechatSdkController {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data) throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-        System.out.println("看一下这个data的数据" + data1);
+//        System.out.println("看一下这个data的数据" + data1);
         String type = String.valueOf(data1.get("type"));
-        System.out.println("这个值是：" + type);
+//        System.out.println("这个值是：" + type);
 
         String from1 = data1.get("from");
         String to1 = data1.get("to");
-        String chatroomMemberInfoJson1 = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
-        // 将JSON字符串解析为Map
-        JSONObject chatroomMemberInfo1 = JSONUtil.parseObj(chatroomMemberInfoJson1);
-        String belongChatroomNickName1 = (String) chatroomMemberInfo1.get("belongChatroomNickName");
-        if (belongChatroomNickName1 != null) {
-            redisTemplate.opsForHash().put("wx_voice", belongChatroomNickName1, from1);
-        }
-        //获取的数据根据格式来看有时候不能通过上面那种方式存入redis，所以这个if中再做补充，这种情况是别人在群里中发送消息，自己接收到
-        if (from1.endsWith("@chatroom")) {
-            String url_1 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> hashMap_1 = new HashMap<>();
-            hashMap_1.put("type", 30);
-            hashMap_1.put("chatroomUserName", from1);
-            String jsonString_1 = JSONUtil.toJsonStr(hashMap_1);
-            HttpResponse response_1 = HttpUtil.createPost(url_1).body(jsonString_1, "application/json").execute();
-            if (response_1.isOk()) {
-                String responseBody_1 = response_1.body();
-                JSONObject entries = JSONUtil.parseObj(responseBody_1);
-                // 获取 encryptUserName
-                String encryptUserName = entries.getJSONObject("data")
-                        .getJSONObject("data")
-                        .getJSONObject("profile")
-                        .getJSONObject("data")
-                        .getStr("nickName");
-                if (encryptUserName != null) {
-                    redisTemplate.opsForHash().put("wx_voice", encryptUserName, from1);
-                }
 
-            }
+        if (data1.containsKey("chatroomMemberInfo")) {
+            String str = JSONUtil.parseObj(data1).getJSONObject("chatroomMemberInfo").getStr("belongChatroomNickName");
+            redisTemplate.opsForHash().put("wx_voice", str, from1);
         }
-        //这种情况是自己在群里中发送消息，自己接收到
+        //获取的数据根据格式来看，自己在群里中发送消息不能通过上面那种方式存入redis，所以这里再做补充
         if (to1.endsWith("@chatroom")) {
             String url_1 = "http://127.0.0.1:8888/api/";
             HashMap<String, Object> hashMap_1 = new HashMap<>();
@@ -132,9 +107,7 @@ public class WechatSdkController {
             System.out.println("这个是语音消息");
             String from = data1.get("from");
             String to = data1.get("to");
-            // 获取chatroomMemberInfo字段，它是一个JSON字符串,就不能像上面那样获取了
             String chatroomMemberInfoJson = JSONUtil.toJsonStr(data1.get("chatroomMemberInfo"));
-            // 将JSON字符串解析为Map
             JSONObject chatroomMemberInfo = JSONUtil.parseObj(chatroomMemberInfoJson);
             String belongChatroomNickName = (String) chatroomMemberInfo.get("belongChatroomNickName");
             handleAudioMsg(data1, from, to, belongChatroomNickName);
@@ -170,10 +143,10 @@ public class WechatSdkController {
                                     String music = (String) map.get("music");
                                     System.out.println("文字转语音后的wav文件链接是：" + music);
                                     // 下载音乐文件到本地指定目录
-                                    String localFilePath = downloadFile(music, "F:\\\\yuyin\\\\");
+                                    String localFilePath = downloadFile(music, "C:\\\\yuyin\\\\");
                                     String fileName = localFilePath.substring(localFilePath.lastIndexOf("\\") + 1);
                                     //这时候给wav转成silk，然后通过wechatsdk进行发送
-                                    String s = AudioUtils.transferAudioSilk("F:\\\\yuyin\\\\", fileName, false);
+                                    String s = AudioUtils.transferAudioSilk("C:\\\\yuyin\\\\", fileName, false);
                                     System.out.println("看一下这个s：" + s);
 
                                     String qunId = (String) redisTemplate.opsForHash().get("wx_voice", substring);
@@ -194,6 +167,42 @@ public class WechatSdkController {
                             case "哈哈":
 
                                 break;
+                            default:
+                                if (Integer.parseInt(yinse) >= 1 && Integer.parseInt(yinse) <= 20) {
+                                    //这时候采用chattts生成语音，具体部署请查询chattts项目的使用文档
+                                    //这个执行的比较慢，不用线程会消息阻塞
+                                    new Thread(() -> {
+                                    String url_6 = "http://127.0.0.1:9966/tts";
+                                    HashMap<String, Object> hashMap_6 = new HashMap<>();
+                                    hashMap_6.put("text", wenzi);
+                                    hashMap_6.put("voice", yinse+".pt");
+                                    HttpResponse response_6 = HttpUtil.createPost(url_6).form(hashMap_6).execute();
+
+                                    if (response_6.isOk()) {
+                                        String responseBody_6 = response_6.body();
+                                        String str = JSONUtil.parseObj(responseBody_6).getJSONArray("audio_files")
+                                                .getJSONObject(0)
+                                                .getStr("filename");
+                                        System.out.println("看一下获取的这个音频地址："+str);
+                                        String fileName = str.substring(str.lastIndexOf("/") + 1);
+                                        System.out.println("看一下获取的这个音频地址2："+fileName);
+                                        //这时候给wav转成silk，然后通过wechatsdk进行发送
+                                        String s = AudioUtils.transferAudioSilk("C:\\\\chattts\\\\static\\\\wavs\\\\", fileName, false);
+                                        System.out.println("看一下这个s：" + s);
+                                        String qunId = (String) redisTemplate.opsForHash().get("wx_voice", substring);
+                                        System.out.println("查询到的群id是：" + qunId);
+                                        String url_2 = "http://127.0.0.1:8888/api/";
+                                        HashMap<String, Object> hashMap_2 = new HashMap<>();
+                                        hashMap_2.put("type", 10014);
+                                        hashMap_2.put("userName", qunId);
+                                        hashMap_2.put("filePath", s);
+                                        String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
+                                        HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+
+                                    }
+                                    }).start();
+                                }
+                                break;
                         }
                     } else if ("2".equals(address.charAt(0) + "")) {
                         String substring = address.substring(1);
@@ -210,10 +219,10 @@ public class WechatSdkController {
                                     String music = (String) map.get("music");
                                     System.out.println("文字转语音后的wav文件链接是：" + music);
                                     // 下载音乐文件到本地指定目录
-                                    String localFilePath = downloadFile(music, "F:\\\\yuyin\\\\");
+                                    String localFilePath = downloadFile(music, "C:\\\\yuyin\\\\");
                                     String fileName = localFilePath.substring(localFilePath.lastIndexOf("\\") + 1);
                                     //这时候给wav转成silk，然后通过wechatsdk进行发送
-                                    String s = AudioUtils.transferAudioSilk("F:\\\\yuyin\\\\", fileName, false);
+                                    String s = AudioUtils.transferAudioSilk("C:\\\\yuyin\\\\", fileName, false);
                                     System.out.println("看一下这个s：" + s);
 
                                     //获取准备发送到这个人的wxid，这里先根据微信号查询出具体的wxid
@@ -248,6 +257,55 @@ public class WechatSdkController {
                                 break;
                             case "哈哈":
 
+                                break;
+                            default:
+                                if (Integer.parseInt(yinse) >= 1 && Integer.parseInt(yinse) <= 20) {
+                                    //这时候采用chattts生成语音，具体部署请查询chattts项目的使用文档,不用的话给这个注释起来
+                                    //这个执行的比较慢，不用线程会消息阻塞
+                                    new Thread(() -> {
+                                        String url_6 = "http://127.0.0.1:9966/tts";
+                                        HashMap<String, Object> hashMap_6 = new HashMap<>();
+                                        hashMap_6.put("text", wenzi);
+                                        hashMap_6.put("voice", yinse+".pt");
+                                        HttpResponse response_6 = HttpUtil.createPost(url_6).form(hashMap_6).execute();
+
+                                        if (response_6.isOk()) {
+                                            String responseBody_6 = response_6.body();
+                                            String str = JSONUtil.parseObj(responseBody_6).getJSONArray("audio_files")
+                                                    .getJSONObject(0)
+                                                    .getStr("filename");
+                                            String fileName = str.substring(str.lastIndexOf("/") + 1);
+                                            //这时候给wav转成silk，然后通过wechatsdk进行发送
+                                            String s = AudioUtils.transferAudioSilk("C:\\\\chattts\\\\static\\\\wavs\\\\", fileName, false);
+
+                                            //获取准备发送到这个人的wxid，这里先根据微信号查询出具体的wxid
+                                            String url_1 = "http://127.0.0.1:8888/api/";
+                                            HashMap<String, Object> hashMap_1 = new HashMap<>();
+                                            hashMap_1.put("type", 43);
+                                            hashMap_1.put("keyword", substring);
+                                            String jsonString_1 = JSONUtil.toJsonStr(hashMap_1);
+                                            HttpResponse response_1 = HttpUtil.createPost(url_1).body(jsonString_1, "application/json").execute();
+                                            if (response_1.isOk()) {
+                                                String responseBody_1 = response_1.body();
+                                                JSONObject entries = JSONUtil.parseObj(responseBody_1);
+                                                // 获取 encryptUserName
+                                                String encryptUserName = entries.getJSONObject("data")
+                                                        .getJSONObject("data")
+                                                        .getStr("encryptUserName");
+                                                System.out.println("查询到的微信号：" + encryptUserName);
+
+
+                                                String url_2 = "http://127.0.0.1:8888/api/";
+                                                HashMap<String, Object> hashMap_2 = new HashMap<>();
+                                                hashMap_2.put("type", 10014);
+                                                hashMap_2.put("userName", encryptUserName);
+                                                hashMap_2.put("filePath", s);
+                                                String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
+                                                HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+                                            }
+                                        }
+                                    }).start();
+                                }
                                 break;
                         }
 
@@ -288,7 +346,7 @@ public class WechatSdkController {
                                 QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
                                 //下面第二个eq主要是为了防止本机登录了多个微信，而他们有相同好友都给其发送了语音，这时候不加就不能区分
                                 objectQueryWrapper.eq("from_wx", jsonObject)
-                                        .eq("to_wx", "wxid_mxx11pv88oj422")
+                                        .eq("to_wx", "wxid_o42elvr0ggen22")
                                         .orderByDesc("times");
 
                                 List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
@@ -495,7 +553,7 @@ public class WechatSdkController {
                 map3.put("aeskey", aeskey);
                 map3.put("fileid", cdnthumburl);
                 map3.put("fileType", 2);
-                map3.put("savePath", "F:\\yuyin\\pic\\1.png");
+                map3.put("savePath", "C:\\yuyin\\pic\\1.png");
                 String jsonString3 = JSONUtil.toJsonStr(map3);
                 // 发送POST请求
                 HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
@@ -513,7 +571,7 @@ public class WechatSdkController {
                 HashMap<String, Object> map4 = new HashMap<>();
                 map4.put("type", 10010);
                 map4.put("userName", chatRoom);
-                map4.put("filePath", "F:\\yuyin\\pic\\1.png");
+                map4.put("filePath", "C:\\yuyin\\pic\\1.png");
                 String jsonString4 = JSONUtil.toJsonStr(map4);
                 // 发送POST请求
                 HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
@@ -598,7 +656,7 @@ public class WechatSdkController {
         requestBody.put("fileid", fileid);
         requestBody.put("aeskey", aeskey);
         requestBody.put("fileType", 15);
-        requestBody.put("savePath", "F:\\yuyin\\zhuan\\" + aeskey + ".slik");
+        requestBody.put("savePath", "C:\\yuyin\\zhuan\\" + aeskey + ".slik");
         String jsonString = JSONUtil.toJsonStr(requestBody);
         HttpUtil.createPost(url).body(jsonString, "application/json").execute();
 
@@ -609,7 +667,7 @@ public class WechatSdkController {
         wx_voice.setFromWx(from);
         wx_voice.setToWx(to);
         wx_voice.setLiao(belongChatroomNickName);
-        wx_voice.setAddress("F:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
+        wx_voice.setAddress("C:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
         wx_voice.setTimes(System.currentTimeMillis() / 1000 + "");
         wx_voiceService.save(wx_voice);
 
@@ -799,7 +857,7 @@ public class WechatSdkController {
                 String responseBody = response1.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String imgUrl = (String) map.get("data");
-                String localFilePath = downloadFile(imgUrl, "F:\\\\yuyin\\\\pic\\\\");
+                String localFilePath = downloadFile(imgUrl, "C:\\\\yuyin\\\\pic\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map_1 = new HashMap<>();
@@ -819,7 +877,7 @@ public class WechatSdkController {
                 String responseBody = response1.body();
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String videoUrl = (String) map.get("video");
-                String localFilePath = downloadFile(videoUrl, "F:\\\\yuyin\\\\video\\\\");
+                String localFilePath = downloadFile(videoUrl, "C:\\\\yuyin\\\\video\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map_1 = new HashMap<>();
@@ -844,7 +902,7 @@ public class WechatSdkController {
                 String responseBody = response.body();
                 Map<String, Object> map_1 = JSONUtil.parseObj(responseBody);
                 String image_url = (String) map_1.get("image_url");
-                String localFilePath = downloadFile(image_url, "F:\\\\yuyin\\\\pic\\\\");
+                String localFilePath = downloadFile(image_url, "C:\\\\yuyin\\\\pic\\\\");
 
                 String url_2 = "http://127.0.0.1:8888/api/";
                 HashMap<String, Object> map_2 = new HashMap<>();
