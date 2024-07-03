@@ -23,6 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import javax.net.ssl.*;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -30,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -69,9 +71,9 @@ public class WechatSdkController {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data) throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-//        System.out.println("看一下这个data的数据" + data1);
+        System.out.println("看一下这个data的数据" + data1);
         String type = String.valueOf(data1.get("type"));
-//        System.out.println("这个值是：" + type);
+        System.out.println("这个值是：" + type);
 
         String from1 = data1.get("from");
         String to1 = data1.get("to");
@@ -383,7 +385,7 @@ public class WechatSdkController {
                             QueryWrapper<WxVoice> objectQueryWrapper = new QueryWrapper<>();
                             //下面第二个eq主要是为了防止本机登录了多个微信，而他们有相同好友都给其发送了语音，这时候不加就不能区分
                             objectQueryWrapper.eq("from_wx", jsonObject)
-                                    .eq("to_wx", "wxid_mxx11pv88oj422")
+                                    .eq("to_wx", "wxid_o42elvr0ggen22")
                                     .orderByDesc("times");
 
                             List<WxVoice> list = wx_voiceService.list(objectQueryWrapper);
@@ -950,6 +952,84 @@ public class WechatSdkController {
             map.put("msgContent", "收到");
             String jsonString = JSONUtil.toJsonStr(map);
             HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+        } else if (message.startsWith("放首") && message.contains("的")) {
+//            1.放首海来阿木的歌
+//            2.放首海来阿木的西楼儿女
+            String substring = message.substring(2);
+            if (substring.endsWith("的歌")){
+                String newStr1 = substring.substring(0, substring.length() - 2);
+                String url = "http://ovoa.cc/api/QQmusic.php?msg="+newStr1+"&n=1&type=json";
+//                String url = "http://ovoa.cc/api/QQmusic.php?msg=海来阿木&n=1&type=json";
+                HttpResponse response = HttpUtil.createGet(url).execute();
+                if (response.isOk()) {
+                    String responseBody = response.body();
+                    JSONObject jsonObject = JSONUtil.parseObj(responseBody);
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String songname = data.getStr("songname");
+                    String name1 = data.getStr("name");
+                    String cover = data.getStr("cover");
+                    String songurl = data.getStr("songurl");
+                    int lastSlashIndex = songurl.lastIndexOf('/');
+                    int lastDotIndex = songurl.lastIndexOf('.');
+                    String songId = songurl.substring(lastSlashIndex + 1, lastDotIndex);
+                    String content = "<appmsg appid=\"wx5aa333606550dfd5\" sdkver=\"0\">" +
+                            "<title>" + songname + "</title>" +
+                            "<des>"+newStr1+"</des>" +
+                            "<action>view</action>" +
+                            "<type>3</type>" +
+                            "<url>" + "http://c.y.qq.com/v8/playsong.html?songmid="+songId + "</url>" +
+                            "<songalbumurl>" + cover + "</songalbumurl>" +
+                            "</appmsg>";
+                    String url_5 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map_4 = new HashMap<>();
+                    map_4.put("type", 10053);
+                    map_4.put("userName", chatRoom);
+                    map_4.put("content", content);
+                    String jsonString = JSONUtil.toJsonStr(map_4);
+                    try {
+                        HttpUtil.createPost(url_5).body(jsonString, "application/json").execute();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("fewc"+e);
+                    }
+                } else {
+                    // 处理错误
+                    System.err.println("歌曲出错" + response.getStatus());
+                }
+
+            }else{
+                String url = "http://ovoa.cc/api/QQmusic.php?msg="+substring+"&n=1&type=json";
+                HttpResponse response = HttpUtil.createGet(url).execute();
+                if (response.isOk()) {
+                    String responseBody = response.body();
+                    JSONObject jsonObject = JSONUtil.parseObj(responseBody);
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String songname = data.getStr("songname");
+                    String name1 = data.getStr("name");
+                    String cover = data.getStr("cover");
+                    String songurl = data.getStr("songurl");
+                    int lastSlashIndex = songurl.lastIndexOf('/');
+                    int lastDotIndex = songurl.lastIndexOf('.');
+                    String songId = songurl.substring(lastSlashIndex + 1, lastDotIndex);
+                    String content = "<appmsg appid=\"wx5aa333606550dfd5\" sdkver=\"0\">" +
+                            "<title>" + songname + "</title>" +
+                            "<des>"+name1+"</des>" +
+                            "<action>view</action>" +
+                            "<type>3</type>" +
+                            "<url>" + "http://c.y.qq.com/v8/playsong.html?songmid="+songId + "</url>" +
+                            "<songalbumurl>" + cover + "</songalbumurl>" +
+                            "</appmsg>";
+                    String url_2 = "http://127.0.0.1:8888/api/";
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("type", 10053);
+                    map.put("userName", chatRoom);
+                    map.put("content", content);
+                    String jsonString = JSONUtil.toJsonStr(map);
+                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+
+                }
+            }
+
         } else {
             String chat = chatGptService.chat(newStr, message,"0");
             String url_2 = "http://127.0.0.1:8888/api/";
