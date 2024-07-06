@@ -71,9 +71,9 @@ public class WechatSdkController {
     @PostMapping("/api/setCallback")
     public void setCallbackUrl(@RequestBody Map<String, Object> data) throws Exception {
         Map<String, String> data1 = (Map<String, String>) data.get("data");
-        System.out.println("看一下这个data的数据" + data1);
+//        System.out.println("看一下这个data的数据" + data1);
         String type = String.valueOf(data1.get("type"));
-        System.out.println("这个值是：" + type);
+//        System.out.println("这个值是：" + type);
 
         String from1 = data1.get("from");
         String to1 = data1.get("to");
@@ -153,14 +153,7 @@ public class WechatSdkController {
 
                                     String qunId = (String) redisTemplate.opsForHash().get("wx_voice", substring);
                                     System.out.println("查询到的群id是：" + qunId);
-                                    String url_2 = "http://127.0.0.1:8888/api/";
-                                    HashMap<String, Object> hashMap_2 = new HashMap<>();
-                                    hashMap_2.put("type", 10014);
-                                    hashMap_2.put("userName", qunId);
-                                    hashMap_2.put("filePath", s);
-                                    String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
-                                    HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
-
+                                    sendFile(qunId,s,10014);
 
                                 }
 
@@ -174,34 +167,28 @@ public class WechatSdkController {
                                     //这时候采用chattts生成语音，具体部署请查询chattts项目的使用文档
                                     //这个执行的比较慢，不用线程会消息阻塞
                                     new Thread(() -> {
-                                    String url_6 = "http://127.0.0.1:9966/tts";
-                                    HashMap<String, Object> hashMap_6 = new HashMap<>();
-                                    hashMap_6.put("text", wenzi);
-                                    hashMap_6.put("voice", yinse+".pt");
-                                    HttpResponse response_6 = HttpUtil.createPost(url_6).form(hashMap_6).execute();
+                                        String url_6 = "http://127.0.0.1:9966/tts";
+                                        HashMap<String, Object> hashMap_6 = new HashMap<>();
+                                        hashMap_6.put("text", wenzi);
+                                        hashMap_6.put("voice", yinse+".pt");
+                                        HttpResponse response_6 = HttpUtil.createPost(url_6).form(hashMap_6).execute();
 
-                                    if (response_6.isOk()) {
-                                        String responseBody_6 = response_6.body();
-                                        String str = JSONUtil.parseObj(responseBody_6).getJSONArray("audio_files")
-                                                .getJSONObject(0)
-                                                .getStr("filename");
-                                        System.out.println("看一下获取的这个音频地址："+str);
-                                        String fileName = str.substring(str.lastIndexOf("/") + 1);
-                                        System.out.println("看一下获取的这个音频地址2："+fileName);
-                                        //这时候给wav转成silk，然后通过wechatsdk进行发送
-                                        String s = AudioUtils.transferAudioSilk("C:\\\\chattts\\\\static\\\\wavs\\\\", fileName, false);
-                                        System.out.println("看一下这个s：" + s);
-                                        String qunId = (String) redisTemplate.opsForHash().get("wx_voice", substring);
-                                        System.out.println("查询到的群id是：" + qunId);
-                                        String url_2 = "http://127.0.0.1:8888/api/";
-                                        HashMap<String, Object> hashMap_2 = new HashMap<>();
-                                        hashMap_2.put("type", 10014);
-                                        hashMap_2.put("userName", qunId);
-                                        hashMap_2.put("filePath", s);
-                                        String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
-                                        HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
-
-                                    }
+                                        if (response_6.isOk()) {
+                                            String responseBody_6 = response_6.body();
+                                            String str = JSONUtil.parseObj(responseBody_6).getJSONArray("audio_files")
+                                                    .getJSONObject(0)
+                                                    .getStr("filename");
+                                            System.out.println("看一下获取的这个音频地址："+str);
+                                            String fileName = str.substring(str.lastIndexOf("/") + 1);
+                                            System.out.println("看一下获取的这个音频地址2："+fileName);
+                                            //这时候给wav转成silk，然后通过wechatsdk进行发送
+                                            String s = AudioUtils.transferAudioSilk("C:\\\\chattts\\\\static\\\\wavs\\\\", fileName, false);
+                                            System.out.println("看一下这个s：" + s);
+                                            String qunId = (String) redisTemplate.opsForHash().get("wx_voice", substring);
+                                            System.out.println("查询到的群id是：" + qunId);
+                                            String url_2 = "http://127.0.0.1:8888/api/";
+                                            sendFile(qunId,s,10014);
+                                        }
                                     }).start();
                                 }
                                 break;
@@ -242,15 +229,7 @@ public class WechatSdkController {
                                                 .getJSONObject("data")
                                                 .getStr("encryptUserName");
                                         System.out.println("查询到的微信号：" + encryptUserName);
-
-
-                                        String url_2 = "http://127.0.0.1:8888/api/";
-                                        HashMap<String, Object> hashMap_2 = new HashMap<>();
-                                        hashMap_2.put("type", 10014);
-                                        hashMap_2.put("userName", encryptUserName);
-                                        hashMap_2.put("filePath", s);
-                                        String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
-                                        HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+                                        sendFile(encryptUserName,s,10014);
                                     }
 
                                 }
@@ -295,15 +274,7 @@ public class WechatSdkController {
                                                         .getJSONObject("data")
                                                         .getStr("encryptUserName");
                                                 System.out.println("查询到的微信号：" + encryptUserName);
-
-
-                                                String url_2 = "http://127.0.0.1:8888/api/";
-                                                HashMap<String, Object> hashMap_2 = new HashMap<>();
-                                                hashMap_2.put("type", 10014);
-                                                hashMap_2.put("userName", encryptUserName);
-                                                hashMap_2.put("filePath", s);
-                                                String jsonString_2 = JSONUtil.toJsonStr(hashMap_2);
-                                                HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+                                                sendFile(encryptUserName,s,10014);
                                             }
                                         }
                                     }).start();
@@ -355,16 +326,7 @@ public class WechatSdkController {
                                 WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
                                 String address = wxVoice.getAddress();
                                 System.out.println("当前的语音聊天数据是：" + address);
-
-                                String url_2 = "http://127.0.0.1:8888/api/";
-                                HashMap<String, Object> map_2 = new HashMap<>();
-                                map_2.put("type", 10014);
-                                map_2.put("userName", jsonObject4);
-                                map_2.put("filePath", address);
-                                String jsonString444 = JSONUtil.toJsonStr(map_2);
-                                // 发送POST请求
-                                HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
-
+                                sendFile(jsonObject4,address,10014);
 
                             }
                         }
@@ -392,16 +354,8 @@ public class WechatSdkController {
                             WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
                             String address = wxVoice.getAddress();
                             System.out.println("当前的语音聊天数据是：" + address);
-
                             String qunId = (String) redisTemplate.opsForHash().get("wx_voice", to_wx);
-                            String url_2 = "http://127.0.0.1:8888/api/";
-                            HashMap<String, Object> map_2 = new HashMap<>();
-                            map_2.put("type", 10014);
-                            map_2.put("userName", qunId);
-                            map_2.put("filePath", address);
-                            String jsonString444 = JSONUtil.toJsonStr(map_2);
-                            // 发送POST请求
-                            HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
+                            sendFile(qunId,address,10014);
 
                         }
                     } else if ("群人".equals(biao)) {
@@ -429,16 +383,7 @@ public class WechatSdkController {
                             WxVoice wxVoice = list.get(Integer.parseInt(number) - 1);
                             String address = wxVoice.getAddress();
                             System.out.println("当前的语音聊天数据是：" + address);
-
-
-                            String url_2 = "http://127.0.0.1:8888/api/";
-                            HashMap<String, Object> map_2 = new HashMap<>();
-                            map_2.put("type", 10014);
-                            map_2.put("userName", jsonObject);
-                            map_2.put("filePath", address);
-                            String jsonString444 = JSONUtil.toJsonStr(map_2);
-                            // 发送POST请求
-                            HttpUtil.createPost(url_2).body(jsonString444, "application/json").execute();
+                            sendFile(jsonObject,address,10014);
                         }
 
                     }
@@ -471,35 +416,14 @@ public class WechatSdkController {
                     String chatRoom = (String) redisTemplate.opsForHash().get("a_route", from);
                     if (chatRoom != null) {
                         String str = JSONUtil.parseObj(data1).getJSONObject("talkerInfo").getStr("nickName");
-                        String url_2 = "http://127.0.0.1:8888/api/";
-                        HashMap<String, Object> map = new HashMap<>();
-                        map.put("type", 10009);
-                        map.put("userName", chatRoom);
-                        map.put("msgContent", str + "对" + name + "说：" + content);
-                        String jsonString = JSONUtil.toJsonStr(map);
-                        // 发送POST请求
-                        HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                        sendMessage(chatRoom,str + "对" + name + "说：" + content,10009);
                     }
                 }
             }
-        } else if ("10002".equals(type)) {
-            //扫描二维码进群
-            String user = handleTextMsg(data1);
-            if (!user.isEmpty()) {
-                String[] split = user.split("=");
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("type", 10009);
-                map.put("userName", split[1]);
-                map.put("msgContent", "掌声欢迎：" + split[0] + " 加入本群聊!");
-                String jsonString = JSONUtil.toJsonStr(map);
-                // 发送POST请求
-                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-
-            }
         } else if ("10000".equals(type)) {
-            //邀请别人进群
+            //邀请别人进群,或者扫码进群
             String content = data1.get("content");
+            int endIndex = content.indexOf("\"通过扫描");
             if (content.endsWith("\"加入了群聊")) {
                 Pattern pattern = Pattern.compile("\"([^\"]*)\"");
                 Matcher matcher = pattern.matcher(content);
@@ -513,15 +437,11 @@ public class WechatSdkController {
                     }
                 }
                 if (secondMatch != null) {
-                    String url_2 = "http://127.0.0.1:8888/api/";
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("type", 10009);
-                    map.put("userName", from1);
-                    map.put("msgContent", "掌声欢迎：" + secondMatch + " 加入本群聊!");
-                    String jsonString = JSONUtil.toJsonStr(map);
-                    // 发送POST请求
-                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                    sendMessage(from1,"掌声欢迎：" + secondMatch + " 加入本群聊!",10009);
                 }
+            }else if(endIndex != -1){
+                String substring = content.substring(0, endIndex);
+                sendMessage(from1,"掌声欢迎：" + substring + " 加入本群聊!",10009);
             }
 
 
@@ -559,24 +479,8 @@ public class WechatSdkController {
                 String jsonString3 = JSONUtil.toJsonStr(map3);
                 // 发送POST请求
                 HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
-
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("type", 10009);
-                map.put("userName", chatRoom);
-                map.put("msgContent", str + "给" + name + "发了一张图片：");
-                String jsonString = JSONUtil.toJsonStr(map);
-                // 发送POST请求
-                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
-
-                String url_4 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map4 = new HashMap<>();
-                map4.put("type", 10010);
-                map4.put("userName", chatRoom);
-                map4.put("filePath", "C:\\yuyin\\pic\\1.png");
-                String jsonString4 = JSONUtil.toJsonStr(map4);
-                // 发送POST请求
-                HttpUtil.createPost(url_4).body(jsonString4, "application/json").execute();
+                sendMessage(chatRoom,str + "给" + name + "发了一张图片：",10009);
+                sendFile(chatRoom,"C:\\yuyin\\pic\\1.png",10010);
 
             }
         }
@@ -597,7 +501,6 @@ public class WechatSdkController {
         InputStream inputStream = con.getInputStream();
         String fileName = Paths.get(url.getPath()).getFileName().toString();
         String saveFilePath = saveDir + fileName;
-        // 检查目录是否存在，如果不存在则创建
         Path directory = Paths.get(saveDir);
         if (!Files.exists(directory)) {
             Files.createDirectories(directory);
@@ -636,8 +539,6 @@ public class WechatSdkController {
             String fileid = voicemsgElem.getAttribute("voiceurl");
             // 下载音频文件
             downloadAudioFile(fileid, aeskey, from, to, belongChatroomNickName);
-        } else {
-            System.out.println("No voicemsg element found.");
         }
     }
 
@@ -654,7 +555,7 @@ public class WechatSdkController {
 
         String url = "http://127.0.0.1:8888/api/";
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("type", 66);
+        requestBody.put("type", 88);
         requestBody.put("fileid", fileid);
         requestBody.put("aeskey", aeskey);
         requestBody.put("fileType", 15);
@@ -669,48 +570,13 @@ public class WechatSdkController {
         wx_voice.setFromWx(from);
         wx_voice.setToWx(to);
         wx_voice.setLiao(belongChatroomNickName);
-        wx_voice.setAddress("C:\\\\yuyin\\zhuan\\\\" + aeskey + ".slik");
+        wx_voice.setAddress("C:\\\\yuyin\\\\zhuan\\\\" + aeskey + ".slik");
         wx_voice.setTimes(System.currentTimeMillis() / 1000 + "");
         wx_voiceService.save(wx_voice);
 
 //        redisTemplate.opsForHash().put("wx_voice",belongChatroomNickName,from);
     }
 
-    /**
-     * 解析新人入群的xml
-     *
-     * @param data
-     * @throws Exception
-     */
-    private String handleTextMsg(Map<String, String> data) throws Exception {
-        String xmlContent = data.get("content");
-        // 微信群发言是有前缀的,这里需要去掉
-        String[] split = xmlContent.split(":\n");
-        xmlContent = split.length > 1 ? split[1] : xmlContent;
-
-        // 使用Hutool的XmlUtil解析XML
-        Document doc = XmlUtil.parseXml(xmlContent);
-        Element msgElem = doc.getDocumentElement(); // 获取根元素
-        Node textNode = msgElem.getElementsByTagName("text").item(0);
-        String user = "";
-        if (textNode != null && textNode.getNodeType() == Node.ELEMENT_NODE) {
-            Element textElem = (Element) textNode;
-            String textContent = textElem.getTextContent();
-            System.out.println("新用户: " + textContent);
-//            你邀请"千夜"加入了群聊
-//            "千夜"通过扫描你分享的二维码加入群聊
-            if ((textContent.trim().endsWith("\"加入了群聊")) || (textContent.trim().endsWith("\"通过扫描你分享的二维码加入群聊"))) {
-                // 定义正则表达式模式，匹配双引号包裹的内容
-                String regex = "\"(.*?)\"";
-                Pattern pattern = Pattern.compile(regex);
-                Matcher matcher = pattern.matcher(textContent);
-                if (matcher.find()) {
-                    user = matcher.group(1) + "=" + split[0];
-                }
-            }
-        }
-        return user;
-    }
 
     /**
      * 解析陌生人添加自己为好友的xml
@@ -782,27 +648,13 @@ public class WechatSdkController {
                     String responseBody2 = execute2.body();
                     Map<String, Object> map2 = JSONUtil.parseObj(responseBody2);
                     String answer = (String) map2.get("answer");
-                    String url_3 = "http://127.0.0.1:8888/api/";
-                    HashMap<String, Object> map3 = new HashMap<>();
-                    map3.put("type", 10009);
-                    map3.put("userName", chatRoom);
-                    map3.put("msgContent", "@" + name + value + " " + answer);
-                    String jsonString3 = JSONUtil.toJsonStr(map3);
-                    // 发送POST请求
-                    HttpUtil.createPost(url_3).body(jsonString3, "application/json").execute();
+                    sendMessage(chatRoom, "@" + name + value + " " + answer, 10009);
                 }
             }
         } else if ("今日早报".equals(message)) {
             String s = csdnNewsService.csdn_to();
             System.out.println(s);
-            String url_2 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("type", 10009);
-            map.put("userName", chatRoom);
-            map.put("msgContent", s);
-            String jsonString = JSONUtil.toJsonStr(map);
-            // 发送POST请求
-            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            sendMessage(chatRoom, s, 10009);
         } else if (
                 message.contains("白羊座") ||
                         message.contains("金牛座") ||
@@ -839,14 +691,7 @@ public class WechatSdkController {
                     String content = item.getStr("content");
                     sum.append(type).append("：").append(content).append("\n");
                 }
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("type", 10009);
-                map.put("userName", chatRoom);
-                map.put("msgContent", sum.toString());
-                String jsonString = JSONUtil.toJsonStr(map);
-                // 发送POST请求
-                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                sendMessage(chatRoom,sum.toString(),10009);
             } else {
                 // 处理错误
                 System.err.println("查询星座错误" + response.getStatus());
@@ -860,14 +705,7 @@ public class WechatSdkController {
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String imgUrl = (String) map.get("data");
                 String localFilePath = downloadFile(imgUrl, "C:\\\\yuyin\\\\pic\\\\");
-
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map_1 = new HashMap<>();
-                map_1.put("type", 10010);
-                map_1.put("userName", chatRoom);
-                map_1.put("filePath", localFilePath);
-                String jsonString = JSONUtil.toJsonStr(map_1);
-                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                sendFile(chatRoom, localFilePath, 10010);
             } else {
                 // 处理错误
                 System.out.println("请求图片出错");
@@ -880,14 +718,7 @@ public class WechatSdkController {
                 Map<String, Object> map = JSONUtil.parseObj(responseBody);
                 String videoUrl = (String) map.get("video");
                 String localFilePath = downloadFile(videoUrl, "C:\\\\yuyin\\\\video\\\\");
-
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map_1 = new HashMap<>();
-                map_1.put("type", 10093);
-                map_1.put("userName", chatRoom);
-                map_1.put("filePath", localFilePath);
-                String jsonString = JSONUtil.toJsonStr(map_1);
-                HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                sendFile(chatRoom, localFilePath, 10093);
             } else {
                 // 处理错误
                 System.out.println("请求视频出错");
@@ -905,14 +736,7 @@ public class WechatSdkController {
                 Map<String, Object> map_1 = JSONUtil.parseObj(responseBody);
                 String image_url = (String) map_1.get("image_url");
                 String localFilePath = downloadFile(image_url, "C:\\\\yuyin\\\\pic\\\\");
-
-                String url_2 = "http://127.0.0.1:8888/api/";
-                HashMap<String, Object> map_2 = new HashMap<>();
-                map_2.put("type", 10010);
-                map_2.put("userName", chatRoom);
-                map_2.put("filePath", localFilePath);
-                String jsonString_2 = JSONUtil.toJsonStr(map_2);
-                HttpUtil.createPost(url_2).body(jsonString_2, "application/json").execute();
+                sendFile(chatRoom,localFilePath,10010);
             } else {
                 // 处理错误
                 System.err.println("链接转二维码出错。。。");
@@ -922,21 +746,12 @@ public class WechatSdkController {
             System.out.println("看一下这个活跃度：" + hashMapR);
             StringBuilder sb = new StringBuilder();
             sb.append("该群聊的活跃度如下:\n\n");
-
             for (Object obj : hashMapR.entrySet()) {
                 Map.Entry<String, Integer> entry = (Map.Entry<String, Integer>) obj;
                 sb.append(entry.getKey() + ":" + entry.getValue() + "\n");
             }
-
             String result = sb.toString();
-            System.out.println(result);
-            String url_2 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("type", 10009);
-            map.put("userName", chatRoom);
-            map.put("msgContent", result);
-            String jsonString = JSONUtil.toJsonStr(map);
-            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            sendMessage(chatRoom,result,10009);
         } else if (message.contains("传话筒=") && message.split("=").length == 3) {
             String[] split = message.split("=");
             airfoneService.airfoneChat(split[1], split[2], chatRoom, name, value);
@@ -944,14 +759,7 @@ public class WechatSdkController {
         } else if (message.startsWith("叫我") && message.length() < 7) {
             String result = message.substring(2);
             redisTemplate.opsForHash().put(chatRoom, name, result);
-
-            String url_2 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("type", 10009);
-            map.put("userName", chatRoom);
-            map.put("msgContent", "收到");
-            String jsonString = JSONUtil.toJsonStr(map);
-            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            sendMessage(chatRoom,"收到",10009);
         } else if (message.startsWith("放首") && message.contains("的")) {
 //            1.放首海来阿木的歌
 //            2.放首海来阿木的西楼儿女
@@ -980,20 +788,8 @@ public class WechatSdkController {
                             "<url>" + "http://c.y.qq.com/v8/playsong.html?songmid="+songId + "</url>" +
                             "<songalbumurl>" + cover + "</songalbumurl>" +
                             "</appmsg>";
-                    String url_5 = "http://127.0.0.1:8888/api/";
-                    HashMap<String, Object> map_4 = new HashMap<>();
-                    map_4.put("type", 10053);
-                    map_4.put("userName", chatRoom);
-                    map_4.put("content", content);
-                    String jsonString = JSONUtil.toJsonStr(map_4);
-                    try {
-                        HttpUtil.createPost(url_5).body(jsonString, "application/json").execute();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("fewc"+e);
-                    }
+                    sendSpecialMessage(chatRoom,content,10053);
                 } else {
-                    // 处理错误
                     System.err.println("歌曲出错" + response.getStatus());
                 }
 
@@ -1019,28 +815,58 @@ public class WechatSdkController {
                             "<url>" + "http://c.y.qq.com/v8/playsong.html?songmid="+songId + "</url>" +
                             "<songalbumurl>" + cover + "</songalbumurl>" +
                             "</appmsg>";
-                    String url_2 = "http://127.0.0.1:8888/api/";
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("type", 10053);
-                    map.put("userName", chatRoom);
-                    map.put("content", content);
-                    String jsonString = JSONUtil.toJsonStr(map);
-                    HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+                    sendSpecialMessage(chatRoom,content,10053);
 
                 }
             }
 
-        } else {
+        } else if ("功能菜单".equals(message)){
+            String msg="1. 进群欢迎\n" +
+                    "2. 普通提问解答\n" +
+                    "3. 今日早报\n" +
+                    "4. 今日星座运势\n" +
+                    "5. 天气预报\n" +
+                    "6. 定制称呼\n" +
+                    "7. 美女/视频\n" +
+                    "8. 活跃度查询/链接转二维码\n" +
+                    "9. 传话筒\n" +
+                    "10. 多种语音包发送语音\n" +
+                    "11. 语音转发\n" +
+                    "12. QQ音乐点歌\n" +
+                    "13. 语音克隆：通过某段音色复刻某人的声音并自己使用（待上线）\n" +
+                    "14. 万群同步：在一个群中接收/回复，所有群/指定群的消息（待上线）";
+            sendMessage(chatRoom,msg,10009);
+        }else {
             String chat = chatGptService.chat(newStr, message,"0");
-            String url_2 = "http://127.0.0.1:8888/api/";
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("type", 10009);
-            map.put("userName", chatRoom);
-            map.put("msgContent", "@" + name + value + " " + chat);
-            String jsonString = JSONUtil.toJsonStr(map);
-            // 发送POST请求
-            HttpUtil.createPost(url_2).body(jsonString, "application/json").execute();
+            sendMessage(chatRoom,"@" + name + value + " " + chat,10009);
         }
 
+    }
+    private void sendMessage(String chatRoom, String msgContent, int type) {
+        String url = "http://127.0.0.1:8888/api/";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("userName", chatRoom);
+        map.put("msgContent", msgContent);
+        String jsonString = JSONUtil.toJsonStr(map);
+        HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+    }
+    private void sendFile(String chatRoom, String filePath, int type) {
+        String url = "http://127.0.0.1:8888/api/";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("userName", chatRoom);
+        map.put("filePath", filePath);
+        String jsonString = JSONUtil.toJsonStr(map);
+        HttpUtil.createPost(url).body(jsonString, "application/json").execute();
+    }
+    private void sendSpecialMessage(String chatRoom, String content, int type) {
+        String url = "http://127.0.0.1:8888/api/";
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", type);
+        map.put("userName", chatRoom);
+        map.put("content", content);
+        String jsonString = JSONUtil.toJsonStr(map);
+        HttpUtil.createPost(url).body(jsonString, "application/json").execute();
     }
 }
